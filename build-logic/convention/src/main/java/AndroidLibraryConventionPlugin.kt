@@ -38,7 +38,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             }
 
             extensions.configure<KotlinAndroidProjectExtension>("kotlin"){
-                jvmToolchain(11)
+                jvmToolchain(17)
             }
 
             val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
