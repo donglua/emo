@@ -65,7 +65,7 @@ fun EmoTip(flow: StateFlow<TipStatus>) {
             modifier = Modifier
                 .size(120.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF181818).copy(alpha = 0.9f)),
+                .background(Color(0xFF181818)),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
