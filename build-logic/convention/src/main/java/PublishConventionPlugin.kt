@@ -8,7 +8,10 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import org.gradle.plugins.signing.SigningExtension
 import java.io.File
+import java.net.URI
 import java.util.*
+
+const val DEFAULT_PUBLICATION_NAME = "default"
 
 class PublishConventionPlugin: Plugin<Project> {
 
@@ -16,7 +19,7 @@ class PublishConventionPlugin: Plugin<Project> {
         val isAndroid = project.hasProperty("android")
 
         with(project.pluginManager) {
-            apply("org.gradle.signing")
+            // apply("org.gradle.signing")
             apply("org.gradle.maven-publish")
         }
 
@@ -52,19 +55,21 @@ class PublishConventionPlugin: Plugin<Project> {
                 project.configure<PublishingExtension> {
                     repositories {
                         maven {
-                            setUrl(mavenUrl)
+                            isAllowInsecureProtocol = true
+                            url = URI.create(mavenUrl)
                             credentials {
                                 username = mavenUsername
                                 password = mavenPassword
                             }
+                            authentication {
+                            }
                         }
                     }
                     publications {
-                        create<MavenPublication>("release") {
-
-                            project.configure<SigningExtension> {
-                                sign(this@create)
-                            }
+                        create(DEFAULT_PUBLICATION_NAME, MavenPublication::class.java) {
+                            // project.configure<SigningExtension> {
+                            //     sign(this@create)
+                            // }
 
                             if (isAndroid) {
                                 from(components.getByName("release"))
@@ -73,7 +78,7 @@ class PublishConventionPlugin: Plugin<Project> {
                             }
 
                             groupId = project.group as String
-                            artifactId = project.name
+                            artifactId = "emo-${project.name}"
                             version = project.version as String
 
                             pom {

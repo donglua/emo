@@ -16,5 +16,5 @@ buildscript {
 }
 
 subprojects {
-    group = "cn.qhplus.emo"
+    group = "cn.jingzhuan.forks"
 }
