@@ -83,7 +83,7 @@ class PublishConventionPlugin: Plugin<Project> {
 
                             pom {
                                 name.set("${project.group}:${project.name}")
-                                url.set("https://github.com/cgspine/emo")
+                                url.set("https://github.com/donglua/emo")
                                 description.set("emo android library.")
                                 licenses {
                                     license {
@@ -99,9 +99,9 @@ class PublishConventionPlugin: Plugin<Project> {
                                     }
                                 }
                                 scm {
-                                    connection.set("scm:git:git://github.com/cgspine/emo.git")
-                                    developerConnection.set("scm:git:ssh://github.com/cgspine/emo.git")
-                                    url.set("https://github.com/cgspine/emo")
+                                    connection.set("scm:git:git://github.com/donglua/emo.git")
+                                    developerConnection.set("scm:git:ssh://github.com/donglua/emo.git")
+                                    url.set("https://github.com/donglua/emo")
                                 }
                             }
                         }
