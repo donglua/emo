@@ -28,7 +28,7 @@ class PublishConventionPlugin: Plugin<Project> {
             val android = project.extensions.getByName("android") as LibraryExtension
             android.publishing {
                 singleVariant("release") {
-                    withJavadocJar()
+                    // withJavadocJar()
                     withSourcesJar()
                 }
             }

@@ -96,7 +96,10 @@ fun PhotoPickerPreviewPage(
 
     val pickedItems by viewModel.pickedListFlow.collectAsState()
 
-    val pagerState = rememberPagerState(list.indexOfFirst { it.model.id == currentId }.coerceAtLeast(0))
+    val pagerState = rememberPagerState(
+        list.indexOfFirst { it.model.id == currentId }.coerceAtLeast(0),
+        pageCount = { list.size }
+    )
 
     val topBarLeftItems = remember {
         persistentListOf(
@@ -214,7 +217,7 @@ fun PhotoPickerPreviewContent(
     onTap: () -> Unit
 ) {
     HorizontalPager(
-        pageCount = data.size,
+        // pageCount = data.size,
         state = pagerState,
         key = { data[it].model.id }
     ) { page ->

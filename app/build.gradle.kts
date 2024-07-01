@@ -15,6 +15,9 @@
  */
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import java.io.ByteArrayOutputStream
+import java.io.FileInputStream
+import java.lang.System.load
+import java.util.Properties
 
 
 plugins {
@@ -33,7 +36,9 @@ val gitVersion = providers.exec {
 android {
 
     signingConfigs {
-        val properties = gradleLocalProperties(project.rootDir)
+        val properties = Properties().apply {
+            load(FileInputStream(File(rootProject.projectDir, "local.properties")))
+        }
         create("release"){
             keyAlias = properties.getProperty("sign_alias")
             keyPassword = properties.getProperty("sign_key_password")

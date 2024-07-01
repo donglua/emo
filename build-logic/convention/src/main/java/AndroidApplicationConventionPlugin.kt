@@ -33,7 +33,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
 
             extensions.configure<BaseAppModuleExtension> {
                 configureKotlinAndroid(this)
-                defaultConfig.targetSdk = 33
+                defaultConfig.targetSdk = 34
                 buildFeatures.buildConfig = true
             }
 

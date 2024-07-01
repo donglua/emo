@@ -28,10 +28,10 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
  * Configure base Kotlin with Android options
  */
 internal fun Project.configureKotlinAndroid(
-    commonExtension: CommonExtension<*, *, *, *>,
+    commonExtension: CommonExtension<*, *, *, *, *, *>,
 ) {
     commonExtension.apply {
-        compileSdk = 33
+        compileSdk = 34
 
         defaultConfig {
             minSdk = 21
@@ -70,6 +70,6 @@ internal fun Project.configureKotlinAndroid(
     }
 }
 
-private fun CommonExtension<*, *, *, *>.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
+private fun CommonExtension<*, *, *, *, *, *>.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
     (this as ExtensionAware).extensions.configure("kotlinOptions", block)
 }

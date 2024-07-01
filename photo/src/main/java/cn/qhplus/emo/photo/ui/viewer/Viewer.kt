@@ -133,12 +133,11 @@ fun DefaultPhotoViewer(
     arg: PhotoViewerArg,
     PhotoPage: @Composable (PhotoPageArg) -> Unit
 ) {
-    val pagerState = rememberPagerState(arg.index)
+    val pagerState = rememberPagerState(arg.index, pageCount = { arg.list.size })
     val pagedChanged = remember {
         PhotoViewerPagedChanged()
     }
     HorizontalPager(
-        pageCount = arg.list.size,
         state = pagerState,
         key = { arg.list[it].photoProvider.id() }
     ) { page ->

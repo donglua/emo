@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "cn.qhplus.emo.microbenchmark"
-    compileSdk = 33
+    compileSdk = 34
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -19,7 +19,7 @@ android {
 
     defaultConfig {
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 //        testInstrumentationRunner = "androidx.benchmark.junit4.AndroidBenchmarkRunner"
