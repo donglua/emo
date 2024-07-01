@@ -114,12 +114,12 @@ class WebViewActivity : ComponentActivity() {
             return super.shouldOverrideUrlLoading(view, request)
         }
 
-        override fun onPageFinished(view: WebView?, url: String?) {
+        override fun onPageFinished(view: WebView, url: String?) {
             super.onPageFinished(view, url)
-            view?.let {
+            view.let {
                 helper.doOnPageFinished(it)
             }
-            view?.title?.let {
+            view.title?.let {
                 if (it.isNotBlank()) {
                     title.value = it
                 }
@@ -189,9 +189,9 @@ class BusinessWebViewClient(handler: EmoJsBridgeHandler) : AccompanistWebViewCli
         return super.shouldOverrideUrlLoading(view, request)
     }
 
-    override fun onPageFinished(view: WebView?, url: String?) {
+    override fun onPageFinished(view: WebView, url: String?) {
         super.onPageFinished(view, url)
-        view?.let {
+        view.let {
             helper.doOnPageFinished(it)
         }
     }

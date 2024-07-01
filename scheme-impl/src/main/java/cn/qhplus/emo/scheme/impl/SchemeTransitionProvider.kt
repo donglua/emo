@@ -17,6 +17,7 @@
 package cn.qhplus.emo.scheme.impl
 
 import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -55,84 +56,86 @@ object SchemeTransitionProviders {
 interface SchemeTransitionProvider {
     fun activityEnterRes(): Int
     fun activityExitRes(): Int
-    fun enterTransition(): (AnimatedContentScope.() -> EnterTransition?)?
-    fun exitTransition(): (AnimatedContentScope.() -> ExitTransition?)?
-    fun popEnterTransition(): (AnimatedContentScope.() -> EnterTransition?)?
-    fun popExitTransition(): (AnimatedContentScope.() -> ExitTransition?)?
+    fun enterTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)?
+    fun exitTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)?
+    fun popEnterTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)?
+    fun popExitTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)?
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-val SlideInRight: AnimatedContentScope.() -> EnterTransition by lazy {
+val SlideInRight: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition by lazy {
     {
         slideIn(tween(durationMillis = 300)) { IntOffset(it.width, 0) }
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-val SlideInLeft: AnimatedContentScope.() -> EnterTransition by lazy {
+val SlideInLeft: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition by lazy {
     {
         slideIn(tween(durationMillis = 300)) { IntOffset(-it.width, 0) }
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-val SlideInBottom: AnimatedContentScope.() -> EnterTransition by lazy {
+val SlideInBottom: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition by lazy {
     {
+        targetState
+
         slideIn(tween(durationMillis = 300)) { IntOffset(0, it.height) }
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-val SlideInTop: AnimatedContentScope.() -> EnterTransition by lazy {
+val SlideInTop: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition by lazy {
     {
         slideIn(tween(durationMillis = 300)) { IntOffset(0, -it.height) }
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-val ScaleIn: AnimatedContentScope.() -> EnterTransition by lazy {
+val ScaleIn: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition by lazy {
     {
         scaleIn(tween(durationMillis = 300), 0.8f) + fadeIn(tween(durationMillis = 300), 0f)
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-val FadeIn: AnimatedContentScope.() -> EnterTransition by lazy {
+val FadeIn: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition by lazy {
     {
         fadeIn(tween(durationMillis = 300), 0f)
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-val StillIn: AnimatedContentScope.() -> EnterTransition by lazy {
+val StillIn: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition by lazy {
     {
         scaleIn(tween(durationMillis = 300), 1f)
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-val SlideOutLeft: AnimatedContentScope.() -> ExitTransition by lazy {
+val SlideOutLeft: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition by lazy {
     {
         slideOut(tween(durationMillis = 300, delayMillis = 50)) { IntOffset(-it.width, 0) }
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-val SlideOutRight: AnimatedContentScope.() -> ExitTransition by lazy {
+val SlideOutRight: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition by lazy {
     {
         slideOut(tween(durationMillis = 300, delayMillis = 50)) { IntOffset(it.width, 0) }
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-val SlideOutTop: AnimatedContentScope.() -> ExitTransition by lazy {
+val SlideOutTop: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition by lazy {
     {
         slideOut(tween(durationMillis = 300, delayMillis = 50)) { IntOffset(0, -it.height) }
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-val ScaleOut: AnimatedContentScope.() -> ExitTransition by lazy {
+val ScaleOut: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition by lazy {
     {
         scaleOut(
             tween(durationMillis = 300, delayMillis = 50),
@@ -142,21 +145,21 @@ val ScaleOut: AnimatedContentScope.() -> ExitTransition by lazy {
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-val FadeOut: AnimatedContentScope.() -> ExitTransition by lazy {
+val FadeOut: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition by lazy {
     {
         fadeOut(tween(durationMillis = 300, delayMillis = 50))
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-val StillOut: AnimatedContentScope.() -> ExitTransition by lazy {
+val StillOut: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition by lazy {
     {
         scaleOut(tween(durationMillis = 300, delayMillis = 50), 1f)
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-val SlideOutBottom: AnimatedContentScope.() -> ExitTransition by lazy {
+val SlideOutBottom: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition by lazy {
     {
         slideOut(tween(durationMillis = 300, delayMillis = 50)) { IntOffset(0, it.height) }
     }
@@ -173,19 +176,19 @@ open class PushSchemeTransitionProvider : SchemeTransitionProvider {
         return R.anim.slide_out_left
     }
 
-    override fun enterTransition(): (AnimatedContentScope.() -> EnterTransition?)? {
+    override fun enterTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? {
         return SlideInRight
     }
 
-    override fun exitTransition(): (AnimatedContentScope.() -> ExitTransition?)? {
+    override fun exitTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? {
         return SlideOutLeft
     }
 
-    override fun popEnterTransition(): (AnimatedContentScope.() -> EnterTransition?)? {
+    override fun popEnterTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? {
         return SlideInLeft
     }
 
-    override fun popExitTransition(): (AnimatedContentScope.() -> ExitTransition?)? {
+    override fun popExitTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? {
         return SlideOutRight
     }
 }
@@ -201,19 +204,19 @@ open class PushThenStillSchemeTransitionProvider : SchemeTransitionProvider {
         return R.anim.slide_out_left
     }
 
-    override fun enterTransition(): (AnimatedContentScope.() -> EnterTransition?)? {
+    override fun enterTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? {
         return SlideInRight
     }
 
-    override fun exitTransition(): (AnimatedContentScope.() -> ExitTransition?)? {
+    override fun exitTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? {
         return StillOut
     }
 
-    override fun popEnterTransition(): (AnimatedContentScope.() -> EnterTransition?)? {
+    override fun popEnterTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? {
         return StillIn
     }
 
-    override fun popExitTransition(): (AnimatedContentScope.() -> ExitTransition?)? {
+    override fun popExitTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? {
         return SlideOutRight
     }
 }
@@ -229,19 +232,19 @@ open class PresentSchemeTransitionProvider : SchemeTransitionProvider {
         return R.anim.slide_still
     }
 
-    override fun enterTransition(): (AnimatedContentScope.() -> EnterTransition?)? {
+    override fun enterTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? {
         return SlideInBottom
     }
 
-    override fun exitTransition(): (AnimatedContentScope.() -> ExitTransition?)? {
+    override fun exitTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? {
         return StillOut
     }
 
-    override fun popEnterTransition(): (AnimatedContentScope.() -> EnterTransition?)? {
+    override fun popEnterTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? {
         return StillIn
     }
 
-    override fun popExitTransition(): (AnimatedContentScope.() -> ExitTransition?)? {
+    override fun popExitTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? {
         return SlideOutBottom
     }
 }
@@ -257,19 +260,19 @@ open class ScaleSchemeTransitionProvider : SchemeTransitionProvider {
         return R.anim.slide_still
     }
 
-    override fun enterTransition(): (AnimatedContentScope.() -> EnterTransition?)? {
+    override fun enterTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? {
         return ScaleIn
     }
 
-    override fun exitTransition(): (AnimatedContentScope.() -> ExitTransition?)? {
+    override fun exitTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? {
         return StillOut
     }
 
-    override fun popEnterTransition(): (AnimatedContentScope.() -> EnterTransition?)? {
+    override fun popEnterTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? {
         return StillIn
     }
 
-    override fun popExitTransition(): (AnimatedContentScope.() -> ExitTransition?)? {
+    override fun popExitTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? {
         return ScaleOut
     }
 }
