@@ -20,18 +20,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.lang.ref.WeakReference
 
-class ConfigMeta(
-    val name: String,
-    val humanName: String,
-    val versionRelated: Boolean,
-    val category: String,
-    val tags: Array<String>
-)
+class ConfigMeta(val name: String, val humanName: String, val versionRelated: Boolean, val category: String, val tags: Array<String>)
 
-sealed class ConfigAction(
-    protected val storage: ConfigStorage,
-    val meta: ConfigMeta
-) {
+sealed class ConfigAction(protected val storage: ConfigStorage, val meta: ConfigMeta) {
     fun remove() {
         storage.remove(meta)
     }
@@ -41,32 +32,23 @@ sealed class ConfigAction(
     abstract fun valueType(): Class<*>
 }
 
-class IntConfigAction(
-    storage: ConfigStorage,
-    meta: ConfigMeta,
-    val default: Int
-) : ConfigAction(storage, meta) {
+class IntConfigAction(storage: ConfigStorage, meta: ConfigMeta, val default: Int) : ConfigAction(storage, meta) {
 
     @Volatile
     private var stateFlow: WeakReference<MutableStateFlow<Int>>? = null
 
-    fun stateFlowOf(): StateFlow<Int> {
-        return stateFlow?.get() ?: synchronized(this) {
-            stateFlow?.get() ?: MutableStateFlow(read()).also { stateFlow = WeakReference(it) }
-        }
+    fun stateFlowOf(): StateFlow<Int> = stateFlow?.get() ?: synchronized(this) {
+        stateFlow?.get() ?: MutableStateFlow(read()).also { stateFlow = WeakReference(it) }
     }
 
-    override fun readAsString(): String {
-        return read().toString()
-    }
+    override fun readAsString(): String = read().toString()
 
-    override fun writeFromString(value: String): Boolean {
-        return value.toIntOrNull()?.run { write(this); true } ?: false
-    }
+    override fun writeFromString(value: String): Boolean = value.toIntOrNull()?.run {
+        write(this)
+        true
+    } ?: false
 
-    fun read(): Int {
-        return storage.readInt(meta, default)
-    }
+    fun read(): Int = storage.readInt(meta, default)
 
     fun write(value: Int) {
         storage.writeInt(meta, value)
@@ -76,24 +58,16 @@ class IntConfigAction(
     override fun valueType(): Class<*> = Int::class.java
 }
 
-class BoolConfigAction(
-    storage: ConfigStorage,
-    meta: ConfigMeta,
-    val default: Boolean
-) : ConfigAction(storage, meta) {
+class BoolConfigAction(storage: ConfigStorage, meta: ConfigMeta, val default: Boolean) : ConfigAction(storage, meta) {
 
     @Volatile
     private var stateFlow: WeakReference<MutableStateFlow<Boolean>>? = null
 
-    fun stateFlowOf(): StateFlow<Boolean> {
-        return stateFlow?.get() ?: synchronized(this) {
-            stateFlow?.get() ?: MutableStateFlow(read()).also { stateFlow = WeakReference(it) }
-        }
+    fun stateFlowOf(): StateFlow<Boolean> = stateFlow?.get() ?: synchronized(this) {
+        stateFlow?.get() ?: MutableStateFlow(read()).also { stateFlow = WeakReference(it) }
     }
 
-    override fun readAsString(): String {
-        return read().toString()
-    }
+    override fun readAsString(): String = read().toString()
 
     override fun writeFromString(value: String): Boolean {
         val lowercase = value.lowercase()
@@ -109,9 +83,7 @@ class BoolConfigAction(
 
     override fun valueType(): Class<*> = Boolean::class.java
 
-    fun read(): Boolean {
-        return storage.readBool(meta, default)
-    }
+    fun read(): Boolean = storage.readBool(meta, default)
 
     fun write(value: Boolean) {
         storage.writeBool(meta, value)
@@ -119,34 +91,25 @@ class BoolConfigAction(
     }
 }
 
-class LongConfigAction(
-    storage: ConfigStorage,
-    meta: ConfigMeta,
-    val default: Long
-) : ConfigAction(storage, meta) {
+class LongConfigAction(storage: ConfigStorage, meta: ConfigMeta, val default: Long) : ConfigAction(storage, meta) {
 
     @Volatile
     private var stateFlow: WeakReference<MutableStateFlow<Long>>? = null
 
-    fun stateFlowOf(): StateFlow<Long> {
-        return stateFlow?.get() ?: synchronized(this) {
-            stateFlow?.get() ?: MutableStateFlow(read()).also { stateFlow = WeakReference(it) }
-        }
+    fun stateFlowOf(): StateFlow<Long> = stateFlow?.get() ?: synchronized(this) {
+        stateFlow?.get() ?: MutableStateFlow(read()).also { stateFlow = WeakReference(it) }
     }
 
-    override fun readAsString(): String {
-        return read().toString()
-    }
+    override fun readAsString(): String = read().toString()
 
-    override fun writeFromString(value: String): Boolean {
-        return value.toLongOrNull()?.run { write(this); true } ?: false
-    }
+    override fun writeFromString(value: String): Boolean = value.toLongOrNull()?.run {
+        write(this)
+        true
+    } ?: false
 
     override fun valueType(): Class<*> = Long::class.java
 
-    fun read(): Long {
-        return storage.readLong(meta, default)
-    }
+    fun read(): Long = storage.readLong(meta, default)
 
     fun write(value: Long) {
         storage.writeLong(meta, value)
@@ -154,34 +117,25 @@ class LongConfigAction(
     }
 }
 
-class FloatConfigAction(
-    storage: ConfigStorage,
-    meta: ConfigMeta,
-    private val default: Float
-) : ConfigAction(storage, meta) {
+class FloatConfigAction(storage: ConfigStorage, meta: ConfigMeta, private val default: Float) : ConfigAction(storage, meta) {
 
     @Volatile
     private var stateFlow: WeakReference<MutableStateFlow<Float>>? = null
 
-    fun stateFlowOf(): StateFlow<Float> {
-        return stateFlow?.get() ?: synchronized(this) {
-            stateFlow?.get() ?: MutableStateFlow(read()).also { stateFlow = WeakReference(it) }
-        }
+    fun stateFlowOf(): StateFlow<Float> = stateFlow?.get() ?: synchronized(this) {
+        stateFlow?.get() ?: MutableStateFlow(read()).also { stateFlow = WeakReference(it) }
     }
 
-    override fun readAsString(): String {
-        return read().toString()
-    }
+    override fun readAsString(): String = read().toString()
 
-    override fun writeFromString(value: String): Boolean {
-        return value.toFloatOrNull()?.run { write(this); true } ?: false
-    }
+    override fun writeFromString(value: String): Boolean = value.toFloatOrNull()?.run {
+        write(this)
+        true
+    } ?: false
 
     override fun valueType(): Class<*> = Float::class.java
 
-    fun read(): Float {
-        return storage.readFloat(meta, default)
-    }
+    fun read(): Float = storage.readFloat(meta, default)
 
     fun write(value: Float) {
         storage.writeFloat(meta, value)
@@ -189,34 +143,25 @@ class FloatConfigAction(
     }
 }
 
-class DoubleConfigAction(
-    storage: ConfigStorage,
-    meta: ConfigMeta,
-    private val default: Double
-) : ConfigAction(storage, meta) {
+class DoubleConfigAction(storage: ConfigStorage, meta: ConfigMeta, private val default: Double) : ConfigAction(storage, meta) {
 
     @Volatile
     private var stateFlow: WeakReference<MutableStateFlow<Double>>? = null
 
-    fun stateFlowOf(): StateFlow<Double> {
-        return stateFlow?.get() ?: synchronized(this) {
-            stateFlow?.get() ?: MutableStateFlow(read()).also { stateFlow = WeakReference(it) }
-        }
+    fun stateFlowOf(): StateFlow<Double> = stateFlow?.get() ?: synchronized(this) {
+        stateFlow?.get() ?: MutableStateFlow(read()).also { stateFlow = WeakReference(it) }
     }
 
-    override fun readAsString(): String {
-        return read().toString()
-    }
+    override fun readAsString(): String = read().toString()
 
-    override fun writeFromString(value: String): Boolean {
-        return value.toDoubleOrNull()?.run { write(this); true } ?: false
-    }
+    override fun writeFromString(value: String): Boolean = value.toDoubleOrNull()?.run {
+        write(this)
+        true
+    } ?: false
 
     override fun valueType(): Class<*> = Double::class.java
 
-    fun read(): Double {
-        return storage.readDouble(meta, default)
-    }
+    fun read(): Double = storage.readDouble(meta, default)
 
     fun write(value: Double) {
         storage.writeDouble(meta, value)
@@ -224,24 +169,16 @@ class DoubleConfigAction(
     }
 }
 
-class StringConfigAction(
-    storage: ConfigStorage,
-    meta: ConfigMeta,
-    private val default: String
-) : ConfigAction(storage, meta) {
+class StringConfigAction(storage: ConfigStorage, meta: ConfigMeta, private val default: String) : ConfigAction(storage, meta) {
 
     @Volatile
     private var stateFlow: WeakReference<MutableStateFlow<String>>? = null
 
-    fun stateFlowOf(): StateFlow<String> {
-        return stateFlow?.get() ?: synchronized(this) {
-            stateFlow?.get() ?: MutableStateFlow(read()).also { stateFlow = WeakReference(it) }
-        }
+    fun stateFlowOf(): StateFlow<String> = stateFlow?.get() ?: synchronized(this) {
+        stateFlow?.get() ?: MutableStateFlow(read()).also { stateFlow = WeakReference(it) }
     }
 
-    override fun readAsString(): String {
-        return read()
-    }
+    override fun readAsString(): String = read()
 
     override fun writeFromString(value: String): Boolean {
         write(value)
@@ -250,9 +187,7 @@ class StringConfigAction(
 
     override fun valueType(): Class<*> = String::class.java
 
-    fun read(): String {
-        return storage.readString(meta, default)
-    }
+    fun read(): String = storage.readString(meta, default)
 
     fun write(value: String) {
         storage.writeString(meta, value)
@@ -260,26 +195,14 @@ class StringConfigAction(
     }
 }
 
-fun ConfigAction.concreteInt(): IntConfigAction {
-    return this as IntConfigAction
-}
+fun ConfigAction.concreteInt(): IntConfigAction = this as IntConfigAction
 
-fun ConfigAction.concreteLong(): LongConfigAction {
-    return this as LongConfigAction
-}
+fun ConfigAction.concreteLong(): LongConfigAction = this as LongConfigAction
 
-fun ConfigAction.concreteBool(): BoolConfigAction {
-    return this as BoolConfigAction
-}
+fun ConfigAction.concreteBool(): BoolConfigAction = this as BoolConfigAction
 
-fun ConfigAction.concreteFloat(): FloatConfigAction {
-    return this as FloatConfigAction
-}
+fun ConfigAction.concreteFloat(): FloatConfigAction = this as FloatConfigAction
 
-fun ConfigAction.concreteDouble(): DoubleConfigAction {
-    return this as DoubleConfigAction
-}
+fun ConfigAction.concreteDouble(): DoubleConfigAction = this as DoubleConfigAction
 
-fun ConfigAction.concreteString(): StringConfigAction {
-    return this as StringConfigAction
-}
+fun ConfigAction.concreteString(): StringConfigAction = this as StringConfigAction

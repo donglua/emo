@@ -23,41 +23,29 @@ annotation class ConfigBasic(
     val humanName: String,
     val category: String = "default",
     val versionRelated: Boolean = false,
-    val tags: Array<String> = []
+    val tags: Array<String> = [],
 )
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
-annotation class ConfigWithBoolValue(
-    val default: Boolean = false
-)
+annotation class ConfigWithBoolValue(val default: Boolean = false)
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
-annotation class ConfigWithIntValue(
-    val default: Int = 0
-)
+annotation class ConfigWithIntValue(val default: Int = 0)
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
-annotation class ConfigWithLongValue(
-    val default: Long = 0
-)
+annotation class ConfigWithLongValue(val default: Long = 0)
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
-annotation class ConfigWithFloatValue(
-    val default: Float = 0f
-)
+annotation class ConfigWithFloatValue(val default: Float = 0f)
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
-annotation class ConfigWithDoubleValue(
-    val default: Double = 0.0
-)
+annotation class ConfigWithDoubleValue(val default: Double = 0.0)
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
-annotation class ConfigWithStringValue(
-    val default: String = ""
-)
+annotation class ConfigWithStringValue(val default: String = "")

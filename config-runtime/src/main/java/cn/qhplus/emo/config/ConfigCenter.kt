@@ -25,11 +25,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ConfigCenter(
-    val storage: ConfigStorage,
-    val prodMode: Boolean = true,
-    autoClearUp: Boolean = true
-) {
+class ConfigCenter(val storage: ConfigStorage, val prodMode: Boolean = true, autoClearUp: Boolean = true) {
 
     private val configMap by lazy {
         try {
@@ -55,14 +51,10 @@ class ConfigCenter(
         }
     }
 
-    fun <T> actionOf(cls: Class<T>): ConfigAction {
-        return configMap.actionMap[cls] ?: throw RuntimeException("${cls.simpleName} is not a config interface")
-    }
+    fun <T> actionOf(cls: Class<T>): ConfigAction = configMap.actionMap[cls] ?: throw RuntimeException("${cls.simpleName} is not a config interface")
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> resolverOf(cls: Class<T>): ConfigImplResolver<T>? {
-        return configMap.implMap[cls] as? ConfigImplResolver<T>
-    }
+    fun <T> resolverOf(cls: Class<T>): ConfigImplResolver<T>? = configMap.implMap[cls] as? ConfigImplResolver<T>
 
     @Suppress("UNCHECKED_CAST")
     fun <T> implOf(cls: Class<T>): T? {
@@ -70,29 +62,19 @@ class ConfigCenter(
         return resolver.resolve()
     }
 
-    fun clsByName(name: String): Class<*>? {
-        return configMap.clsByName(name)
-    }
+    fun clsByName(name: String): Class<*>? = configMap.clsByName(name)
 
-    fun actionByName(name: String): ConfigAction? {
-        return configMap.actionByName(name)
-    }
+    fun actionByName(name: String): ConfigAction? = configMap.actionByName(name)
 
     fun clearUp() {
         storage.clearUp(configMap.actionMap.values.map { it.meta })
     }
 
-    fun getAll(): Sequence<ConfigAction> {
-        return configMap.actionMap.values.asSequence()
-    }
+    fun getAll(): Sequence<ConfigAction> = configMap.actionMap.values.asSequence()
 
-    fun getByCategory(category: String): Sequence<ConfigAction> {
-        return getAll().filter { it.meta.category == category }
-    }
+    fun getByCategory(category: String): Sequence<ConfigAction> = getAll().filter { it.meta.category == category }
 
-    fun getByTag(tag: String): Sequence<ConfigAction> {
-        return getAll().filter { it.meta.tags.contains(tag) }
-    }
+    fun getByTag(tag: String): Sequence<ConfigAction> = getAll().filter { it.meta.tags.contains(tag) }
 
     fun removeIf(predicate: (ConfigAction) -> Boolean) {
         val metas = getAll().asSequence().filter(predicate).map { it.meta }.toList()
@@ -106,11 +88,11 @@ class ConfigCenter(
             if (!prodMode) {
                 throw RuntimeException(
                     "Value type for ${configCls.simpleName}[name = ${action.meta.name}] is not matched. " +
-                        "expected ${expected.simpleName}, actual ${actual.simpleName}"
+                        "expected ${expected.simpleName}, actual ${actual.simpleName}",
                 )
             }
             false
-        }
+        },
     ) = withContext(Dispatchers.IO) {
         for ((name, value) in map) {
             val cls = configMap.clsByName(name)
@@ -170,24 +152,12 @@ class ConfigCenter(
     }
 
     fun interface OnValueTypeNotMatched {
-        fun invoke(
-            action: ConfigAction,
-            configCls: Class<*>,
-            value: Any,
-            expectedType: Class<*>,
-            actualType: Class<*>
-        ): Boolean
+        fun invoke(action: ConfigAction, configCls: Class<*>, value: Any, expectedType: Class<*>, actualType: Class<*>): Boolean
     }
 }
 
-inline fun <reified T : Any> ConfigCenter.actionOf(): ConfigAction {
-    return actionOf(T::class.java)
-}
+inline fun <reified T : Any> ConfigCenter.actionOf(): ConfigAction = actionOf(T::class.java)
 
-inline fun <reified T : Any> ConfigCenter.resolverOf(): ConfigImplResolver<T>? {
-    return resolverOf(T::class.java)
-}
+inline fun <reified T : Any> ConfigCenter.resolverOf(): ConfigImplResolver<T>? = resolverOf(T::class.java)
 
-inline fun <reified T : Any> ConfigCenter.implOf(): T? {
-    return implOf(T::class.java)
-}
+inline fun <reified T : Any> ConfigCenter.implOf(): T? = implOf(T::class.java)
