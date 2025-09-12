@@ -21,9 +21,7 @@ class CacheRunner<T, R>(private val action: (T) -> R?) {
     @Volatile
     private var value: R? = null
 
-    fun get(param: T): R? {
-        return value ?: synchronized(this) {
-            value ?: action(param)?.also { value = it }
-        }
+    fun get(param: T): R? = value ?: synchronized(this) {
+        value ?: action(param)?.also { value = it }
     }
 }

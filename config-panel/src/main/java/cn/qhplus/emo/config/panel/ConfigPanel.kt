@@ -16,7 +16,6 @@
 
 package cn.qhplus.emo.config.panel
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +25,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -64,8 +62,8 @@ interface ConfigImplDisplayable {
     fun displayName(): String
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
+@Suppress("ktlint:standard:function-naming")
 fun ConfigPanel(configCenter: ConfigCenter) {
     var configList by remember {
         mutableStateOf(configCenter.getAll().groupBy { it.meta.category }.toList())
@@ -98,17 +96,17 @@ fun ConfigPanel(configCenter: ConfigCenter) {
             modifier = Modifier
                 .fillMaxWidth()
                 .bottomSeparator(Color.Gray)
-                .padding(horizontal = 20.dp, vertical = 10.dp)
+                .padding(horizontal = 20.dp, vertical = 10.dp),
         ) {
             SearchBar(
                 state = searchState,
-                modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = TextFieldDefaults.MinHeight)
+                modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = TextFieldDefaults.MinHeight),
             )
         }
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
+                .weight(1f),
         ) {
             derivedConfigList.forEach {
                 stickyHeader(it.first) { _ ->
@@ -119,14 +117,14 @@ fun ConfigPanel(configCenter: ConfigCenter) {
                             .background(Color.LightGray)
                             .padding(horizontal = 20.dp, vertical = 10.dp),
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 }
 
                 it.second.forEach { action ->
                     item(
                         key = action.meta.name,
-                        contentType = action.javaClass
+                        contentType = action.javaClass,
                     ) {
                         when (action) {
                             is BoolConfigAction -> {
@@ -143,6 +141,7 @@ fun ConfigPanel(configCenter: ConfigCenter) {
     }
 }
 
+@Suppress("ktlint:standard:function-naming")
 @Composable
 fun BoolConfigActionItem(action: BoolConfigAction) {
     val isSelected by action.stateFlowOf().collectAsStateWithLifecycle()
@@ -156,12 +155,13 @@ fun BoolConfigActionItem(action: BoolConfigAction) {
                 checked = isSelected,
                 onCheckedChange = {
                     action.write(it)
-                }
+                },
             )
-        }
+        },
     )
 }
 
+@Suppress("ktlint:standard:function-naming")
 @Composable
 fun GeneralConfigActionItem(configCenter: ConfigCenter, action: ConfigAction) {
     var value by remember {
@@ -176,26 +176,26 @@ fun GeneralConfigActionItem(configCenter: ConfigCenter, action: ConfigAction) {
             ConfigItemValueAccessory(
                 configCenter,
                 KeyboardOptions(
-                    keyboardType = if (Number::class.java.isAssignableFrom(action.valueType())) KeyboardType.Number else KeyboardType.Text
+                    keyboardType = if (Number::class.java.isAssignableFrom(action.valueType())) KeyboardType.Number else KeyboardType.Text,
                 ),
                 action.meta.name,
-                value
+                value,
             ) {
                 value = it
                 action.writeFromString(it)
             }
-        }
+        },
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@Suppress("ktlint:standard:function-naming")
 @Composable
 fun ConfigItemValueAccessory(
     configCenter: ConfigCenter,
     keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
     configName: String,
     value: String,
-    onValueChange: (value: String) -> Unit
+    onValueChange: (value: String) -> Unit,
 ) {
     val cls = configCenter.clsByName(configName)
     if (cls != null && ConfigImplDisplayable::class.java.isAssignableFrom(cls)) {
@@ -211,7 +211,7 @@ fun ConfigItemValueAccessory(
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
-            disabledContainerColor = Color.Transparent
+            disabledContainerColor = Color.Transparent,
         ),
         keyboardOptions = keyboardOptions,
         value = value,
@@ -219,10 +219,11 @@ fun ConfigItemValueAccessory(
         maxLines = 1,
         onValueChange = {
             onValueChange(it)
-        }
+        },
     )
 }
 
+@Suppress("ktlint:standard:function-naming")
 @Composable
 fun ConfigDisplayInfo(resolver: ConfigImplResolver<*>) {
     var display by remember {
@@ -233,7 +234,7 @@ fun ConfigDisplayInfo(resolver: ConfigImplResolver<*>) {
             .throttleClick {
                 display = resolver.setToNext() as ConfigImplDisplayable
             }
-            .padding(start = 32.dp, top = 8.dp, bottom = 8.dp)
+            .padding(start = 32.dp, top = 8.dp, bottom = 8.dp),
     ) {
         Text(text = display.displayName())
     }

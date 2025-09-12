@@ -71,7 +71,7 @@ private val cpuCountCacheRunner by lazy {
         runCatching {
             sequenceOf(
                 "/sys/devices/system/cpu/possible",
-                "/sys/devices/system/cpu/present"
+                "/sys/devices/system/cpu/present",
             ).map {
                 getCoresFromFile(it)
             }.firstOrNull {
@@ -92,41 +92,29 @@ private val batteryCapacityCacheRunner by lazy {
     }
 }
 
-fun getTotalMemory(context: Context): Long {
-    return totalMemoryCacheRunner.get(context) ?: -1
-}
+fun getTotalMemory(context: Context): Long = totalMemoryCacheRunner.get(context) ?: -1
 
-fun getDataStorageSize(): Long {
-    return dataStorageSizeCacheRunner.get(Unit) ?: -1
-}
+fun getDataStorageSize(): Long = dataStorageSizeCacheRunner.get(Unit) ?: -1
 
-fun hasExtraStorage(): Boolean {
-    return Environment.MEDIA_MOUNTED == Environment.getExternalStorageState()
-}
+fun hasExtraStorage(): Boolean = Environment.MEDIA_MOUNTED == Environment.getExternalStorageState()
 
-fun getExtraStorageSize(): Long {
-    return extraStorageSizeCacheRunner.get(Unit) ?: -1
-}
+fun getExtraStorageSize(): Long = extraStorageSizeCacheRunner.get(Unit) ?: -1
 
-fun getCpuCoreCount(): Int {
-    return cpuCountCacheRunner.get(Unit) ?: 1
-}
+fun getCpuCoreCount(): Int = cpuCountCacheRunner.get(Unit) ?: 1
 
-fun getBatteryCapacity(context: Context): Double {
-    return batteryCapacityCacheRunner.get(context) ?: -1.0
-}
+fun getBatteryCapacity(context: Context): Double = batteryCapacityCacheRunner.get(context) ?: -1.0
 
-private fun getCoresFromFile(file: String): Int {
-    return File(file).inputStream()
-        .reader(StandardCharsets.UTF_8)
-        .buffered()
-        .runCatching {
-            use {
-                val line = it.readLine()
-                if (line.matches("0-\\d+$".toRegex())) {
-                    val num = line.substring(2)
-                    num.toInt() + 1
-                } else 0
+private fun getCoresFromFile(file: String): Int = File(file).inputStream()
+    .reader(StandardCharsets.UTF_8)
+    .buffered()
+    .runCatching {
+        use {
+            val line = it.readLine()
+            if (line.matches("0-\\d+$".toRegex())) {
+                val num = line.substring(2)
+                num.toInt() + 1
+            } else {
+                0
             }
-        }.getOrDefault(0)
-}
+        }
+    }.getOrDefault(0)
