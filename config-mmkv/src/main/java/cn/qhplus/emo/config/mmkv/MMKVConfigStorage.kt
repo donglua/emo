@@ -20,68 +20,50 @@ import cn.qhplus.emo.config.ConfigMeta
 import cn.qhplus.emo.config.ConfigStorage
 import com.tencent.mmkv.MMKV
 
-class MMKVConfigStorage(
-    version: Int,
-    name: String = "emo-cfg-0",
-    multiProcess: Boolean = false
-) : ConfigStorage {
+class MMKVConfigStorage(version: Int, name: String = "emo-cfg-0", multiProcess: Boolean = false) : ConfigStorage {
 
     private val kv = MMKV.mmkvWithID(name, if (multiProcess) MMKV.MULTI_PROCESS_MODE else MMKV.SINGLE_PROCESS_MODE)
 
     private val versionRelatedKeyPrefix = "$version-"
     private val nonVersionRelatedKeyPrefix = "forever-"
 
-    private fun ConfigMeta.buildKey(): String {
-        return if (versionRelated) {
-            "$versionRelatedKeyPrefix$name"
-        } else {
-            "$nonVersionRelatedKeyPrefix$name"
-        }
+    private fun ConfigMeta.buildKey(): String = if (versionRelated) {
+        "$versionRelatedKeyPrefix$name"
+    } else {
+        "$nonVersionRelatedKeyPrefix$name"
     }
 
-    override fun readBool(meta: ConfigMeta, default: Boolean): Boolean {
-        return kv.decodeBool(meta.buildKey(), default)
-    }
+    override fun readBool(meta: ConfigMeta, default: Boolean): Boolean = kv.decodeBool(meta.buildKey(), default)
 
     override fun writeBool(meta: ConfigMeta, value: Boolean) {
         kv.encode(meta.buildKey(), value)
     }
 
-    override fun readInt(meta: ConfigMeta, default: Int): Int {
-        return kv.decodeInt(meta.buildKey(), default)
-    }
+    override fun readInt(meta: ConfigMeta, default: Int): Int = kv.decodeInt(meta.buildKey(), default)
 
     override fun writeInt(meta: ConfigMeta, value: Int) {
         kv.encode(meta.buildKey(), value)
     }
 
-    override fun readLong(meta: ConfigMeta, default: Long): Long {
-        return kv.decodeLong(meta.buildKey(), default)
-    }
+    override fun readLong(meta: ConfigMeta, default: Long): Long = kv.decodeLong(meta.buildKey(), default)
 
     override fun writeLong(meta: ConfigMeta, value: Long) {
         kv.encode(meta.buildKey(), value)
     }
 
-    override fun readFloat(meta: ConfigMeta, default: Float): Float {
-        return kv.decodeFloat(meta.buildKey(), default)
-    }
+    override fun readFloat(meta: ConfigMeta, default: Float): Float = kv.decodeFloat(meta.buildKey(), default)
 
     override fun writeFloat(meta: ConfigMeta, value: Float) {
         kv.encode(meta.buildKey(), value)
     }
 
-    override fun readDouble(meta: ConfigMeta, default: Double): Double {
-        return kv.decodeDouble(meta.buildKey(), default)
-    }
+    override fun readDouble(meta: ConfigMeta, default: Double): Double = kv.decodeDouble(meta.buildKey(), default)
 
     override fun writeDouble(meta: ConfigMeta, value: Double) {
         kv.encode(meta.buildKey(), value)
     }
 
-    override fun readString(meta: ConfigMeta, default: String): String {
-        return kv.decodeString(meta.buildKey(), default) ?: ""
-    }
+    override fun readString(meta: ConfigMeta, default: String): String = kv.decodeString(meta.buildKey(), default) ?: ""
 
     override fun writeString(meta: ConfigMeta, value: String) {
         kv.encode(meta.buildKey(), value)

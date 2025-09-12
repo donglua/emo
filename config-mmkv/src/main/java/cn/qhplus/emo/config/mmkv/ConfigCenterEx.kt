@@ -23,7 +23,7 @@ fun configCenterWithMMKV(
     name: String = "emo-cfg-mmkv",
     prodMode: Boolean = true,
     multiProcess: Boolean = false,
-    autoClearUp: Boolean = true
+    autoClearUp: Boolean = true,
 ): ConfigCenter {
     val storage = MMKVConfigStorage(version, name, multiProcess)
     return ConfigCenter(storage, prodMode, autoClearUp)
