@@ -44,6 +44,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
@@ -196,7 +197,7 @@ fun ClickPositionCheckerBox(
     interactionSource: MutableInteractionSource = remember {
         MutableInteractionSource()
     },
-    indication: Indication? = rememberRipple(),
+    indication: Indication? = ripple(),
     onClick: ((Offset) -> Unit),
     onLongClick: ((Offset) -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit

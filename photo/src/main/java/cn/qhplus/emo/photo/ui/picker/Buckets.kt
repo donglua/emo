@@ -34,8 +34,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -133,7 +133,7 @@ fun PhotoPickerBucketItem(
             .bottomSeparator(color = config.commonSeparatorColor, insetStart = h + textBeginMargin)
             .throttleClick(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(color = config.bucketChooserIndicationColor)
+                indication = ripple(color = config.bucketChooserIndicationColor)
             ) {
                 onBucketClick(data)
             }

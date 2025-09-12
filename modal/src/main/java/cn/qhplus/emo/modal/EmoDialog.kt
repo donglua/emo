@@ -48,6 +48,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -179,7 +180,7 @@ fun EmoDialogMarkList(
     markIndex: Int,
     state: LazyListState = rememberLazyListState(markIndex),
     maxHeight: Dp = Dp.Unspecified,
-    itemIndication: Indication = rememberRipple(),
+    itemIndication: Indication = ripple(),
     itemTextStyle: TextStyle = DefaultDialogListItemTextStyle,
     itemTextColor: Color = Color.Black,
     itemMarkTintColor: Color = Color.Black,
@@ -218,7 +219,7 @@ fun EmoDialogMutiCheckList(
     disableAlpha: Float = 0.5f,
     state: LazyListState = rememberLazyListState(0),
     maxHeight: Dp = Dp.Unspecified,
-    itemIndication: Indication = rememberRipple(),
+    itemIndication: Indication = ripple(),
     itemTextStyle: TextStyle = DefaultDialogListItemTextStyle,
     itemTextColor: Color = Color.Black,
     itemCheckNormalTint: Color = Color.DarkGray,
