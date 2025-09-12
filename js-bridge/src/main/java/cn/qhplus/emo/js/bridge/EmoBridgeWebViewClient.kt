@@ -16,14 +16,17 @@
 
 package cn.qhplus.emo.js.bridge
 
+import android.os.Build
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.annotation.RequiresApi
 
 open class EmoBridgeWebViewClient(injectJsCode: Boolean, handler: EmoJsBridgeHandler) : WebViewClient() {
 
     private val helper = EmoBridgeWebViewClientHelper(injectJsCode, handler)
 
+    @RequiresApi(Build.VERSION_CODES.N)
     final override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
         if (view != null && helper.shouldOverrideUrlLoading(view, request)) {
             return true
@@ -31,6 +34,7 @@ open class EmoBridgeWebViewClient(injectJsCode: Boolean, handler: EmoJsBridgeHan
         return onShouldOverrideUrlLoading(view, request)
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     protected open fun onShouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean =
         super.shouldOverrideUrlLoading(view, request)
 
