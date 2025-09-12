@@ -30,28 +30,28 @@
 #./deploy.sh device publish
 #./deploy.sh all publish
 
-buildCore="./gradlew.bat :core:clean :core:build core:$2"
-buildUiCore="./gradlew.bat :ui-core:clean :ui-core:build :ui-core:$2"
-buildFs="./gradlew.bat :fs:clean :fs:build :fs:$2"
-buildModal="./gradlew.bat :modal:clean :modal:build :modal:$2"
-buildPhoto="./gradlew.bat :photo:clean :photo:build :photo:$2"
-buildPhotoCoil="./gradlew.bat :photo-coil:clean :photo-coil:build :photo-coil:$2"
-buildPhotoPdf="./gradlew.bat :photo-pdf:clean :photo-pdf:build :photo-pdf:$2"
-buildNetwork="./gradlew.bat :network:clean :network:build :network:$2"
-buildPermission="./gradlew.bat :permission:clean :permission:build :permission:$2"
-buildJsBridge="./gradlew.bat :js-bridge:clean :js-bridge:build :js-bridge:$2"
-buildReport="./gradlew.bat :report:clean :report:build :report:$2"
-buildDevice="./gradlew.bat :device:clean :device:build :device:$2"
-buildConfigRuntime="./gradlew.bat :config-runtime:clean :config-runtime:build :config-runtime:$2"
-buildConfigMMKV="./gradlew.bat :config-mmkv:clean :config-mmkv:build :config-mmkv:$2"
-buildConfigKsp="./gradlew.bat :config-ksp:clean :config-ksp:build :config-ksp:$2"
-buildConfigPanel="./gradlew.bat :config-panel:clean :config-panel:build :config-panel:$2"
-buildSchemeRuntime="./gradlew.bat :scheme-runtime:clean :scheme-runtime:build :scheme-runtime:$2"
-buildSchemeKsp="./gradlew.bat :scheme-ksp:clean :scheme-ksp:build :scheme-ksp:$2"
-buildSchemeImpl="./gradlew.bat :scheme-impl:clean :scheme-impl:build :scheme-impl:$2"
-buildKv="./gradlew.bat :kv:clean :kv:build :kv:$2"
+buildCore="./gradlew :core:clean :core:build core:$2"
+buildUiCore="./gradlew :ui-core:clean :ui-core:build :ui-core:$2"
+buildFs="./gradlew :fs:clean :fs:build :fs:$2"
+buildModal="./gradlew :modal:clean :modal:build :modal:$2"
+buildPhoto="./gradlew :photo:clean :photo:build :photo:$2"
+buildPhotoCoil="./gradlew :photo-coil:clean :photo-coil:build :photo-coil:$2"
+buildPhotoPdf="./gradlew :photo-pdf:clean :photo-pdf:build :photo-pdf:$2"
+buildNetwork="./gradlew :network:clean :network:build :network:$2"
+buildPermission="./gradlew :permission:clean :permission:build :permission:$2"
+buildJsBridge="./gradlew :js-bridge:clean :js-bridge:build :js-bridge:$2"
+buildReport="./gradlew :report:clean :report:build :report:$2"
+buildDevice="./gradlew :device:clean :device:build :device:$2"
+buildConfigRuntime="./gradlew :config-runtime:clean :config-runtime:build :config-runtime:$2"
+buildConfigMMKV="./gradlew :config-mmkv:clean :config-mmkv:build :config-mmkv:$2"
+buildConfigKsp="./gradlew :config-ksp:clean :config-ksp:build :config-ksp:$2"
+buildConfigPanel="./gradlew :config-panel:clean :config-panel:build :config-panel:$2"
+buildSchemeRuntime="./gradlew :scheme-runtime:clean :scheme-runtime:build :scheme-runtime:$2"
+buildSchemeKsp="./gradlew :scheme-ksp:clean :scheme-ksp:build :scheme-ksp:$2"
+buildSchemeImpl="./gradlew :scheme-impl:clean :scheme-impl:build :scheme-impl:$2"
+buildKv="./gradlew :kv:clean :kv:build :kv:$2"
 
-./gradlew.bat :core:spotlessApply :ui-core:spotlessApply :fs:spotlessApply \
+./gradlew :core:spotlessApply :ui-core:spotlessApply :fs:spotlessApply \
 :photo:spotlessApply :photo-coil:spotlessApply :photo-pdf:spotlessApply \
 :modal:spotlessApply :network:spotlessApply :permission:spotlessApply \
 :js-bridge:spotlessApply :report:spotlessApply :device:spotlessApply \
