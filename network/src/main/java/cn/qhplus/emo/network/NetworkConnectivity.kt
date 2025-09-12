@@ -20,6 +20,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.SystemClock
 import cn.qhplus.emo.core.EmoLog
 import cn.qhplus.emo.core.LogTag
@@ -64,7 +65,9 @@ class NetworkConnectivity private constructor(applicationContext: Context) : Log
 
     init {
         try {
-            connectivityManager.registerDefaultNetworkCallback(networkCallback)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                connectivityManager.registerDefaultNetworkCallback(networkCallback)
+            }
         } catch (e: Throwable) {
             EmoLog.e(TAG, "registerDefaultNetworkCallback failed", e)
         }
