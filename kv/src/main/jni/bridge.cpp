@@ -101,7 +101,7 @@ static void compact(JNIEnv *env, jobject instance, jlong handle){
     kv->Compact();
 }
 
-static void close(JNIEnv *env, jobject instance, jlong handle){
+static void nativeClose(JNIEnv *env, jobject instance, jlong handle){
     KV* kv =  reinterpret_cast<KV *>(handle);
     delete kv;
 }
@@ -119,7 +119,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void* reserved) {
             {"nPut", "(J[B[B)Z", (void *) put},
             {"nDelete", "(J[B)V", (void *) del},
             {"nCompact", "(J)V", (void *) compact},
-            {"nClose", "(J)V", (void *) close}
+            {"nClose", "(J)V", (void *) nativeClose}
     };
 
     registerNativeMethods(env,"cn/qhplus/emo/kv/EmoKV",emoKVMethods, N_ELEM(emoKVMethods)
