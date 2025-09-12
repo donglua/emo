@@ -45,23 +45,18 @@ class CoilImageDecoderFactory(maxParallelism: Int = 4) : Decoder.Factory {
 
     private val parallelismLock = Semaphore(maxParallelism)
 
-    override fun create(
-        result: SourceResult,
-        options: Options,
-        imageLoader: ImageLoader
-    ): Decoder? {
-        return if ((options.parameters.entry("isLongImage")?.value as? Boolean) == true) {
+    override fun create(result: SourceResult, options: Options, imageLoader: ImageLoader): Decoder? =
+        if ((options.parameters.entry("isLongImage")?.value as? Boolean) == true) {
             CoilLongImageDecoder(result.source, options, parallelismLock)
         } else {
             BitmapFactoryDecoder(result.source, options, parallelismLock)
         }
-    }
 }
 
 class CoilLongImageDecoder(
     private val source: ImageSource,
     private val options: Options,
-    private val parallelismLock: Semaphore = Semaphore(Int.MAX_VALUE)
+    private val parallelismLock: Semaphore = Semaphore(Int.MAX_VALUE),
 ) : Decoder {
 
     private val isThumb = options.parameters.entry("isThumb")?.value == true
@@ -80,11 +75,11 @@ class CoilLongImageDecoder(
                 ins,
                 IntSize(dstWidth, dstHeight),
                 bmOptions,
-                options.scale == Scale.FIT
+                options.scale == Scale.FIT,
             )
             return DecodeResult(
                 drawable = BitmapDrawable(options.context.resources, bm),
-                isSampled = bmOptions.inSampleSize > 1
+                isSampled = bmOptions.inSampleSize > 1,
             )
         } else {
             val bitmapRegion = loadLongImage(
@@ -92,11 +87,11 @@ class CoilLongImageDecoder(
                 IntSize(dstWidth, dstHeight),
                 bmOptions,
                 options.scale == Scale.FIT,
-                preloadCount = 2
+                preloadCount = 2,
             )
             return DecodeResult(
                 drawable = BitmapRegionHolderDrawable(bitmapRegion),
-                isSampled = bmOptions.inSampleSize > 1 || bmOptions.inScaled
+                isSampled = bmOptions.inSampleSize > 1 || bmOptions.inScaled,
             )
         }
     }

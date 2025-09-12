@@ -39,8 +39,10 @@ interface ConfigImplResolver<T> {
 
 class ConfigImplItem<T, V>(val cls: Class<out T>?, val instance: T?, val value: V)
 
-abstract class InstanceListConfigImplResolver<T, V>(private val implList: List<ConfigImplItem<T, V>>, private val prodMode: Boolean) :
-    ConfigImplResolver<T> {
+abstract class InstanceListConfigImplResolver<T, V>(
+    private val implList: List<ConfigImplItem<T, V>>,
+    private val prodMode: Boolean,
+) : ConfigImplResolver<T> {
     private val instanceMap = mutableMapOf<Class<out T>, T>()
 
     override fun setToNext(): T? {
@@ -92,8 +94,11 @@ abstract class InstanceListConfigImplResolver<T, V>(private val implList: List<C
     abstract fun writeValue(v: V)
 }
 
-class IntClsConfigImplResolver<T>(implList: List<ConfigImplItem<T, Int>>, prodMode: Boolean, private val action: IntConfigAction) :
-    InstanceListConfigImplResolver<T, Int>(implList, prodMode) {
+class IntClsConfigImplResolver<T>(
+    implList: List<ConfigImplItem<T, Int>>,
+    prodMode: Boolean,
+    private val action: IntConfigAction,
+) : InstanceListConfigImplResolver<T, Int>(implList, prodMode) {
 
     override fun readValue(): Int = action.read()
 
@@ -102,8 +107,11 @@ class IntClsConfigImplResolver<T>(implList: List<ConfigImplItem<T, Int>>, prodMo
     }
 }
 
-class BoolClsConfigImplResolver<T>(implList: List<ConfigImplItem<T, Boolean>>, prodMode: Boolean, private val action: BoolConfigAction) :
-    InstanceListConfigImplResolver<T, Boolean>(implList, prodMode) {
+class BoolClsConfigImplResolver<T>(
+    implList: List<ConfigImplItem<T, Boolean>>,
+    prodMode: Boolean,
+    private val action: BoolConfigAction,
+) : InstanceListConfigImplResolver<T, Boolean>(implList, prodMode) {
 
     override fun readValue(): Boolean = action.read()
 
@@ -112,8 +120,11 @@ class BoolClsConfigImplResolver<T>(implList: List<ConfigImplItem<T, Boolean>>, p
     }
 }
 
-class LongClsConfigImplResolver<T>(implList: List<ConfigImplItem<T, Long>>, prodMode: Boolean, private val action: LongConfigAction) :
-    InstanceListConfigImplResolver<T, Long>(implList, prodMode) {
+class LongClsConfigImplResolver<T>(
+    implList: List<ConfigImplItem<T, Long>>,
+    prodMode: Boolean,
+    private val action: LongConfigAction,
+) : InstanceListConfigImplResolver<T, Long>(implList, prodMode) {
 
     override fun readValue(): Long = action.read()
 
@@ -122,8 +133,11 @@ class LongClsConfigImplResolver<T>(implList: List<ConfigImplItem<T, Long>>, prod
     }
 }
 
-class FloatClsConfigImplResolver<T>(implList: List<ConfigImplItem<T, Float>>, prodMode: Boolean, private val action: FloatConfigAction) :
-    InstanceListConfigImplResolver<T, Float>(implList, prodMode) {
+class FloatClsConfigImplResolver<T>(
+    implList: List<ConfigImplItem<T, Float>>,
+    prodMode: Boolean,
+    private val action: FloatConfigAction,
+) : InstanceListConfigImplResolver<T, Float>(implList, prodMode) {
 
     override fun readValue(): Float = action.read()
 
@@ -132,8 +146,11 @@ class FloatClsConfigImplResolver<T>(implList: List<ConfigImplItem<T, Float>>, pr
     }
 }
 
-class DoubleClsConfigImplResolver<T>(implList: List<ConfigImplItem<T, Double>>, prodMode: Boolean, private val action: DoubleConfigAction) :
-    InstanceListConfigImplResolver<T, Double>(implList, prodMode) {
+class DoubleClsConfigImplResolver<T>(
+    implList: List<ConfigImplItem<T, Double>>,
+    prodMode: Boolean,
+    private val action: DoubleConfigAction,
+) : InstanceListConfigImplResolver<T, Double>(implList, prodMode) {
 
     override fun readValue(): Double = action.read()
 
@@ -142,8 +159,11 @@ class DoubleClsConfigImplResolver<T>(implList: List<ConfigImplItem<T, Double>>, 
     }
 }
 
-class StringClsConfigImplResolver<T>(implList: List<ConfigImplItem<T, String>>, prodMode: Boolean, private val action: StringConfigAction) :
-    InstanceListConfigImplResolver<T, String>(implList, prodMode) {
+class StringClsConfigImplResolver<T>(
+    implList: List<ConfigImplItem<T, String>>,
+    prodMode: Boolean,
+    private val action: StringConfigAction,
+) : InstanceListConfigImplResolver<T, String>(implList, prodMode) {
 
     override fun readValue(): String = action.read()
 

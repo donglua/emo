@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 internal class EmoPermissionModal(
     private val view: View,
     private val scope: CoroutineScope,
-    private val tip: EmoPermissionTip
+    private val tip: EmoPermissionTip,
 ) {
 
     private var modal: EmoModal? = null
@@ -43,7 +43,7 @@ internal class EmoPermissionModal(
                 modal = view.emoModal(
                     mask = Color.Transparent,
                     enter = fadeIn(),
-                    exit = fadeOut()
+                    exit = fadeOut(),
                 ) {
                     tip.run {
                         Content()

@@ -60,7 +60,7 @@ fun ConstraintLayoutScope.PhotoPickerBucketChooser(
     data: List<MediaPhotoBucketVO>,
     currentId: String,
     onBucketClick: (MediaPhotoBucketVO) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     val (mask, content) = createRefs()
     AnimatedVisibility(
@@ -74,7 +74,7 @@ fun ConstraintLayoutScope.PhotoPickerBucketChooser(
             bottom.linkTo(parent.bottom)
         },
         enter = fadeIn(),
-        exit = fadeOut()
+        exit = fadeOut(),
     ) {
         Box(
             modifier = Modifier
@@ -82,10 +82,10 @@ fun ConstraintLayoutScope.PhotoPickerBucketChooser(
                 .background(LocalPhotoPickerConfig.current.bucketChooserMaskColor)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
-                    indication = null
+                    indication = null,
                 ) {
                     onDismiss()
-                }
+                },
         )
     }
     AnimatedVisibility(
@@ -99,7 +99,7 @@ fun ConstraintLayoutScope.PhotoPickerBucketChooser(
             bottom.linkTo(parent.bottom)
         },
         enter = slideInVertically(initialOffsetY = { -it }),
-        exit = slideOutVertically(targetOffsetY = { -it })
+        exit = slideOutVertically(targetOffsetY = { -it }),
     ) {
         BoxWithConstraints(modifier = Modifier.windowInsetsCommonNavPadding()) {
             LazyColumn(
@@ -107,7 +107,7 @@ fun ConstraintLayoutScope.PhotoPickerBucketChooser(
                     .fillMaxWidth()
                     .heightIn(max = maxHeight * 0.8f)
                     .wrapContentHeight()
-                    .background(LocalPhotoPickerConfig.current.bucketChooserBgColor)
+                    .background(LocalPhotoPickerConfig.current.bucketChooserBgColor),
             ) {
                 items(data, key = { it.id }) {
                     PhotoPickerBucketItem(it, it.id == currentId, onBucketClick)
@@ -118,11 +118,7 @@ fun ConstraintLayoutScope.PhotoPickerBucketChooser(
 }
 
 @Composable
-fun PhotoPickerBucketItem(
-    data: MediaPhotoBucketVO,
-    isCurrent: Boolean,
-    onBucketClick: (MediaPhotoBucketVO) -> Unit
-) {
+fun PhotoPickerBucketItem(data: MediaPhotoBucketVO, isCurrent: Boolean, onBucketClick: (MediaPhotoBucketVO) -> Unit) {
     val h = 60.dp
     val textBeginMargin = 16.dp
     val config = LocalPhotoPickerConfig.current
@@ -133,10 +129,10 @@ fun PhotoPickerBucketItem(
             .bottomSeparator(color = config.commonSeparatorColor, insetStart = h + textBeginMargin)
             .throttleClick(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = ripple(color = config.bucketChooserIndicationColor)
+                indication = ripple(color = config.bucketChooserIndicationColor),
             ) {
                 onBucketClick(data)
-            }
+            },
     ) {
         val (pic, title, num, mark) = createRefs()
         val chainHor = createHorizontalChain(title, num, chainStyle = ChainStyle.Packed(0f))
@@ -151,7 +147,7 @@ fun PhotoPickerBucketItem(
                     start.linkTo(parent.start)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
-                }
+                },
         ) {
             val thumbnail = remember(data) {
                 data.list.firstOrNull()?.photoProvider?.thumbnail(true)
@@ -160,7 +156,7 @@ fun PhotoPickerBucketItem(
                 contentScale = ContentScale.Crop,
                 isContainerDimenExactly = true,
                 onSuccess = null,
-                onError = null
+                onError = null,
             )
         }
         Text(
@@ -173,7 +169,7 @@ fun PhotoPickerBucketItem(
                 width = Dimension.preferredWrapContent
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
-            }
+            },
         )
         Text(
             text = "(${data.list.size})",
@@ -182,7 +178,7 @@ fun PhotoPickerBucketItem(
             modifier = Modifier.constrainAs(num) {
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
-            }
+            },
         )
         MarkIcon(
             modifier = Modifier.constrainAs(mark) {
@@ -191,7 +187,7 @@ fun PhotoPickerBucketItem(
                 end.linkTo(parent.end, 16.dp)
                 visibility = if (isCurrent) Visibility.Visible else Visibility.Gone
             },
-            tint = config.commonIconCheckedTintColor
+            tint = config.commonIconCheckedTintColor,
         )
     }
 }

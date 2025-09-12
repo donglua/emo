@@ -76,7 +76,7 @@ val DefaultDialogVerEdgeProtectionMargin = 20.dp
 val DefaultDialogListItemTextStyle by lazy {
     TextStyle(
         fontSize = 17.sp,
-        fontWeight = FontWeight.Medium
+        fontWeight = FontWeight.Medium,
     )
 }
 
@@ -88,13 +88,13 @@ fun EmoDialog(
     widthLimit: Dp = 360.dp,
     radius: Dp = 2.dp,
     background: Color = Color.White,
-    content: @Composable (EmoModal) -> Unit
+    content: @Composable (EmoModal) -> Unit,
 ) {
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = horEdge, vertical = verEdge),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         var modifier = if (widthLimit < maxWidth) {
             Modifier.width(widthLimit)
@@ -108,7 +108,7 @@ fun EmoDialog(
             .background(background)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = null
+                indication = null,
             ) { }
         Box(modifier = modifier) {
             content(modal)
@@ -117,21 +117,18 @@ fun EmoDialog(
 }
 
 @Composable
-fun EmoDialogActions(
-    modal: EmoModal,
-    actions: List<EmoModalAction>
-) {
+fun EmoDialogActions(modal: EmoModal, actions: List<EmoModalAction>) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 6.dp, end = 6.dp, bottom = 8.dp),
-        horizontalArrangement = Arrangement.End
+        horizontalArrangement = Arrangement.End,
     ) {
         actions.forEach {
             EmoDialogAction(
                 text = it.text,
                 enabled = it.enabled,
-                color = it.color
+                color = it.color,
             ) {
                 it.onClick(modal)
             }
@@ -140,12 +137,7 @@ fun EmoDialogActions(
 }
 
 @Composable
-fun EmoDialogMsg(
-    modal: EmoModal,
-    title: String,
-    content: String,
-    actions: List<EmoModalAction>
-) {
+fun EmoDialogMsg(modal: EmoModal, title: String, content: String, actions: List<EmoModalAction>) {
     Column {
         EmoDialogTitle(title)
         EmoDialogMsgContent(content)
@@ -159,14 +151,14 @@ fun EmoDialogList(
     maxHeight: Dp = Dp.Unspecified,
     state: LazyListState = rememberLazyListState(),
     contentPadding: PaddingValues = PaddingValues(vertical = 8.dp),
-    children: LazyListScope.(EmoModal) -> Unit
+    children: LazyListScope.(EmoModal) -> Unit,
 ) {
     LazyColumn(
         state = state,
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(0.dp, maxHeight),
-        contentPadding = contentPadding
+        contentPadding = contentPadding,
     ) {
         children(modal)
     }
@@ -184,7 +176,7 @@ fun EmoDialogMarkList(
     itemTextColor: Color = Color.Black,
     itemMarkTintColor: Color = Color.Black,
     contentPadding: PaddingValues = PaddingValues(vertical = 8.dp),
-    onItemClick: (modal: EmoModal, index: Int) -> Unit
+    onItemClick: (modal: EmoModal, index: Int) -> Unit,
 ) {
     EmoDialogList(modal, maxHeight, state, contentPadding) {
         itemsIndexed(list) { index, item ->
@@ -198,10 +190,10 @@ fun EmoDialogMarkList(
                         Image(
                             painter = painterResource(id = R.drawable.ic_mark),
                             contentDescription = "",
-                            colorFilter = ColorFilter.tint(itemMarkTintColor)
+                            colorFilter = ColorFilter.tint(itemMarkTintColor),
                         )
                     }
-                }
+                },
             ) {
                 onItemClick(modal, index)
             }
@@ -224,12 +216,14 @@ fun EmoDialogMutiCheckList(
     itemCheckNormalTint: Color = Color.DarkGray,
     itemCheckCheckedTint: Color = Color.Black,
     contentPadding: PaddingValues = PaddingValues(vertical = 8.dp),
-    onItemClick: (modal: EmoModal, index: Int) -> Unit
+    onItemClick: (modal: EmoModal, index: Int) -> Unit,
 ) {
     EmoDialogList(modal, maxHeight, state, contentPadding) {
         itemsIndexed(list) { index, item ->
             val isDisabled = disabled.contains(index)
-            val onClick: (() -> Unit)? = if (isDisabled) null else {
+            val onClick: (() -> Unit)? = if (isDisabled) {
+                null
+            } else {
                 {
                     onItemClick(modal, index)
                 }
@@ -245,17 +239,17 @@ fun EmoDialogMutiCheckList(
                         Image(
                             painter = painterResource(id = R.drawable.ic_checkbox_checked),
                             contentDescription = "",
-                            colorFilter = ColorFilter.tint(itemCheckCheckedTint)
+                            colorFilter = ColorFilter.tint(itemCheckCheckedTint),
                         )
                     } else {
                         Image(
                             painter = painterResource(id = R.drawable.ic_checkbox_normal),
                             contentDescription = "",
-                            colorFilter = ColorFilter.tint(itemCheckNormalTint)
+                            colorFilter = ColorFilter.tint(itemCheckNormalTint),
                         )
                     }
                 },
-                onClick = onClick
+                onClick = onClick,
             )
         }
     }
@@ -270,7 +264,7 @@ fun EmoDialogTitle(
     fontWeight: FontWeight? = FontWeight.Bold,
     fontFamily: FontFamily? = null,
     maxLines: Int = Int.MAX_VALUE,
-    lineHeight: TextUnit = 20.sp
+    lineHeight: TextUnit = 20.sp,
 ) {
     Text(
         text = text,
@@ -279,7 +273,7 @@ fun EmoDialogTitle(
             .padding(
                 top = 24.dp,
                 start = DefaultDialogPaddingHor,
-                end = DefaultDialogPaddingHor
+                end = DefaultDialogPaddingHor,
             ),
         textAlign = textAlign,
         color = color,
@@ -287,7 +281,7 @@ fun EmoDialogTitle(
         fontWeight = fontWeight,
         fontFamily = fontFamily,
         maxLines = maxLines,
-        lineHeight = lineHeight
+        lineHeight = lineHeight,
     )
 }
 
@@ -300,7 +294,7 @@ fun EmoDialogMsgContent(
     fontWeight: FontWeight? = FontWeight.Normal,
     fontFamily: FontFamily? = null,
     maxLines: Int = Int.MAX_VALUE,
-    lineHeight: TextUnit = 16.sp
+    lineHeight: TextUnit = 16.sp,
 ) {
     Text(
         text = text,
@@ -310,7 +304,7 @@ fun EmoDialogMsgContent(
                 start = DefaultDialogPaddingHor,
                 end = DefaultDialogPaddingHor,
                 top = 16.dp,
-                bottom = 24.dp
+                bottom = 24.dp,
             ),
         textAlign = textAlign,
         color = color,
@@ -318,7 +312,7 @@ fun EmoDialogMsgContent(
         fontWeight = fontWeight,
         fontFamily = fontFamily,
         maxLines = maxLines,
-        lineHeight = lineHeight
+        lineHeight = lineHeight,
     )
 }
 
@@ -332,7 +326,7 @@ fun EmoDialogAction(
     paddingVer: Dp = 9.dp,
     paddingHor: Dp = 14.dp,
     enabled: Boolean = true,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
@@ -344,14 +338,14 @@ fun EmoDialogAction(
             .throttleClick(
                 enabled = enabled,
                 interactionSource = interactionSource,
-                indication = null
+                indication = null,
             ) {
                 onClick.invoke()
             },
         color = color,
         fontSize = fontSize,
         fontWeight = fontWeight,
-        fontFamily = fontFamily
+        fontFamily = fontFamily,
     )
 }
 
@@ -368,19 +362,17 @@ fun View.emoDialog(
     radius: Dp = 12.dp,
     background: @Composable () -> Color = { MaterialTheme.colorScheme.background },
     themeProvider: @Composable (@Composable () -> Unit) -> Unit = { inner -> inner() },
-    content: @Composable (EmoModal) -> Unit
-): EmoModal {
-    return emoModal(
-        mask,
-        systemCancellable,
-        maskTouchBehavior,
-        modalHostProvider = modalHostProvider,
-        enter = enter,
-        exit = exit,
-        themeProvider = themeProvider
-    ) { modal ->
-        EmoDialog(modal, horEdge, verEdge, widthLimit, radius, background(), content)
-    }
+    content: @Composable (EmoModal) -> Unit,
+): EmoModal = emoModal(
+    mask,
+    systemCancellable,
+    maskTouchBehavior,
+    modalHostProvider = modalHostProvider,
+    enter = enter,
+    exit = exit,
+    themeProvider = themeProvider,
+) { modal ->
+    EmoDialog(modal, horEdge, verEdge, widthLimit, radius, background(), content)
 }
 
 fun View.emoStillDialog(
@@ -394,15 +386,13 @@ fun View.emoStillDialog(
     radius: Dp = 12.dp,
     background: @Composable () -> Color = { MaterialTheme.colorScheme.background },
     themeProvider: @Composable (@Composable () -> Unit) -> Unit = { inner -> inner() },
-    content: @Composable (EmoModal) -> Unit
-): EmoModal {
-    return emoStillModal(
-        mask,
-        systemCancellable,
-        maskTouchBehavior,
-        modalHostProvider = modalHostProvider,
-        themeProvider = themeProvider
-    ) { modal ->
-        EmoDialog(modal, horEdge, verEdge, widthLimit, radius, background(), content)
-    }
+    content: @Composable (EmoModal) -> Unit,
+): EmoModal = emoStillModal(
+    mask,
+    systemCancellable,
+    maskTouchBehavior,
+    modalHostProvider = modalHostProvider,
+    themeProvider = themeProvider,
+) { modal ->
+    EmoDialog(modal, horEdge, verEdge, widthLimit, radius, background(), content)
 }

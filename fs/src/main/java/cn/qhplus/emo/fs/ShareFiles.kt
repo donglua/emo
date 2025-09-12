@@ -36,11 +36,9 @@ object ShareFiles {
         return file
     }
 
-    fun getShareFileUri(context: Context, file: File): Uri {
-        return FileProvider.getUriForFile(
-            context.applicationContext,
-            "${context.packageName}.fileprovider",
-            file
-        )
-    }
+    fun getShareFileUri(context: Context, file: File): Uri = FileProvider.getUriForFile(
+        context.applicationContext,
+        "${context.packageName}.fileprovider",
+        file,
+    )
 }

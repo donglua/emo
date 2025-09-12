@@ -89,7 +89,7 @@ fun GesturePhoto(
         0f,
         0f,
         with(LocalDensity.current) { containerWidth.toPx() },
-        with(LocalDensity.current) { containerHeight.toPx() }
+        with(LocalDensity.current) { containerHeight.toPx() },
     ),
     maxScale: Float = 4f,
     onPress: suspend PressGestureScope.(Offset) -> Unit = { },
@@ -101,8 +101,8 @@ fun GesturePhoto(
         transition: Transition<Boolean>,
         scale: Float,
         rect: Rect,
-        onImageRatioEnsured: (Float) -> Unit
-    ) -> Unit
+        onImageRatioEnsured: (Float) -> Unit,
+    ) -> Unit,
 ) {
     val (imageWidth, imageHeight) = calculateContentSize(containerWidth, containerHeight, imageRatio, isLongImage)
 
@@ -118,13 +118,13 @@ fun GesturePhoto(
         containerWidth,
         containerHeight,
         calculatedImageRatio,
-        imageRatio
+        imageRatio,
     ) {
         val (expectWidth, expectHeight) = calculateContentSize(
             containerWidth,
             containerHeight,
             calculatedImageRatio,
-            isLongImage
+            isLongImage,
         )
         val widthPadding = with(density) {
             (imageWidth - expectWidth).toPx() / 2
@@ -171,61 +171,62 @@ fun GesturePhoto(
 
     var transitionTargetState by remember(containerWidth, containerHeight, transitionTarget) {
         mutableStateOf(
-            transitionTarget
+            transitionTarget,
         )
     }
     val transitionState = remember(containerWidth, containerHeight) {
         MutableTransitionState(!shouldTransitionEnter)
     }
 
-    val scaleHandler: (Offset, Float, Boolean) -> Unit = remember(containerWidth, containerHeight, maxScale, imageRatio) {
-        lambda@{ center, scaleParam, edgeProtection ->
-            var scale = scaleParam
-            if (targetScale * scaleParam > maxScale) {
-                scale = maxScale / targetScale
-            }
-            if (scale == 1f) {
-                return@lambda
-            }
-            var targetLeft = center.x + ((targetTranslateX - center.x) * scale)
-            var targetTop = center.y + ((targetTranslateY - center.y) * scale)
-            val targetWidth = imageWidthPx * targetScale * scale
-            val targetHeight = imageHeightPx * targetScale * scale
+    val scaleHandler: (Offset, Float, Boolean) -> Unit =
+        remember(containerWidth, containerHeight, maxScale, imageRatio) {
+            lambda@{ center, scaleParam, edgeProtection ->
+                var scale = scaleParam
+                if (targetScale * scaleParam > maxScale) {
+                    scale = maxScale / targetScale
+                }
+                if (scale == 1f) {
+                    return@lambda
+                }
+                var targetLeft = center.x + ((targetTranslateX - center.x) * scale)
+                var targetTop = center.y + ((targetTranslateY - center.y) * scale)
+                val targetWidth = imageWidthPx * targetScale * scale
+                val targetHeight = imageHeightPx * targetScale * scale
 
-            if (edgeProtection) {
-                when {
-                    containerWidthPx > targetWidth -> {
-                        targetLeft = (containerWidthPx - targetWidth) / 2
+                if (edgeProtection) {
+                    when {
+                        containerWidthPx > targetWidth -> {
+                            targetLeft = (containerWidthPx - targetWidth) / 2
+                        }
+
+                        targetLeft > 0 -> {
+                            targetLeft = 0f
+                        }
+
+                        targetLeft + targetWidth < containerWidthPx -> {
+                            targetLeft = containerWidthPx - targetWidth
+                        }
                     }
 
-                    targetLeft > 0 -> {
-                        targetLeft = 0f
-                    }
+                    when {
+                        containerHeightPx > targetHeight -> {
+                            targetTop = (containerHeightPx - targetHeight) / 2
+                        }
 
-                    targetLeft + targetWidth < containerWidthPx -> {
-                        targetLeft = containerWidthPx - targetWidth
+                        targetTop > 0 -> {
+                            targetTop = 0f
+                        }
+
+                        targetTop + targetHeight < containerHeightPx -> {
+                            targetTop = containerHeightPx - targetHeight
+                        }
                     }
                 }
-
-                when {
-                    containerHeightPx > targetHeight -> {
-                        targetTop = (containerHeightPx - targetHeight) / 2
-                    }
-
-                    targetTop > 0 -> {
-                        targetTop = 0f
-                    }
-
-                    targetTop + targetHeight < containerHeightPx -> {
-                        targetTop = containerHeightPx - targetHeight
-                    }
-                }
+                targetTranslateX = targetLeft
+                targetTranslateY = targetTop
+                targetScale *= scale
             }
-            targetTranslateX = targetLeft
-            targetTranslateY = targetTop
-            targetScale *= scale
         }
-    }
 
     val reset: () -> Unit = remember(containerWidth, containerHeight, imageRatio) {
         {
@@ -249,7 +250,7 @@ fun GesturePhoto(
     Box(
         modifier = Modifier
             .width(containerWidth)
-            .height(containerHeight)
+            .height(containerHeight),
     ) {
         PhotoBackgroundWithTransition(backgroundTargetAlpha, transition, transitionDurationMs) {
             PhotoBackground(alpha = it)
@@ -266,7 +267,7 @@ fun GesturePhoto(
                     shouldTransitionExit,
                     onTapExit,
                     onBeginPullExit,
-                    imagePaddingFix
+                    imagePaddingFix,
                 ) {
                     coroutineScope {
                         launch {
@@ -284,7 +285,12 @@ fun GesturePhoto(
                                 onDoubleTap = {
                                     if (targetScale == 1f) {
                                         var scale = 2f
-                                        val alignScale = (containerWidth / imageWidth).coerceAtLeast((containerHeight / imageHeight))
+                                        val alignScale = (containerWidth / imageWidth).coerceAtLeast(
+                                            (
+                                                containerHeight /
+                                                    imageHeight
+                                                ),
+                                        )
                                         if (alignScale > 1.25 && alignScale < scale) {
                                             scale = alignScale
                                         }
@@ -293,7 +299,7 @@ fun GesturePhoto(
                                         reset()
                                     }
                                 },
-                                onPress = onPress
+                                onPress = onPress,
                             )
                         }
 
@@ -313,7 +319,7 @@ fun GesturePhoto(
                                     val fixEdgeRight = panEdgeProtection.right + imagePaddingFix.first * targetScale
                                     if (targetTranslateX + w > fixEdgeRight) {
                                         targetTranslateX = (targetTranslateX + delta).coerceAtLeast(
-                                            fixEdgeRight - w
+                                            fixEdgeRight - w,
                                         )
                                         return@lambda true
                                     }
@@ -346,7 +352,9 @@ fun GesturePhoto(
                                         if (isZooming || isExitPanning) {
                                             nestedScrollConnection.isIntercepted = true
                                         }
-                                        val needHandle = nestedScrollConnection.canConsumeEvent || event.changes.none { it.isConsumed }
+                                        val needHandle =
+                                            nestedScrollConnection.canConsumeEvent ||
+                                                event.changes.none { it.isConsumed }
                                         if (needHandle) {
                                             val zoomChange = event.calculateZoom()
                                             val panChange = event.calculatePan()
@@ -385,9 +393,14 @@ fun GesturePhoto(
                                                     if (panChange != Offset.Zero) {
                                                         xConsumed = scrollXBy(panChange.x)
                                                         if (panChange.y > 0) {
-                                                            val fixEdgeTop = panEdgeProtection.top - imagePaddingFix.second * targetScale
+                                                            val fixEdgeTop =
+                                                                panEdgeProtection.top -
+                                                                    imagePaddingFix.second * targetScale
                                                             if (targetTranslateY < fixEdgeTop) {
-                                                                targetTranslateY = (targetTranslateY + panChange.y).coerceAtMost(fixEdgeTop)
+                                                                targetTranslateY =
+                                                                    (targetTranslateY + panChange.y).coerceAtMost(
+                                                                        fixEdgeTop,
+                                                                    )
                                                                 yConsumed = true
                                                             } else if (!xConsumed &&
                                                                 panChange.y > panChange.x.absoluteValue
@@ -403,9 +416,10 @@ fun GesturePhoto(
                                                                     imagePaddingFix.second * targetScale
                                                                 )
                                                             if (targetTranslateY + h > fixEgeBottom) {
-                                                                targetTranslateY = (targetTranslateY + panChange.y).coerceAtLeast(
-                                                                    fixEgeBottom - h
-                                                                )
+                                                                targetTranslateY =
+                                                                    (targetTranslateY + panChange.y).coerceAtLeast(
+                                                                        fixEgeBottom - h,
+                                                                    )
                                                                 yConsumed = true
                                                             }
                                                         }
@@ -459,10 +473,10 @@ fun GesturePhoto(
                                         val v = velocityTracker.calculateVelocity().x
                                         flingJob = scope.launch {
                                             val scrollScope = object : ScrollScope {
-                                                override fun scrollBy(pixels: Float): Float {
-                                                    return if (scrollXBy(pixels)) {
-                                                        pixels
-                                                    } else 0f
+                                                override fun scrollBy(pixels: Float): Float = if (scrollXBy(pixels)) {
+                                                    pixels
+                                                } else {
+                                                    0f
                                                 }
                                             }
                                             with(scrollScope) {
@@ -476,7 +490,7 @@ fun GesturePhoto(
                             }
                         }
                     }
-                }
+                },
         ) {
             if (initRect == null || initRect == Rect.Zero || imageRatio <= 0f) {
                 PhotoContentWithAlphaTransition(
@@ -485,7 +499,7 @@ fun GesturePhoto(
                     isGestureHandling = isGestureHandling,
                     scale = targetScale,
                     translateX = targetTranslateX,
-                    translateY = targetTranslateY
+                    translateY = targetTranslateY,
                 ) { alpha, scale, translateX, translateY ->
                     PhotoTransformContent(
                         alpha,
@@ -494,7 +508,7 @@ fun GesturePhoto(
                         scale,
                         scale,
                         translateX,
-                        translateY
+                        translateY,
                     ) {
                         val imageLeft = translateX + imagePaddingFix.first * it
                         val imageTop = translateY + imagePaddingFix.second * it
@@ -505,9 +519,9 @@ fun GesturePhoto(
                                 imageLeft,
                                 imageTop,
                                 imageLeft + imageWidthPx * it,
-                                imageTop + imageHeightPx * it
+                                imageTop + imageHeightPx * it,
                             ),
-                            usedImageRatioUpdater
+                            usedImageRatioUpdater,
                         )
                     }
                 }
@@ -520,7 +534,7 @@ fun GesturePhoto(
                     translateX = targetTranslateX,
                     translateY = targetTranslateY,
                     transition = transition,
-                    transitionDurationMs = transitionDurationMs
+                    transitionDurationMs = transitionDurationMs,
                 ) { scaleX, scaleY, translateX, translateY ->
                     PhotoTransformContent(
                         1f,
@@ -529,7 +543,7 @@ fun GesturePhoto(
                         scaleX,
                         scaleY,
                         translateX,
-                        translateY
+                        translateY,
                     ) {
                         val imageLeft = translateX + imagePaddingFix.first * it
                         val imageTop = translateY + imagePaddingFix.second * it
@@ -540,9 +554,9 @@ fun GesturePhoto(
                                 imageLeft,
                                 imageTop,
                                 imageLeft + imageWidthPx * it,
-                                imageTop + imageHeightPx * it
+                                imageTop + imageHeightPx * it,
                             ),
-                            usedImageRatioUpdater
+                            usedImageRatioUpdater,
                         )
                     }
                 }
@@ -560,11 +574,11 @@ fun PhotoBackgroundWithTransition(
     backgroundTargetAlpha: Float,
     transition: Transition<Boolean>,
     transitionDurationMs: Int,
-    content: @Composable (alpha: Float) -> Unit
+    content: @Composable (alpha: Float) -> Unit,
 ) {
     val alpha = transition.animateFloat(
         transitionSpec = { tween(durationMillis = transitionDurationMs) },
-        label = "PhotoBackgroundWithTransition"
+        label = "PhotoBackgroundWithTransition",
     ) {
         if (it) backgroundTargetAlpha else 0f
     }
@@ -579,37 +593,39 @@ fun PhotoContentWithAlphaTransition(
     scale: Float,
     translateX: Float,
     translateY: Float,
-    content: @Composable (alpha: Float, scale: Float, translateX: Float, translateY: Float) -> Unit
+    content: @Composable (alpha: Float, scale: Float, translateX: Float, translateY: Float) -> Unit,
 ) {
     val alphaState = transition.animateFloat(
         transitionSpec = { tween(durationMillis = transitionDurationMs) },
-        label = "PhotoContentWithAlphaTransition"
+        label = "PhotoContentWithAlphaTransition",
     ) {
         if (it) 1f else 0f
     }
     val rect = transition.animateRect(
         transitionSpec = { tween(durationMillis = transitionDurationMs) },
-        label = "PhotoContentWithRectTransition"
+        label = "PhotoContentWithRectTransition",
     ) {
         if (it) {
             Rect(
                 translateX,
                 translateY,
                 translateX + 100 * scale,
-                translateY + 100 * scale
+                translateY + 100 * scale,
             )
-        } else Rect(
-            translateX,
-            translateY,
-            translateX + 100,
-            translateY + 100
-        )
+        } else {
+            Rect(
+                translateX,
+                translateY,
+                translateX + 100,
+                translateY + 100,
+            )
+        }
     }
     content(
         alphaState.value,
         (rect.value.width / 100).coerceAtLeast(0f),
         rect.value.left,
-        rect.value.top
+        rect.value.top,
     )
 }
 
@@ -623,38 +639,38 @@ fun PhotoContentWithRectTransition(
     translateY: Float,
     transition: Transition<Boolean>,
     transitionDurationMs: Int,
-    content: @Composable (scaleX: Float, scaleY: Float, translateX: Float, translateY: Float) -> Unit
+    content: @Composable (scaleX: Float, scaleY: Float, translateX: Float, translateY: Float) -> Unit,
 ) {
     val rect = transition.animateRect(
         transitionSpec = { tween(durationMillis = transitionDurationMs) },
-        label = "PhotoContentWithRectTransition"
+        label = "PhotoContentWithRectTransition",
     ) {
         if (it) {
             Rect(
                 translateX,
                 translateY,
                 translateX + imageWidth * scale,
-                translateY + imageHeight * scale
+                translateY + imageHeight * scale,
             )
-        } else initRect
+        } else {
+            initRect
+        }
     }
     content(
         (rect.value.width / imageWidth).coerceAtLeast(0f),
         (rect.value.height / imageHeight).coerceAtLeast(0f),
         rect.value.left,
-        rect.value.top
+        rect.value.top,
     )
 }
 
 @Composable
-fun PhotoBackground(
-    alpha: Float
-) {
+fun PhotoBackground(alpha: Float) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .alpha(alpha)
-            .background(Color.Black)
+            .background(Color.Black),
     )
 }
 
@@ -667,7 +683,7 @@ fun PhotoTransformContent(
     scaleY: Float,
     translateX: Float,
     translateY: Float,
-    content: @Composable (scale: Float) -> Unit
+    content: @Composable (scale: Float) -> Unit,
 ) {
     val widthDp = with(LocalDensity.current) { width.toDp() }
     val heightDp = with(LocalDensity.current) { height.toDp() }
@@ -700,15 +716,15 @@ fun PhotoTransformContent(
                                 clipSize.width,
                                 clipSize.height,
                                 size.width - clipSize.width,
-                                size.height - clipSize.height
-                            )
+                                size.height - clipSize.height,
+                            ),
                         )
 
                     override fun toString(): String = "PhotoTransformShape"
                 }
                 this.translationX = translateX - clipSize.width * scale
                 this.translationY = translateY - clipSize.height * scale
-            }
+            },
     ) {
         content(scale)
     }
@@ -738,7 +754,7 @@ internal fun calculateContentSize(
     containerWidth: Dp,
     containerHeight: Dp,
     contentRatio: Float,
-    isLongContent: Boolean
+    isLongContent: Boolean,
 ): Pair<Dp, Dp> {
     val layoutRatio = containerWidth / containerHeight
     return when {

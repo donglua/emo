@@ -21,10 +21,7 @@ import android.webkit.WebView
 
 private const val EMO_BRIDGE_QUEUE_MESSAGE = "emo://__QUEUE_MSG__/"
 
-class EmoBridgeWebViewClientHelper(
-    private val injectJsCode: Boolean,
-    private val handler: EmoJsBridgeHandler
-) {
+class EmoBridgeWebViewClientHelper(private val injectJsCode: Boolean, private val handler: EmoJsBridgeHandler) {
     fun shouldOverrideUrlLoading(webView: WebView, request: WebResourceRequest?): Boolean {
         if (request?.url?.toString()?.startsWith(EMO_BRIDGE_QUEUE_MESSAGE) == true) {
             handler.fetchAndHandleMessageFromJs(webView)

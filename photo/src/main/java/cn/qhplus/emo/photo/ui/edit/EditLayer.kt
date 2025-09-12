@@ -41,9 +41,7 @@ interface EditLayer {
 }
 
 object EditLayerDeserializeFactory {
-    fun deserialize(
-        value: ByteArray
-    ): EditLayer? {
+    fun deserialize(value: ByteArray): EditLayer? {
         val buffer = ByteBuffer.wrap(value)
         val type = buffer.get().toInt()
         val version = buffer.short

@@ -92,7 +92,7 @@ class ConcurrencyShareTest {
     fun joinPreviousOrRunCancelTest() = runTest {
         val key = "key"
         val concurrencyShare = ConcurrencyShare(scope = this)
-        val a = launch() {
+        val a = launch {
             val a = concurrencyShare.joinPreviousOrRun(key) {
                 delay(1000)
                 "a"

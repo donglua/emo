@@ -45,10 +45,10 @@ private const val CMD_ON_BRIDGE_READY = "__onBridgeReady__"
 
 abstract class EmoJsBridgeHandler(
     val scope: CoroutineScope = CoroutineScope(
-        Dispatchers.Main + SupervisorJob() + coroutineLogExceptionHandler("EmoJsBridgeHandler")
+        Dispatchers.Main + SupervisorJob() + coroutineLogExceptionHandler("EmoJsBridgeHandler"),
     ),
     private val bridgePropName: String = DEFAULT_BRIDGE_PROP_NAME,
-    private val readyEventName: String = DEFAULT_READY_EVENT_NAME
+    private val readyEventName: String = DEFAULT_READY_EVENT_NAME,
 ) : LogTag {
 
     companion object {
@@ -70,7 +70,9 @@ abstract class EmoJsBridgeHandler(
     }
 
     internal fun fetchAndHandleMessageFromJs(webView: WebView) {
-        webView.evaluateJavascriptCatching("$bridgePropName.$JS_METHOD_NAME_FETCH_QUEUE()") { value ->
+        webView.evaluateJavascriptCatching(
+            "$bridgePropName.$JS_METHOD_NAME_FETCH_QUEUE()",
+        ) { value ->
             if (value != null) {
                 try {
                     val array = JSONArray(value)
@@ -97,7 +99,9 @@ abstract class EmoJsBridgeHandler(
                     .use {
                         String(it.readBytes())
                     }
-                    .runIf(bridgePropName.isNotBlank() && bridgePropName != DEFAULT_BRIDGE_PROP_NAME) {
+                    .runIf(
+                        bridgePropName.isNotBlank() && bridgePropName != DEFAULT_BRIDGE_PROP_NAME,
+                    ) {
                         replace("window.EmoBridge", "window.$bridgePropName")
                     }
                     .runIf(readyEventName.isNotBlank()) {
@@ -133,7 +137,10 @@ abstract class EmoJsBridgeHandler(
 
                         private fun innerFinish(data: Any?) {
                             scope.launch {
-                                webView.evaluateJavascriptCatching(createResponseScript(responseId, data), null)
+                                webView.evaluateJavascriptCatching(
+                                    createResponseScript(responseId, data),
+                                    null,
+                                )
                             }
                         }
 
@@ -171,7 +178,10 @@ abstract class EmoJsBridgeHandler(
 
                         override fun failed(error: String) {
                             scope.launch {
-                                webView.evaluateJavascriptCatching(createErrorScript(responseId, error), null)
+                                webView.evaluateJavascriptCatching(
+                                    createErrorScript(responseId, error),
+                                    null,
+                                )
                             }
                         }
                     }
@@ -205,7 +215,12 @@ abstract class EmoJsBridgeHandler(
 
     protected abstract fun getSupportedCmdList(): List<String>
 
-    protected abstract fun handleMessage(webView: WebView, cmd: String, dataPicker: JsonDataPicker, callback: ResponseCallback?)
+    protected abstract fun handleMessage(
+        webView: WebView,
+        cmd: String,
+        dataPicker: JsonDataPicker,
+        callback: ResponseCallback?,
+    )
 
     interface ResponseCallback {
 
@@ -231,32 +246,18 @@ abstract class EmoJsBridgeHandler(
     }
 
     class JsonDataPicker(private val json: JSONObject) {
-        fun pickAsJsonArray(): JSONArray? {
-            return json.optJSONArray(MSG_DATA)
-        }
+        fun pickAsJsonArray(): JSONArray? = json.optJSONArray(MSG_DATA)
 
-        fun pickAsJsonObject(): JSONObject? {
-            return json.optJSONObject(MSG_DATA)
-        }
+        fun pickAsJsonObject(): JSONObject? = json.optJSONObject(MSG_DATA)
 
-        fun pickAsString(): String? {
-            return if (json.isNull(MSG_DATA)) null else json.optString(MSG_DATA)
-        }
+        fun pickAsString(): String? = if (json.isNull(MSG_DATA)) null else json.optString(MSG_DATA)
 
-        fun pickAsInt(defaultValue: Int = 0): Int {
-            return json.optInt(MSG_DATA, defaultValue)
-        }
+        fun pickAsInt(defaultValue: Int = 0): Int = json.optInt(MSG_DATA, defaultValue)
 
-        fun pickAsBool(defaultValue: Boolean = false): Boolean {
-            return json.optBoolean(MSG_DATA, defaultValue)
-        }
+        fun pickAsBool(defaultValue: Boolean = false): Boolean = json.optBoolean(MSG_DATA, defaultValue)
 
-        fun pickAsLong(defaultValue: Long = 0): Long {
-            return json.optLong(MSG_DATA, defaultValue)
-        }
+        fun pickAsLong(defaultValue: Long = 0): Long = json.optLong(MSG_DATA, defaultValue)
 
-        fun pickAsDouble(defaultValue: Double = 0.0): Double {
-            return json.optDouble(MSG_DATA, defaultValue)
-        }
+        fun pickAsDouble(defaultValue: Double = 0.0): Double = json.optDouble(MSG_DATA, defaultValue)
     }
 }

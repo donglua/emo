@@ -47,7 +47,7 @@ class SchemeClientBuilder(val application: Application) {
             handler,
             AndroidSchemeExecTransactionFactory(application) {
                 SchemeTransitionProviders.get(it)
-            }
+            },
         )
     }
 }

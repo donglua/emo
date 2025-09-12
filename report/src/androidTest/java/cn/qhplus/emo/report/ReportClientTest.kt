@@ -138,7 +138,11 @@ class EmoReportTest {
 
 class TestListReportTrans : ListReportTransporter<String> {
 
-    override suspend fun transport(client: ReportClient<String>, batch: List<String>, usedStrategy: ReportStrategy): Boolean {
+    override suspend fun transport(
+        client: ReportClient<String>,
+        batch: List<String>,
+        usedStrategy: ReportStrategy,
+    ): Boolean {
         Log.i(TAG, "listTransport: count = ${batch.count()}, " + batch.joinToString(","))
         return true
     }
@@ -149,7 +153,7 @@ class TestStreamReportTrans : StreamReportTransporter<String> {
         client: ReportClient<String>,
         buffer: ByteArray,
         converter: ReportMsgConverter<String>,
-        usedStrategy: ReportStrategy
+        usedStrategy: ReportStrategy,
     ) {
         Log.i(TAG, "streamTransport:" + converter.decode(buffer))
     }

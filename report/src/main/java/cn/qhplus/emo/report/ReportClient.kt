@@ -60,7 +60,7 @@ class EmoReportClient<T> internal constructor(
     val batchInterval: Long,
     val memBatchCount: Int,
     val fileBatchDirName: String,
-    val fileBatchFileSize: Long
+    val fileBatchFileSize: Long,
 ) : ReportClient<T> {
 
     private val applicationContext = context.applicationContext
@@ -80,7 +80,7 @@ class EmoReportClient<T> internal constructor(
             converter,
             streamReportTransporter,
             fileBatchDirName,
-            fileBatchFileSize
+            fileBatchFileSize,
         )
     }
 
@@ -132,26 +132,24 @@ fun <T> newReportClient(
     scope: CoroutineScope = CoroutineScope(
         SupervisorJob() +
             Dispatchers.IO +
-            coroutineLogExceptionHandler("ReportClient")
+            coroutineLogExceptionHandler("ReportClient"),
     ),
     streamReportTransporter: StreamReportTransporter<T>? = null,
     batchInterval: Long = 5 * 60 * 1000,
     memBatchCount: Int = 50,
     fileBatchDirName: String = "report",
-    fileBatchFileSize: Long = 150 * 1024
-): ReportClient<T> {
-    return EmoReportClient(
-        scope,
-        context,
-        listReportTransporter,
-        streamReportTransporter ?: listReportTransporter.wrapToStreamTransporter(memBatchCount),
-        converter,
-        batchInterval,
-        memBatchCount,
-        fileBatchDirName,
-        fileBatchFileSize
-    )
-}
+    fileBatchFileSize: Long = 150 * 1024,
+): ReportClient<T> = EmoReportClient(
+    scope,
+    context,
+    listReportTransporter,
+    streamReportTransporter ?: listReportTransporter.wrapToStreamTransporter(memBatchCount),
+    converter,
+    batchInterval,
+    memBatchCount,
+    fileBatchDirName,
+    fileBatchFileSize,
+)
 
 fun simpleReportClient(
     context: Context,
@@ -160,23 +158,21 @@ fun simpleReportClient(
     scope: CoroutineScope = CoroutineScope(
         SupervisorJob() +
             Dispatchers.IO +
-            coroutineLogExceptionHandler("ReportClient")
+            coroutineLogExceptionHandler("ReportClient"),
     ),
     streamReportTransporter: StreamReportTransporter<String>? = null,
     batchInterval: Long = 5 * 60 * 1000,
     memBatchCount: Int = 50,
     fileBatchDirName: String = "report",
-    fileBatchFileSize: Long = 150 * 1024
-): ReportClient<String> {
-    return newReportClient(
-        context,
-        listReportTransporter,
-        converter,
-        scope,
-        streamReportTransporter,
-        batchInterval,
-        memBatchCount,
-        fileBatchDirName,
-        fileBatchFileSize
-    )
-}
+    fileBatchFileSize: Long = 150 * 1024,
+): ReportClient<String> = newReportClient(
+    context,
+    listReportTransporter,
+    converter,
+    scope,
+    streamReportTransporter,
+    batchInterval,
+    memBatchCount,
+    fileBatchDirName,
+    fileBatchFileSize,
+)

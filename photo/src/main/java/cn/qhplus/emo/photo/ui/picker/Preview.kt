@@ -75,7 +75,7 @@ fun PhotoPickerPreviewPage(
     navController: NavHostController,
     viewModel: PhotoPickerViewModel,
     bucketId: String,
-    currentId: Long
+    currentId: Long,
 ) {
     val systemUiController = rememberSystemUiController()
     var isFullPageState by remember {
@@ -98,14 +98,14 @@ fun PhotoPickerPreviewPage(
 
     val pagerState = rememberPagerState(
         list.indexOfFirst { it.model.id == currentId }.coerceAtLeast(0),
-        pageCount = { list.size }
+        pageCount = { list.size },
     )
 
     val topBarLeftItems = remember {
         persistentListOf(
             TopBarBackIconItem {
                 navController.popBackStack()
-            }
+            },
         )
     }
 
@@ -123,15 +123,15 @@ fun PhotoPickerPreviewPage(
                                     it.model.width,
                                     it.model.height,
                                     it.model.uri,
-                                    it.model.rotation
+                                    it.model.rotation,
                                 )
-                            }
-                        )
+                            },
+                        ),
                     )
                 } else {
                     viewModel.handleFinish(pickedList)
                 }
-            }
+            },
         )
     }
 
@@ -145,11 +145,11 @@ fun PhotoPickerPreviewPage(
                 Box(modifier = Modifier.fillMaxSize()) {
                     Loading(
                         modifier = Modifier.align(Alignment.Center),
-                        lineColor = LocalPhotoPickerConfig.current.loadingColor
+                        lineColor = LocalPhotoPickerConfig.current.loadingColor,
                     )
                 }
             },
-            loadingFailed = {}
+            loadingFailed = {},
         ) {
             isFullPageState = !isFullPageState
         }
@@ -157,7 +157,7 @@ fun PhotoPickerPreviewPage(
         AnimatedVisibility(
             visible = !isFullPageState,
             enter = slideInVertically(initialOffsetY = { -it }),
-            exit = slideOutVertically(targetOffsetY = { -it })
+            exit = slideOutVertically(targetOffsetY = { -it }),
         ) {
             TopBar(
                 title = { "${pagerState.currentPage + 1}/${list.size}" },
@@ -165,7 +165,7 @@ fun PhotoPickerPreviewPage(
                 paddingEnd = 16.dp,
                 backgroundColor = config.topBarBgColor,
                 leftItems = topBarLeftItems,
-                rightItems = topBarRightItems
+                rightItems = topBarRightItems,
             )
         }
 
@@ -173,7 +173,7 @@ fun PhotoPickerPreviewPage(
             visible = !isFullPageState,
             modifier = Modifier.align(Alignment.BottomCenter),
             enter = slideInVertically(initialOffsetY = { it }),
-            exit = slideOutVertically(targetOffsetY = { it })
+            exit = slideOutVertically(targetOffsetY = { it }),
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 PhotoPickerPreviewPickedItems(list, pickedItems, list[pagerState.currentPage].model.id) {
@@ -200,7 +200,7 @@ fun PhotoPickerPreviewPage(
                     },
                     onToggleSelect = {
                         viewModel.togglePick(list[pagerState.currentPage])
-                    }
+                    },
                 )
             }
         }
@@ -214,12 +214,12 @@ fun PhotoPickerPreviewContent(
     data: List<MediaPhotoVO>,
     loading: @Composable BoxScope.() -> Unit,
     loadingFailed: @Composable BoxScope.() -> Unit,
-    onTap: () -> Unit
+    onTap: () -> Unit,
 ) {
     HorizontalPager(
         // pageCount = data.size,
         state = pagerState,
-        key = { data[it].model.id }
+        key = { data[it].model.id },
     ) { page ->
         val item = data[page]
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -235,7 +235,7 @@ fun PhotoPickerPreviewContent(
                 },
                 onTapExit = {
                     onTap()
-                }
+                },
             ) { _, _, _, onImageRatioEnsured ->
                 PhotoPickerPreviewItemContent(item, onImageRatioEnsured, loadingFailed, loading)
             }
@@ -248,7 +248,7 @@ private fun PhotoPickerPreviewItemContent(
     item: MediaPhotoVO,
     onImageRatioEnsured: (Float) -> Unit,
     loading: @Composable BoxScope.() -> Unit,
-    loadingFailed: @Composable BoxScope.() -> Unit
+    loadingFailed: @Composable BoxScope.() -> Unit,
 ) {
     val photo = remember(item) {
         item.photoProvider.photo()
@@ -270,7 +270,7 @@ private fun PhotoPickerPreviewItemContent(
             },
             onError = {
                 loadStatus = PhotoLoadStatus.Failed
-            }
+            },
         )
 
         if (loadStatus == PhotoLoadStatus.Loading) {
@@ -286,7 +286,7 @@ fun PhotoPickerPreviewPickedItems(
     data: List<MediaPhotoVO>,
     pickedItems: List<Long>,
     currentId: Long,
-    onClick: (MediaPhotoVO) -> Unit
+    onClick: (MediaPhotoVO) -> Unit,
 ) {
     if (pickedItems.isNotEmpty()) {
         val list = remember(data, pickedItems) {
@@ -299,7 +299,7 @@ fun PhotoPickerPreviewPickedItems(
                 .background(LocalPhotoPickerConfig.current.toolBarBgColor),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = spacedBy(5.dp),
-            contentPadding = PaddingValues(horizontal = 5.dp)
+            contentPadding = PaddingValues(horizontal = 5.dp),
         ) {
             items(list, { it.model.id }) {
                 PhotoPickerPreviewPickedItem(it, it.model.id == currentId, onClick)
@@ -309,11 +309,7 @@ fun PhotoPickerPreviewPickedItems(
 }
 
 @Composable
-private fun PhotoPickerPreviewPickedItem(
-    item: MediaPhotoVO,
-    isCurrent: Boolean,
-    onClick: (MediaPhotoVO) -> Unit
-) {
+private fun PhotoPickerPreviewPickedItem(item: MediaPhotoVO, isCurrent: Boolean, onClick: (MediaPhotoVO) -> Unit) {
     val thumb = remember(item) {
         item.photoProvider.thumbnail(true)
     }
@@ -322,7 +318,7 @@ private fun PhotoPickerPreviewPickedItem(
             .size(50.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = null
+                indication = null,
             ) {
                 onClick(item)
             }
@@ -332,13 +328,13 @@ private fun PhotoPickerPreviewPickedItem(
                 } else {
                     it
                 }
-            }
+            },
     ) {
         thumb?.Compose(
             contentScale = ContentScale.Crop,
             isContainerDimenExactly = true,
             onSuccess = null,
-            onError = null
+            onError = null,
         )
     }
 }
@@ -352,21 +348,21 @@ fun PhotoPickerPreviewToolBar(
     isOriginOpenFlow: StateFlow<Boolean>,
     onToggleOrigin: (toOpen: Boolean) -> Unit,
     onEdit: () -> Unit,
-    onToggleSelect: (toSelect: Boolean) -> Unit
+    onToggleSelect: (toSelect: Boolean) -> Unit,
 ) {
     val config = LocalPhotoPickerConfig.current
     Box(
         modifier = modifier
             .background(config.toolBarBgColor)
             .windowInsetsCommonNavPadding()
-            .height(44.dp)
+            .height(44.dp),
     ) {
         if (current.model.editable && config.editable) {
             CommonTextButton(
                 modifier = Modifier.align(Alignment.CenterStart),
                 enable = true,
                 text = "编辑",
-                onClick = onEdit
+                onClick = onEdit,
             )
         }
 
@@ -377,7 +373,7 @@ fun PhotoPickerPreviewToolBar(
                     .padding(horizontal = 16.dp)
                     .align(Alignment.Center),
                 isOriginOpenFlow = isOriginOpenFlow,
-                onToggleOrigin = onToggleOrigin
+                onToggleOrigin = onToggleOrigin,
             )
         }
 
@@ -387,7 +383,7 @@ fun PhotoPickerPreviewToolBar(
                 .padding(horizontal = 16.dp)
                 .align(Alignment.CenterEnd),
             isPicked = isCurrentPicked,
-            onPicked = onToggleSelect
+            onPicked = onToggleSelect,
         )
     }
 }

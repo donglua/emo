@@ -20,10 +20,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 
-open class EmoBridgeWebViewClient(
-    injectJsCode: Boolean,
-    handler: EmoJsBridgeHandler
-) : WebViewClient() {
+open class EmoBridgeWebViewClient(injectJsCode: Boolean, handler: EmoJsBridgeHandler) : WebViewClient() {
 
     private val helper = EmoBridgeWebViewClientHelper(injectJsCode, handler)
 
@@ -34,9 +31,8 @@ open class EmoBridgeWebViewClient(
         return onShouldOverrideUrlLoading(view, request)
     }
 
-    protected open fun onShouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-        return super.shouldOverrideUrlLoading(view, request)
-    }
+    protected open fun onShouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean =
+        super.shouldOverrideUrlLoading(view, request)
 
     override fun onPageFinished(view: WebView?, url: String?) {
         super.onPageFinished(view, url)

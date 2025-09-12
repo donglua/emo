@@ -32,12 +32,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 
-data class NetworkStreamTotal(
-    val id: Int,
-    val down: Long,
-    val up: Long,
-    val timestamp: Long
-) {
+data class NetworkStreamTotal(val id: Int, val down: Long, val up: Long, val timestamp: Long) {
     companion object {
         val ZERO = NetworkStreamTotal(0, 0, 0, 0)
     }
@@ -49,9 +44,7 @@ data class NetworkBandwidth(val down: Double, val up: Double) {
     }
 }
 
-class NetworkBandwidthSampler private constructor(
-    private val applicationContext: Context
-) : LogTag {
+class NetworkBandwidthSampler private constructor(private val applicationContext: Context) : LogTag {
     companion object {
         private const val DEFAULT_DECAY = 0.2F
         private const val BITS_PER_BYTE = 8
@@ -61,11 +54,10 @@ class NetworkBandwidthSampler private constructor(
         private var instance: NetworkBandwidthSampler? = null
 
         @Synchronized
-        fun of(context: Context): NetworkBandwidthSampler {
-            return instance ?: NetworkBandwidthSampler(context.applicationContext).also {
+        fun of(context: Context): NetworkBandwidthSampler =
+            instance ?: NetworkBandwidthSampler(context.applicationContext).also {
                 instance = it
             }
-        }
     }
 
     private val scopeExceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -103,7 +95,13 @@ class NetworkBandwidthSampler private constructor(
                         historyRxBytes = rx
                         historyTxBytes = tx
                     } else {
-                        _streamTotalFlow.value = NetworkStreamTotal(sampleId, rx - historyRxBytes, tx - historyTxBytes, curTimeReading)
+                        _streamTotalFlow.value =
+                            NetworkStreamTotal(
+                                sampleId,
+                                rx - historyRxBytes,
+                                tx - historyTxBytes,
+                                curTimeReading,
+                            )
                     }
 
                     if (previousRxBytes >= 0) {
@@ -117,7 +115,7 @@ class NetworkBandwidthSampler private constructor(
                         if (down >= 0 || up >= 0) {
                             _bandwidthFlow.value = NetworkBandwidth(
                                 down.coerceAtLeast(0.0),
-                                up.coerceAtLeast(0.0)
+                                up.coerceAtLeast(0.0),
                             )
                         }
                     }
@@ -140,11 +138,7 @@ class NetworkBandwidthSampler private constructor(
     }
 
     @Synchronized
-    private fun recordBandwidth(
-        bandwidth: ExponentialMovingAverage,
-        bytes: Long,
-        timeInMs: Long
-    ) {
+    private fun recordBandwidth(bandwidth: ExponentialMovingAverage, bytes: Long, timeInMs: Long) {
         if (timeInMs == 0L) {
             return
         }

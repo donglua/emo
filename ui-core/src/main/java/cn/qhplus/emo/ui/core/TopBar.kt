@@ -94,14 +94,14 @@ class DefaultTopBarTitleLayout(
     val titleOnlyFontSize: TextUnit = 17.sp,
     val subTitleFontWeight: FontWeight = FontWeight.Normal,
     val subTitleFontFamily: FontFamily? = null,
-    val subTitleFontSize: TextUnit = 11.sp
+    val subTitleFontSize: TextUnit = 11.sp,
 
 ) : TopBarTitleLayout {
     @Composable
     override fun Compose(
         titleGetter: () -> CharSequence,
         subTitleGetter: () -> CharSequence,
-        alignTitleCenter: Boolean
+        alignTitleCenter: Boolean,
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -109,7 +109,7 @@ class DefaultTopBarTitleLayout(
                 Alignment.CenterHorizontally
             } else {
                 Alignment.Start
-            }
+            },
         ) {
             val title = titleGetter()
             val subTitle = subTitleGetter()
@@ -120,7 +120,7 @@ class DefaultTopBarTitleLayout(
                 fontFamily = titleFontFamily,
                 fontSize = if (subTitle.isNotEmpty()) titleFontSize else titleOnlyFontSize,
                 overflow = TextOverflow.Ellipsis,
-                maxLines = 1
+                maxLines = 1,
             )
             if (subTitle.isNotEmpty()) {
                 Text(
@@ -130,7 +130,7 @@ class DefaultTopBarTitleLayout(
                     fontFamily = subTitleFontFamily,
                     fontSize = subTitleFontSize,
                     overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
+                    maxLines = 1,
                 )
             }
         }
@@ -143,7 +143,7 @@ open class TopBarBackIconItem(
     pressAlpha: Float = 0.5f,
     disableAlpha: Float = 0.5f,
     enable: Boolean = true,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) : TopBarIconItem(
     R.drawable.ic_topbar_back,
     "返回",
@@ -151,7 +151,7 @@ open class TopBarBackIconItem(
     pressAlpha,
     disableAlpha,
     enable,
-    onClick
+    onClick,
 )
 
 @Stable
@@ -162,7 +162,7 @@ open class TopBarIconItem(
     val pressAlpha: Float = 0.5f,
     val disableAlpha: Float = 0.5f,
     val enable: Boolean = true,
-    val onClick: () -> Unit
+    val onClick: () -> Unit,
 ) : TopBarItem {
 
     @Composable
@@ -172,14 +172,14 @@ open class TopBarIconItem(
             enable = enable,
             pressAlpha = pressAlpha,
             disableAlpha = disableAlpha,
-            onClick = onClick
+            onClick = onClick,
         ) {
             Image(
                 modifier = Modifier.fillMaxSize(),
                 painter = painterResource(icon),
                 contentDescription = contentDescription,
                 colorFilter = ColorFilter.tint(tint),
-                contentScale = ContentScale.Inside
+                contentScale = ContentScale.Inside,
             )
         }
     }
@@ -193,7 +193,7 @@ open class TopBarImageVectorItem(
     val pressAlpha: Float = 0.5f,
     val disableAlpha: Float = 0.5f,
     val enable: Boolean = true,
-    val onClick: () -> Unit
+    val onClick: () -> Unit,
 ) : TopBarItem {
 
     @Composable
@@ -203,14 +203,14 @@ open class TopBarImageVectorItem(
             enable = enable,
             pressAlpha = pressAlpha,
             disableAlpha = disableAlpha,
-            onClick = onClick
+            onClick = onClick,
         ) {
             Image(
                 modifier = Modifier.fillMaxSize(),
                 painter = rememberVectorPainter(image = icon),
                 contentDescription = contentDescription,
                 colorFilter = ColorFilter.tint(tint),
-                contentScale = ContentScale.Inside
+                contentScale = ContentScale.Inside,
             )
         }
     }
@@ -226,7 +226,7 @@ open class TopBarTextItem(
     val pressAlpha: Float = 0.5f,
     val disableAlpha: Float = 0.5f,
     val enable: Boolean = true,
-    val onClick: () -> Unit
+    val onClick: () -> Unit,
 ) : TopBarItem {
 
     @Composable
@@ -238,14 +238,14 @@ open class TopBarTextItem(
             enable = enable,
             pressAlpha = pressAlpha,
             disableAlpha = disableAlpha,
-            onClick = onClick
+            onClick = onClick,
         ) {
             Text(
                 text = text(),
                 modifier = Modifier.align(Alignment.Center),
                 color = color,
                 fontSize = fontSize,
-                fontWeight = fontWeight
+                fontWeight = fontWeight,
             )
         }
     }
@@ -271,7 +271,7 @@ fun TopBarWithLazyListScrollState(
     titleBoxPaddingHor: Dp = 8.dp,
     leftItems: PersistentList<TopBarItem> = persistentListOf(),
     rightItems: PersistentList<TopBarItem> = persistentListOf(),
-    titleLayout: TopBarTitleLayout = remember { DefaultTopBarTitleLayout() }
+    titleLayout: TopBarTitleLayout = remember { DefaultTopBarTitleLayout() },
 ) {
     val percentGetter: Density.() -> Float = remember(scrollState, scrollAlphaChangeMaxOffset) {
         {
@@ -295,7 +295,9 @@ fun TopBarWithLazyListScrollState(
                     scrollState.firstVisibleItemScrollOffset.toDp() > scrollAlphaChangeMaxOffset
                 ) {
                     1f
-                } else scrollState.firstVisibleItemScrollOffset.toDp() / scrollAlphaChangeMaxOffset
+                } else {
+                    scrollState.firstVisibleItemScrollOffset.toDp() / scrollAlphaChangeMaxOffset
+                }
             }
         }
     }
@@ -304,7 +306,7 @@ fun TopBarWithLazyListScrollState(
         zIndex, backgroundColor, changeWithBackground,
         shadowElevation, shadowAlpha, separatorHeight, separatorColor,
         paddingStart, paddingEnd, titleBoxPaddingHor,
-        leftItems, rightItems, titleLayout
+        leftItems, rightItems, titleLayout,
     )
 }
 
@@ -328,7 +330,7 @@ fun TopBarWithLazyGridScrollState(
     titleBoxPaddingHor: Dp = 8.dp,
     leftItems: PersistentList<TopBarItem> = persistentListOf(),
     rightItems: PersistentList<TopBarItem> = persistentListOf(),
-    titleLayout: TopBarTitleLayout = remember { DefaultTopBarTitleLayout() }
+    titleLayout: TopBarTitleLayout = remember { DefaultTopBarTitleLayout() },
 ) {
     val percentGetter: Density.() -> Float = remember(scrollState, scrollAlphaChangeMaxOffset) {
         {
@@ -352,7 +354,9 @@ fun TopBarWithLazyGridScrollState(
                     scrollState.firstVisibleItemScrollOffset.toDp() > scrollAlphaChangeMaxOffset
                 ) {
                     1f
-                } else scrollState.firstVisibleItemScrollOffset.toDp() / scrollAlphaChangeMaxOffset
+                } else {
+                    scrollState.firstVisibleItemScrollOffset.toDp() / scrollAlphaChangeMaxOffset
+                }
             }
         }
     }
@@ -361,7 +365,7 @@ fun TopBarWithLazyGridScrollState(
         zIndex, backgroundColor, changeWithBackground,
         shadowElevation, shadowAlpha, separatorHeight, separatorColor,
         paddingStart, paddingEnd, titleBoxPaddingHor,
-        leftItems, rightItems, titleLayout
+        leftItems, rightItems, titleLayout,
     )
 }
 
@@ -385,13 +389,15 @@ fun TopBarWithScrollState(
     titleBoxPaddingHor: Dp = 8.dp,
     leftItems: PersistentList<TopBarItem> = persistentListOf(),
     rightItems: PersistentList<TopBarItem> = persistentListOf(),
-    titleLayout: TopBarTitleLayout = remember { DefaultTopBarTitleLayout() }
+    titleLayout: TopBarTitleLayout = remember { DefaultTopBarTitleLayout() },
 ) {
     val percentGetter: Density.() -> Float = remember(scrollState, scrollAlphaChangeMaxOffset) {
         {
             if (scrollState.value.toDp() >= scrollAlphaChangeMaxOffset) {
                 1f
-            } else scrollState.value.toDp() / scrollAlphaChangeMaxOffset
+            } else {
+                scrollState.value.toDp() / scrollAlphaChangeMaxOffset
+            }
         }
     }
     TopBarWithPercent(
@@ -399,7 +405,7 @@ fun TopBarWithScrollState(
         zIndex, backgroundColor, changeWithBackground,
         shadowElevation, shadowAlpha, separatorHeight, separatorColor,
         paddingStart, paddingEnd, titleBoxPaddingHor,
-        leftItems, rightItems, titleLayout
+        leftItems, rightItems, titleLayout,
     )
 }
 
@@ -422,7 +428,7 @@ fun TopBarWithPercent(
     titleBoxPaddingHor: Dp = 8.dp,
     leftItems: PersistentList<TopBarItem> = persistentListOf(),
     rightItems: PersistentList<TopBarItem> = persistentListOf(),
-    titleLayout: TopBarTitleLayout = remember { DefaultTopBarTitleLayout() }
+    titleLayout: TopBarTitleLayout = remember { DefaultTopBarTitleLayout() },
 ) {
     val density = LocalDensity.current
     val percent by remember(percentGetter) {
@@ -440,11 +446,13 @@ fun TopBarWithPercent(
         alignTitleCenter, height, zIndex,
         if (changeWithBackground) {
             backgroundColor.copy(backgroundColor.alpha * percent)
-        } else backgroundColor,
+        } else {
+            backgroundColor
+        },
         shadowElevation, shadowAlphaUsed,
         separatorHeight, { separatorColor.copy(separatorColor.alpha * percent) },
         paddingStart, paddingEnd,
-        titleBoxPaddingHor, leftItems, rightItems, titleLayout
+        titleBoxPaddingHor, leftItems, rightItems, titleLayout,
     )
 }
 
@@ -465,13 +473,13 @@ fun TopBar(
     titleBoxPaddingHor: Dp = 8.dp,
     leftItems: PersistentList<TopBarItem> = persistentListOf(),
     rightItems: PersistentList<TopBarItem> = persistentListOf(),
-    titleLayout: TopBarTitleLayout = remember { DefaultTopBarTitleLayout() }
+    titleLayout: TopBarTitleLayout = remember { DefaultTopBarTitleLayout() },
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Max)
-            .zIndex(zIndex)
+            .zIndex(zIndex),
     ) {
         Box(
             modifier = Modifier
@@ -481,14 +489,14 @@ fun TopBar(
                     this.shadowElevation = shadowElevation.toPx()
                     this.shape = RectangleShape
                     this.clip = shadowElevation > 0.dp
-                }
+                },
         )
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(backgroundColor)
                 .windowInsetsCommonTopPadding()
-                .height(height)
+                .height(height),
         ) {
             TopBarContent(
                 title,
@@ -500,7 +508,7 @@ fun TopBar(
                 titleBoxPaddingHor,
                 leftItems,
                 rightItems,
-                titleLayout
+                titleLayout,
             )
             TopBarSeparator(separatorHeight, separatorColor)
         }
@@ -516,7 +524,7 @@ fun BoxScope.TopBarSeparator(height: Dp, colorGetter: () -> Color) {
                 .fillMaxWidth()
                 .height(height)
                 .align(Alignment.BottomStart)
-                .background(color)
+                .background(color),
         )
     }
 }
@@ -532,7 +540,7 @@ fun TopBarContent(
     titleBoxPaddingHor: Dp = 8.dp,
     leftItems: PersistentList<TopBarItem> = persistentListOf(),
     rightItems: PersistentList<TopBarItem> = persistentListOf(),
-    titleLayout: TopBarTitleLayout = remember { DefaultTopBarTitleLayout() }
+    titleLayout: TopBarTitleLayout = remember { DefaultTopBarTitleLayout() },
 ) {
     val measurePolicy = remember(alignTitleCenter) {
         MeasurePolicy { measurables, constraints ->
@@ -567,8 +575,8 @@ fun TopBarContent(
                 centerPlaceable = centerMeasurable?.measure(
                     constraints.copy(
                         minWidth = 0,
-                        maxWidth = titleContainerWidth
-                    )
+                        maxWidth = titleContainerWidth,
+                    ),
                 )
             }
 
@@ -593,7 +601,7 @@ fun TopBarContent(
                 modifier = Modifier
                     .fillMaxHeight()
                     .topBarArea(TopBarArea.Left),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 leftItems.forEach {
                     key(it) {
@@ -607,7 +615,7 @@ fun TopBarContent(
                     .fillMaxHeight()
                     .topBarArea(TopBarArea.Center)
                     .padding(horizontal = titleBoxPaddingHor),
-                contentAlignment = Alignment.CenterStart
+                contentAlignment = Alignment.CenterStart,
             ) {
                 titleLayout.Compose(title, subTitle, alignTitleCenter)
             }
@@ -616,7 +624,7 @@ fun TopBarContent(
                 modifier = Modifier
                     .fillMaxHeight()
                     .topBarArea(TopBarArea.Right),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 rightItems.forEach {
                     key(it) {
@@ -629,15 +637,13 @@ fun TopBarContent(
         modifier = Modifier
             .fillMaxWidth()
             .height(height)
-            .padding(start = paddingStart, end = paddingEnd)
+            .padding(start = paddingStart, end = paddingEnd),
     )
 }
 
 internal enum class TopBarArea { Left, Center, Right }
 
-internal data class TopBarAreaParentData(
-    var area: TopBarArea = TopBarArea.Left
-)
+internal data class TopBarAreaParentData(var area: TopBarArea = TopBarArea.Left)
 
 internal fun Modifier.topBarArea(area: TopBarArea) = this.then(
     TopBarAreaModifier(
@@ -645,19 +651,17 @@ internal fun Modifier.topBarArea(area: TopBarArea) = this.then(
         inspectorInfo = debugInspectorInfo {
             name = "area"
             value = area.name
-        }
-    )
+        },
+    ),
 )
 
-internal class TopBarAreaModifier(
-    val area: TopBarArea,
-    inspectorInfo: InspectorInfo.() -> Unit
-) : ParentDataModifier, InspectorValueInfo(inspectorInfo) {
-    override fun Density.modifyParentData(parentData: Any?): TopBarAreaParentData {
-        return ((parentData as? TopBarAreaParentData) ?: TopBarAreaParentData()).also {
+internal class TopBarAreaModifier(val area: TopBarArea, inspectorInfo: InspectorInfo.() -> Unit) :
+    InspectorValueInfo(inspectorInfo),
+    ParentDataModifier {
+    override fun Density.modifyParentData(parentData: Any?): TopBarAreaParentData =
+        ((parentData as? TopBarAreaParentData) ?: TopBarAreaParentData()).also {
             it.area = area
         }
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -665,10 +669,7 @@ internal class TopBarAreaModifier(
         return area == otherModifier.area
     }
 
-    override fun hashCode(): Int {
-        return area.hashCode()
-    }
+    override fun hashCode(): Int = area.hashCode()
 
-    override fun toString(): String =
-        "TopBarAreaModifier(area=$area)"
+    override fun toString(): String = "TopBarAreaModifier(area=$area)"
 }

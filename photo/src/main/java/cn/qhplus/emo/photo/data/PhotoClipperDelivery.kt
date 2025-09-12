@@ -37,14 +37,10 @@ internal object PhotoClipperDelivery {
     }
 
     @MainThread
-    fun peek(id: Long): PhotoProvider? {
-        return dataMap[id]
-    }
+    fun peek(id: Long): PhotoProvider? = dataMap[id]
 
     @MainThread
-    fun getAndRemove(id: Long): PhotoProvider? {
-        return dataMap.remove(id)
-    }
+    fun getAndRemove(id: Long): PhotoProvider? = dataMap.remove(id)
 
     @MainThread
     fun remove(id: Long) {

@@ -18,8 +18,9 @@ package cn.qhplus.emo.core
 
 import kotlinx.coroutines.CoroutineExceptionHandler
 
-fun coroutineLogExceptionHandler(tag: String): CoroutineExceptionHandler {
-    return CoroutineExceptionHandler { _, throwable ->
-        EmoLog.e(tag, "scope error.", throwable)
-    }
+fun coroutineLogExceptionHandler(tag: String): CoroutineExceptionHandler = CoroutineExceptionHandler {
+        _,
+        throwable,
+    ->
+    EmoLog.e(tag, "scope error.", throwable)
 }

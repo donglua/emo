@@ -20,66 +20,41 @@ import kotlin.reflect.KClass
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
-annotation class ActivityScheme(
-    val action: String,
-    val transition: Int = SchemeTransition.PUSH
-)
+annotation class ActivityScheme(val action: String, val transition: Int = SchemeTransition.PUSH)
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.FUNCTION)
 annotation class ComposeScheme(
     val action: String,
     val alternativeHosts: Array<KClass<*>>,
-    val transition: Int = SchemeTransition.PUSH
+    val transition: Int = SchemeTransition.PUSH,
 )
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
-annotation class SchemeHost(
-    val requiredArgs: Array<String>
-)
+annotation class SchemeHost(val requiredArgs: Array<String>)
 
 @Repeatable
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-annotation class SchemeBoolArg(
-    val name: String,
-    val special: Boolean = false,
-    val default: Boolean = false
-)
+annotation class SchemeBoolArg(val name: String, val special: Boolean = false, val default: Boolean = false)
 
 @Repeatable
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-annotation class SchemeIntArg(
-    val name: String,
-    val special: Boolean = false,
-    val default: Int = 0
-)
+annotation class SchemeIntArg(val name: String, val special: Boolean = false, val default: Int = 0)
 
 @Repeatable
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-annotation class SchemeLongArg(
-    val name: String,
-    val special: Boolean = false,
-    val default: Long = 0
-)
+annotation class SchemeLongArg(val name: String, val special: Boolean = false, val default: Long = 0)
 
 @Repeatable
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-annotation class SchemeFloatArg(
-    val name: String,
-    val special: Boolean = false,
-    val default: Float = 0.0f
-)
+annotation class SchemeFloatArg(val name: String, val special: Boolean = false, val default: Float = 0.0f)
 
 @Repeatable
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-annotation class SchemeStringArg(
-    val name: String,
-    val special: Boolean = false,
-    val default: String = ""
-)
+annotation class SchemeStringArg(val name: String, val special: Boolean = false, val default: String = "")

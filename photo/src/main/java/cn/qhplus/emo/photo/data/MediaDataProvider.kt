@@ -45,7 +45,7 @@ open class MediaModel(
     val modifyTimeSec: Long,
     val bucketId: String,
     val bucketName: String,
-    val editable: Boolean
+    val editable: Boolean,
 ) {
 
     private fun isRotated() = rotation == 90 || rotation == 270
@@ -69,32 +69,18 @@ open class MediaModel(
     }
 }
 
-class MediaPhotoBucket(
-    val id: String,
-    val name: String,
-    val list: List<MediaModel>
-)
+class MediaPhotoBucket(val id: String, val name: String, val list: List<MediaModel>)
 
-class MediaPhotoBucketVO(
-    val id: String,
-    val name: String,
-    val list: List<MediaPhotoVO>
-)
+class MediaPhotoBucketVO(val id: String, val name: String, val list: List<MediaPhotoVO>)
 
-class MediaPhotoVO(
-    val model: MediaModel,
-    val photoProvider: PhotoProvider
-)
+class MediaPhotoVO(val model: MediaModel, val photoProvider: PhotoProvider)
 
 interface MediaPhotoProviderFactory {
     fun factory(model: MediaModel): PhotoProvider
 }
 
 interface MediaDataProvider {
-    suspend fun provide(
-        context: Context,
-        supportedMimeTypes: Array<String>
-    ): List<MediaPhotoBucket>
+    suspend fun provide(context: Context, supportedMimeTypes: Array<String>): List<MediaPhotoBucket>
 
     fun permissions(): List<String>
 }
@@ -111,7 +97,7 @@ class EmoDefaultImagesProvider : MediaDataProvider {
             "image/gif",
             "image/webp",
             "image/heic",
-            "image/heif"
+            "image/heif",
         )
 
         private val COLUMNS = arrayOf(
@@ -124,23 +110,18 @@ class EmoDefaultImagesProvider : MediaDataProvider {
             MediaStore.Images.Media.DISPLAY_NAME,
             MediaStore.Images.Media.DATE_MODIFIED,
             MediaStore.Images.Media.BUCKET_ID,
-            MediaStore.Images.Media.BUCKET_DISPLAY_NAME
+            MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
         )
     }
 
-    override fun permissions(): List<String> {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            listOf(Manifest.permission.READ_MEDIA_IMAGES)
-        } else {
-            listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
+    override fun permissions(): List<String> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        listOf(Manifest.permission.READ_MEDIA_IMAGES)
+    } else {
+        listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
     }
 
-    override suspend fun provide(
-        context: Context,
-        supportedMimeTypes: Array<String>
-    ): List<MediaPhotoBucket> {
-        return withContext(Dispatchers.IO) {
+    override suspend fun provide(context: Context, supportedMimeTypes: Array<String>): List<MediaPhotoBucket> =
+        withContext(Dispatchers.IO) {
             val selection = if (supportedMimeTypes.isEmpty()) {
                 null
             } else {
@@ -164,7 +145,7 @@ class EmoDefaultImagesProvider : MediaDataProvider {
                 COLUMNS,
                 selection,
                 null,
-                "${MediaStore.Images.Media.DATE_MODIFIED} DESC"
+                "${MediaStore.Images.Media.DATE_MODIFIED} DESC",
             )?.use { cursor ->
                 if (cursor.moveToFirst()) {
                     do {
@@ -184,8 +165,8 @@ class EmoDefaultImagesProvider : MediaDataProvider {
                                     (cursor.readString(MediaStore.Images.Media.BUCKET_DISPLAY_NAME)).let {
                                         it.ifEmpty { File(path).parent ?: "" }
                                     },
-                                    true
-                                )
+                                    true,
+                                ),
                             )
                         } catch (e: Exception) {
                             EmoLog.e(TAG, "read image data from cursor failed.", e)
@@ -212,25 +193,19 @@ class EmoDefaultImagesProvider : MediaDataProvider {
                 MediaPhotoBucket(it.id, it.name, it.list)
             }
         }
-    }
 
-    private class MutableMediaPhotoBucket(
-        val id: String,
-        val name: String
-    ) {
+    private class MutableMediaPhotoBucket(val id: String, val name: String) {
         val list: MutableList<MediaModel> = mutableListOf()
     }
 }
 
-private fun <T> Cursor.getColumnIndexAndDoAction(columnName: String, block: (Int) -> T): T? {
-    return try {
-        getColumnIndexOrThrow(columnName).let {
-            if (it < 0) null else block(it)
-        }
-    } catch (e: Throwable) {
-        EmoLog.e("MediaDataProvider", "getColumnIndex for $columnName failed.", e)
-        null
+private fun <T> Cursor.getColumnIndexAndDoAction(columnName: String, block: (Int) -> T): T? = try {
+    getColumnIndexOrThrow(columnName).let {
+        if (it < 0) null else block(it)
     }
+} catch (e: Throwable) {
+    EmoLog.e("MediaDataProvider", "getColumnIndex for $columnName failed.", e)
+    null
 }
 
 fun Cursor.readLong(columnName: String): Long = getColumnIndexAndDoAction(columnName) {

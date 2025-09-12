@@ -35,12 +35,16 @@ fun SchemeDef.toComposeRouteDefine(): String {
     }
     val builder = StringBuilder("/").append(action)
     val group = args.groupBy { it.special }
-    val path = group.getOrDefault(true, emptyList()).sortedBy { it.name }.joinToString("/") { "${it.name}_${it.default}" }
+    val path = group.getOrDefault(true, emptyList()).sortedBy {
+        it.name
+    }.joinToString("/") { "${it.name}_${it.default}" }
     if (path.isNotBlank()) {
         builder.append("/")
         builder.append(path)
     }
-    val query = group.getOrDefault(false, emptyList()).sortedBy { it.name }.joinToString("&") { "${it.name}={${it.name}}" }
+    val query = group.getOrDefault(false, emptyList()).sortedBy {
+        it.name
+    }.joinToString("&") { "${it.name}={${it.name}}" }
     builder.append("?")
     if (query.isNotBlank()) {
         builder.append(query)
@@ -76,19 +80,19 @@ fun SchemeDef.toComposeNavArg(): List<NamedNavArgument> {
         navArgument(SchemeKeys.KEY_ORIGIN) {
             type = NavType.StringType
             defaultValue = ""
-        }
+        },
     )
     ret.add(
         navArgument(SchemeKeys.KEY_TRANSITION) {
             type = NavType.IntType
             defaultValue = transition
-        }
+        },
     )
     ret.add(
         navArgument(SchemeKeys.KEY_ACTION) {
             type = NavType.StringType
             defaultValue = action
-        }
+        },
     )
     return ret.also {
         schemeDefToNavArgCache[this] = it
@@ -103,7 +107,9 @@ fun Scheme.toComposeRouteValue(): String {
         builder.append("/")
         builder.append(path)
     }
-    val query = args.entries.filter { entity -> special.find { it.name == entity.key } == null }.joinToString("&") { "${it.key}=${it.value}" }
+    val query = args.entries.filter { entity ->
+        special.find { it.name == entity.key } == null
+    }.joinToString("&") { "${it.key}=${it.value}" }
     builder.append("?")
     if (query.isNotBlank()) {
         builder.append(query)

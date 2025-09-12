@@ -21,10 +21,8 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 
 class SchemeProcessorProvider : SymbolProcessorProvider {
-    override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
-        return SchemeProcessor(
-            environment.codeGenerator,
-            environment.logger
-        )
-    }
+    override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor = SchemeProcessor(
+        environment.codeGenerator,
+        environment.logger,
+    )
 }

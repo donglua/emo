@@ -23,18 +23,12 @@ import java.io.File
 import java.io.InputStream
 import java.security.MessageDigest
 
-fun File.md5(): ByteArray {
-    return inputStream().digest("MD5")
-}
+fun File.md5(): ByteArray = inputStream().digest("MD5")
 
-fun File.sha256(): ByteArray {
-    return inputStream().digest("SHA-256")
-}
+fun File.sha256(): ByteArray = inputStream().digest("SHA-256")
 
-fun ByteArray.toHexString(): String {
-    return joinToString("") {
-        it.toUByte().toString(radix = 16).padStart(2, '0')
-    }
+fun ByteArray.toHexString(): String = joinToString("") {
+    it.toUByte().toString(radix = 16).padStart(2, '0')
 }
 
 fun InputStream.digest(algorithm: String): ByteArray {

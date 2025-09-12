@@ -73,11 +73,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun PhotoPickerGridPage(
-    navController: NavHostController,
-    viewModel: PhotoPickerViewModel,
-    permissions: List<String>
-) {
+fun PhotoPickerGridPage(navController: NavHostController, viewModel: PhotoPickerViewModel, permissions: List<String>) {
     val systemUiController = rememberSystemUiController()
     SideEffect {
         if (!systemUiController.isSystemBarsVisible) {
@@ -95,7 +91,7 @@ fun PhotoPickerGridPage(
                 Box(modifier = Modifier.fillMaxSize()) {
                     Loading(
                         modifier = Modifier.align(Alignment.Center),
-                        lineColor = LocalPhotoPickerConfig.current.loadingColor
+                        lineColor = LocalPhotoPickerConfig.current.loadingColor,
                     )
                 }
             } else if (pickerData.error != null) {
@@ -127,7 +123,7 @@ fun PhotoPickerGridPage(
 fun PhotoPickerGridContent(
     navController: NavHostController,
     viewModel: PhotoPickerViewModel,
-    data: List<MediaPhotoBucketVO>
+    data: List<MediaPhotoBucketVO>,
 ) {
     var currentBucketId by rememberSaveable {
         mutableStateOf(data.first().id)
@@ -176,12 +172,12 @@ fun PhotoPickerGridContent(
             separatorHeight = 0.dp,
             backgroundColor = LocalPhotoPickerConfig.current.topBarBgColor,
             leftItems = topBarLeftItems,
-            rightItems = topBarRightItems
+            rightItems = topBarRightItems,
         )
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
+                .weight(1f),
         ) {
             val (content, toolbar) = createRefs()
             LazyVerticalGrid(
@@ -198,7 +194,7 @@ fun PhotoPickerGridContent(
                         bottom.linkTo(toolbar.top)
                     },
                 horizontalArrangement = Arrangement.spacedBy(config.gridGap),
-                verticalArrangement = Arrangement.spacedBy(config.gridGap)
+                verticalArrangement = Arrangement.spacedBy(config.gridGap),
             ) {
                 items(currentBucket.list, key = { it.model.id }) { item ->
                     PhotoPickerGridCell(
@@ -209,7 +205,7 @@ fun PhotoPickerGridContent(
                         },
                         onPreview = {
                             navController.navigate("${Route.PREVIEW}/${currentBucket.id}/${it.id}")
-                        }
+                        },
                     )
                 }
             }
@@ -226,7 +222,7 @@ fun PhotoPickerGridContent(
                 isOriginOpenFlow = viewModel.isOriginOpenFlow,
                 onToggleOrigin = {
                     viewModel.toggleOrigin(it)
-                }
+                },
             ) {
                 // TODO spotless issue
                 val mediaId = MediaPhotoBucketSelectedId
@@ -239,7 +235,7 @@ fun PhotoPickerGridContent(
                 onBucketClick = {
                     currentBucketId = it.id
                     isFocusBucketFlow.value = false
-                }
+                },
             ) {
                 isFocusBucketFlow.value = false
             }
@@ -252,14 +248,14 @@ private fun PhotoPickerGridCell(
     data: MediaPhotoVO,
     pickedItems: List<Long>,
     onPickItem: (toPick: Boolean, model: MediaPhotoVO) -> Unit,
-    onPreview: (model: MediaModel) -> Unit
+    onPreview: (model: MediaModel) -> Unit,
 ) {
     val pickedIndex = remember(pickedItems) {
         pickedItems.indexOfFirst {
             it == data.model.id
         }
     }
-    BoxWithConstraints() {
+    BoxWithConstraints {
         Box(
             modifier = Modifier
                 .size(maxWidth)
@@ -270,10 +266,10 @@ private fun PhotoPickerGridCell(
                         MutableInteractionSource()
                     },
                     indication = null,
-                    enabled = true
+                    enabled = true,
                 ) {
                     onPreview.invoke(data.model)
-                }
+                },
         ) {
             val thumbnail = remember(data) {
                 data.photoProvider.thumbnail(true)
@@ -282,7 +278,7 @@ private fun PhotoPickerGridCell(
                 contentScale = ContentScale.Crop,
                 isContainerDimenExactly = true,
                 onSuccess = null,
-                onError = null
+                onError = null,
             )
 
             PhotoPickerGridCellMask(pickedIndex)
@@ -292,13 +288,13 @@ private fun PhotoPickerGridCell(
                     .align(Alignment.TopEnd)
                     .throttleClick(
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = null
+                        indication = null,
                     ) {
                         onPickItem(pickedIndex < 0, data)
                     }
                     .padding(4.dp)
                     .size(24.dp),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 PhotoPickCheckBox(pickedIndex)
             }
@@ -312,7 +308,7 @@ fun PhotoPickerGridCellMask(pickedIndex: Int) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = maskAlpha.value))
+            .background(Color.Black.copy(alpha = maskAlpha.value)),
     )
 }
 
@@ -323,20 +319,20 @@ fun PhotoPickerGridToolBar(
     pickedItems: List<Long>,
     isOriginOpenFlow: StateFlow<Boolean>,
     onToggleOrigin: (toOpen: Boolean) -> Unit,
-    onPreview: () -> Unit
+    onPreview: () -> Unit,
 ) {
     val config = LocalPhotoPickerConfig.current
     Box(
         modifier = modifier
             .background(config.toolBarBgColor)
             .windowInsetsCommonNavPadding()
-            .height(44.dp)
+            .height(44.dp),
     ) {
         CommonTextButton(
             modifier = Modifier.align(Alignment.CenterStart),
             enable = pickedItems.isNotEmpty(),
             text = "预览",
-            onClick = onPreview
+            onClick = onPreview,
         )
 
         if (enableOrigin) {
@@ -346,7 +342,7 @@ fun PhotoPickerGridToolBar(
                     .padding(horizontal = 16.dp)
                     .align(Alignment.Center),
                 isOriginOpenFlow = isOriginOpenFlow,
-                onToggleOrigin = onToggleOrigin
+                onToggleOrigin = onToggleOrigin,
             )
         }
     }

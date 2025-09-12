@@ -22,6 +22,4 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun OnePx(): Dp {
-    return (1 / LocalDensity.current.density).dp
-}
+fun OnePx(): Dp = (1 / LocalDensity.current.density).dp

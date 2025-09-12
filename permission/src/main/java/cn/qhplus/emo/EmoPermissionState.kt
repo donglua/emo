@@ -34,7 +34,7 @@ private class EmoPermissionState(
     view: View,
     scope: CoroutineScope,
     tip: EmoPermissionTip,
-    val permissionState: PermissionState
+    val permissionState: PermissionState,
 ) : PermissionState {
 
     private val modal = EmoPermissionModal(view, scope, tip)
@@ -54,16 +54,14 @@ private class EmoPermissionState(
     }
 }
 
-private class PermissionCallbackActionHolder(
-    var action: ((Boolean) -> Unit)? = null
-)
+private class PermissionCallbackActionHolder(var action: ((Boolean) -> Unit)? = null)
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun rememberEmoPermissionState(
     permission: String,
     tipContent: String,
-    onPermissionResult: (Boolean) -> Unit = {}
+    onPermissionResult: (Boolean) -> Unit = {},
 ): PermissionState {
     val tip = remember(tipContent) {
         SimpleEmoPermissionTip(tipContent)
@@ -76,7 +74,7 @@ fun rememberEmoPermissionState(
 fun rememberEmoPermissionState(
     permission: String,
     tip: EmoPermissionTip,
-    onPermissionResult: (Boolean) -> Unit = {}
+    onPermissionResult: (Boolean) -> Unit = {},
 ): PermissionState {
     val callbackHolder = remember {
         PermissionCallbackActionHolder()

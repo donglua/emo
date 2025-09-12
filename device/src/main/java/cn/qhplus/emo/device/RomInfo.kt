@@ -57,7 +57,8 @@ private val romTypeCacheRunner by lazy {
     }
 }
 
-private fun isRom(brand: String, manufacturer: String, name: String): Boolean = brand.contains(name) || manufacturer.contains(name)
+private fun isRom(brand: String, manufacturer: String, name: String): Boolean =
+    brand.contains(name) || manufacturer.contains(name)
 
 fun getRomType() = romTypeCacheRunner.get(Unit) ?: RomType.NotCare
 fun isXiaomi() = getRomType() == RomType.Xiaomi

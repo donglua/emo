@@ -36,7 +36,7 @@ fun Modifier.throttleClick(
     enabled: Boolean = true,
     onClickLabel: String? = null,
     role: Role? = null,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) = composed(
     inspectorInfo = debugInspectorInfo {
         name = "throttleClick"
@@ -45,14 +45,14 @@ fun Modifier.throttleClick(
         properties["onClickLabel"] = onClickLabel
         properties["role"] = role
         properties["onClick"] = onClick
-    }
+    },
 ) {
     val throttleHandler = remember(timeout) { ThrottleHandler(timeout) }
     Modifier.clickable(
         enabled = enabled,
         onClickLabel = onClickLabel,
         role = role,
-        onClick = { throttleHandler.process(onClick) }
+        onClick = { throttleHandler.process(onClick) },
     )
 }
 
@@ -63,7 +63,7 @@ fun Modifier.throttleClick(
     enabled: Boolean = true,
     onClickLabel: String? = null,
     role: Role? = null,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) = composed(
     inspectorInfo = debugInspectorInfo {
         name = "throttleClick"
@@ -74,7 +74,7 @@ fun Modifier.throttleClick(
         properties["onClick"] = onClick
         properties["indication"] = indication
         properties["interactionSource"] = interactionSource
-    }
+    },
 ) {
     val throttleHandler = remember(timeout) { ThrottleHandler(timeout) }
     Modifier.clickable(
@@ -83,15 +83,11 @@ fun Modifier.throttleClick(
         enabled = enabled,
         onClickLabel = onClickLabel,
         role = role,
-        onClick = { throttleHandler.process(onClick) }
+        onClick = { throttleHandler.process(onClick) },
     )
 }
 
-fun Modifier.throttleNoIndicationClick(
-    timeout: Int = 250,
-    enabled: Boolean = true,
-    onClick: () -> Unit
-) = composed {
+fun Modifier.throttleNoIndicationClick(timeout: Int = 250, enabled: Boolean = true, onClick: () -> Unit) = composed {
     throttleClick(
         interactionSource = remember {
             MutableInteractionSource()
@@ -99,7 +95,7 @@ fun Modifier.throttleNoIndicationClick(
         indication = null,
         timeout = timeout,
         enabled = enabled,
-        onClick = onClick
+        onClick = onClick,
     )
 }
 
@@ -108,7 +104,7 @@ fun Modifier.debounceClick(
     enabled: Boolean = true,
     onClickLabel: String? = null,
     role: Role? = null,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) = composed(
     inspectorInfo = debugInspectorInfo {
         name = "debounceClick"
@@ -117,7 +113,7 @@ fun Modifier.debounceClick(
         properties["onClickLabel"] = onClickLabel
         properties["role"] = role
         properties["onClick"] = onClick
-    }
+    },
 ) {
     val coroutineScope = rememberCoroutineScope()
     val debounceHandler = remember(timeout) { DebounceHandler(coroutineScope, timeout) }
@@ -125,7 +121,7 @@ fun Modifier.debounceClick(
         enabled = enabled,
         onClickLabel = onClickLabel,
         role = role,
-        onClick = { debounceHandler.process(onClick) }
+        onClick = { debounceHandler.process(onClick) },
     )
 }
 
@@ -136,7 +132,7 @@ fun Modifier.debounceClick(
     enabled: Boolean = true,
     onClickLabel: String? = null,
     role: Role? = null,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) = composed(
     inspectorInfo = debugInspectorInfo {
         name = "debounceClick"
@@ -147,7 +143,7 @@ fun Modifier.debounceClick(
         properties["onClick"] = onClick
         properties["indication"] = indication
         properties["interactionSource"] = interactionSource
-    }
+    },
 ) {
     val coroutineScope = rememberCoroutineScope()
     val debounceHandler = remember(timeout) { DebounceHandler(coroutineScope, timeout) }
@@ -157,15 +153,11 @@ fun Modifier.debounceClick(
         enabled = enabled,
         onClickLabel = onClickLabel,
         role = role,
-        onClick = { debounceHandler.process(onClick) }
+        onClick = { debounceHandler.process(onClick) },
     )
 }
 
-fun Modifier.debounceNoIndicationClick(
-    timeout: Int = 250,
-    enabled: Boolean = true,
-    onClick: () -> Unit
-) = composed {
+fun Modifier.debounceNoIndicationClick(timeout: Int = 250, enabled: Boolean = true, onClick: () -> Unit) = composed {
     debounceClick(
         interactionSource = remember {
             MutableInteractionSource()
@@ -173,7 +165,7 @@ fun Modifier.debounceNoIndicationClick(
         indication = null,
         timeout = timeout,
         enabled = enabled,
-        onClick = onClick
+        onClick = onClick,
     )
 }
 
@@ -190,10 +182,7 @@ internal class ThrottleHandler(private val timeout: Int = 200) {
     }
 }
 
-internal class DebounceHandler(
-    private val coroutineScope: CoroutineScope,
-    private val timeout: Int = 200
-) {
+internal class DebounceHandler(private val coroutineScope: CoroutineScope, private val timeout: Int = 200) {
     private var job: Job? = null
 
     fun process(event: () -> Unit) {

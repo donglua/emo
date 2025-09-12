@@ -20,7 +20,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.lang.ref.WeakReference
 
-class ConfigMeta(val name: String, val humanName: String, val versionRelated: Boolean, val category: String, val tags: Array<String>)
+class ConfigMeta(
+    val name: String,
+    val humanName: String,
+    val versionRelated: Boolean,
+    val category: String,
+    val tags: Array<String>,
+)
 
 sealed class ConfigAction(protected val storage: ConfigStorage, val meta: ConfigMeta) {
     fun remove() {
@@ -117,7 +123,8 @@ class LongConfigAction(storage: ConfigStorage, meta: ConfigMeta, val default: Lo
     }
 }
 
-class FloatConfigAction(storage: ConfigStorage, meta: ConfigMeta, private val default: Float) : ConfigAction(storage, meta) {
+class FloatConfigAction(storage: ConfigStorage, meta: ConfigMeta, private val default: Float) :
+    ConfigAction(storage, meta) {
 
     @Volatile
     private var stateFlow: WeakReference<MutableStateFlow<Float>>? = null
@@ -143,7 +150,8 @@ class FloatConfigAction(storage: ConfigStorage, meta: ConfigMeta, private val de
     }
 }
 
-class DoubleConfigAction(storage: ConfigStorage, meta: ConfigMeta, private val default: Double) : ConfigAction(storage, meta) {
+class DoubleConfigAction(storage: ConfigStorage, meta: ConfigMeta, private val default: Double) :
+    ConfigAction(storage, meta) {
 
     @Volatile
     private var stateFlow: WeakReference<MutableStateFlow<Double>>? = null
@@ -169,7 +177,8 @@ class DoubleConfigAction(storage: ConfigStorage, meta: ConfigMeta, private val d
     }
 }
 
-class StringConfigAction(storage: ConfigStorage, meta: ConfigMeta, private val default: String) : ConfigAction(storage, meta) {
+class StringConfigAction(storage: ConfigStorage, meta: ConfigMeta, private val default: String) :
+    ConfigAction(storage, meta) {
 
     @Volatile
     private var stateFlow: WeakReference<MutableStateFlow<String>>? = null

@@ -87,7 +87,7 @@ val DefaultPopupVerEdgeProtectionMargin = 96.dp
 
 enum class PopupDirection {
     Bottom,
-    Top
+    Top,
 }
 
 private fun Modifier.combinedPosedClickable(
@@ -95,7 +95,7 @@ private fun Modifier.combinedPosedClickable(
     indication: Indication?,
     enabled: Boolean = true,
     onLongClick: ((Offset) -> Unit)? = null,
-    onClick: (Offset) -> Unit
+    onClick: (Offset) -> Unit,
 ) = composed(
     factory = {
         val onClickState = rememberUpdatedState(onClick)
@@ -129,7 +129,7 @@ private fun Modifier.combinedPosedClickable(
                             handlePressInteractionWithDelay(
                                 offset,
                                 interactionSource,
-                                pressedInteraction
+                                pressedInteraction,
                             )
                         }
                     },
@@ -137,7 +137,7 @@ private fun Modifier.combinedPosedClickable(
                         if (enabled) {
                             onClickState.value.invoke(it)
                         }
-                    }
+                    },
                 )
             }
             .indication(interactionSource, indication)
@@ -149,13 +149,13 @@ private fun Modifier.combinedPosedClickable(
         properties["onLongClick"] = onLongClick
         properties["indication"] = indication
         properties["interactionSource"] = interactionSource
-    }
+    },
 )
 
 suspend fun PressGestureScope.handlePressInteractionWithDelay(
     pressPoint: Offset,
     interactionSource: MutableInteractionSource,
-    pressedInteraction: MutableState<PressInteraction.Press?>
+    pressedInteraction: MutableState<PressInteraction.Press?>,
 ) {
     coroutineScope {
         val delayJob = launch {
@@ -199,7 +199,7 @@ fun ClickPositionCheckerBox(
     indication: Indication? = ripple(),
     onClick: ((Offset) -> Unit),
     onLongClick: ((Offset) -> Unit)? = null,
-    content: @Composable BoxScope.() -> Unit
+    content: @Composable BoxScope.() -> Unit,
 ) {
     var offset by remember {
         mutableStateOf<Offset?>(null)
@@ -218,13 +218,15 @@ fun ClickPositionCheckerBox(
                             ?.plus(it)
                             ?.run(onLongClick)
                     }
-                } else null,
+                } else {
+                    null
+                },
                 onClick = {
                     offset
                         ?.plus(it)
                         ?.run(onClick)
-                }
-            )
+                },
+            ),
     ) {
         content()
     }
@@ -265,117 +267,113 @@ fun View.emoPopup(
     enter: EnterTransition = fadeIn(),
     exit: ExitTransition = fadeOut(),
     themeProvider: @Composable (@Composable () -> Unit) -> Unit = { inner -> inner() },
-    content: @Composable (EmoModal) -> Unit
-): EmoModal {
-    return emoModal(
-        mask = Color.Transparent,
-        modalHostProvider = modalHostProvider,
-        enter = EnterTransition.None,
-        exit = ExitTransition.None,
-        themeProvider = themeProvider
-    ) { modal ->
-        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            val direction = directionCal(constraints.maxHeight, offset)
-            val widthSpace = maxWidth - horEdge * 2
-            val width = widthCal(widthSpace).coerceAtMost(widthSpace)
-            val widthPx = with(LocalDensity.current) {
-                width.toPx()
-            }
-            val horEdgePx = with(LocalDensity.current) {
-                horEdge.toPx()
-            }
-            val offsetX = (offset.x - widthPx / 2).coerceAtLeast(horEdgePx).coerceAtMost(constraints.maxWidth - horEdgePx - widthPx)
-            val arrowWidthPx = with(LocalDensity.current) {
-                arrowWidth.toPx()
-            }
-            val arrowHeightPx = with(LocalDensity.current) {
-                arrowHeight.toPx()
-            }
-            val radiusPx = with(LocalDensity.current) {
-                radius.toPx()
-            }
-            val arrowCenterX = (
-                (offset.x - offsetX)
-                    .coerceAtLeast(radiusPx + arrowWidthPx)
-                    .coerceAtMost(widthPx - radiusPx - arrowWidthPx)
-                )
-            val backgroundColor = background()
-            when (direction) {
-                PopupDirection.Top -> {
-                    val offsetY = offset.y - constraints.maxHeight
-                    val offsetYDp = with(LocalDensity.current) {
-                        offsetY.toDp()
-                    }
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
-                            .width(width)
-                            .heightIn(max = maxHeight + offsetYDp - verEdge)
-                            .animateEnterExit(
-                                enter = enter,
-                                exit = exit
-                            )
-                            .drawBehind {
-                                val path = Path().apply {
-                                    moveTo(arrowCenterX, size.height)
-                                    lineTo(arrowCenterX - arrowWidthPx / 2, size.height - arrowHeightPx)
-                                    lineTo(arrowCenterX + arrowWidthPx / 2, size.height - arrowHeightPx)
-                                    close()
-                                }
-                                drawPath(path, backgroundColor)
-                            }
-                            .padding(bottom = arrowHeight)
-                            .clip(RoundedCornerShape(radius))
-                            .background(backgroundColor)
-                    ) {
-                        content(modal)
-                    }
+    content: @Composable (EmoModal) -> Unit,
+): EmoModal = emoModal(
+    mask = Color.Transparent,
+    modalHostProvider = modalHostProvider,
+    enter = EnterTransition.None,
+    exit = ExitTransition.None,
+    themeProvider = themeProvider,
+) { modal ->
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val direction = directionCal(constraints.maxHeight, offset)
+        val widthSpace = maxWidth - horEdge * 2
+        val width = widthCal(widthSpace).coerceAtMost(widthSpace)
+        val widthPx = with(LocalDensity.current) {
+            width.toPx()
+        }
+        val horEdgePx = with(LocalDensity.current) {
+            horEdge.toPx()
+        }
+        val offsetX = (offset.x - widthPx / 2).coerceAtLeast(horEdgePx).coerceAtMost(
+            constraints.maxWidth - horEdgePx - widthPx,
+        )
+        val arrowWidthPx = with(LocalDensity.current) {
+            arrowWidth.toPx()
+        }
+        val arrowHeightPx = with(LocalDensity.current) {
+            arrowHeight.toPx()
+        }
+        val radiusPx = with(LocalDensity.current) {
+            radius.toPx()
+        }
+        val arrowCenterX = (
+            (offset.x - offsetX)
+                .coerceAtLeast(radiusPx + arrowWidthPx)
+                .coerceAtMost(widthPx - radiusPx - arrowWidthPx)
+            )
+        val backgroundColor = background()
+        when (direction) {
+            PopupDirection.Top -> {
+                val offsetY = offset.y - constraints.maxHeight
+                val offsetYDp = with(LocalDensity.current) {
+                    offsetY.toDp()
                 }
-                PopupDirection.Bottom -> {
-                    val offsetY = offset.y
-                    val offsetYDp = with(LocalDensity.current) {
-                        offsetY.toDp()
-                    }
-                    Box(
-                        modifier = Modifier
-                            .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
-                            .width(width)
-                            .heightIn(max = maxHeight - offsetYDp - verEdge)
-                            .animateEnterExit(
-                                enter = enter,
-                                exit = exit
-                            )
-                            .animateEnterExit(
-                                enter = enter,
-                                exit = exit
-                            )
-                            .drawBehind {
-                                val path = Path().apply {
-                                    moveTo(arrowCenterX, 0f)
-                                    lineTo(arrowCenterX - arrowWidthPx / 2, arrowHeightPx)
-                                    lineTo(arrowCenterX + arrowWidthPx / 2, arrowHeightPx)
-                                    close()
-                                }
-                                drawPath(path, backgroundColor)
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
+                        .width(width)
+                        .heightIn(max = maxHeight + offsetYDp - verEdge)
+                        .animateEnterExit(
+                            enter = enter,
+                            exit = exit,
+                        )
+                        .drawBehind {
+                            val path = Path().apply {
+                                moveTo(arrowCenterX, size.height)
+                                lineTo(arrowCenterX - arrowWidthPx / 2, size.height - arrowHeightPx)
+                                lineTo(arrowCenterX + arrowWidthPx / 2, size.height - arrowHeightPx)
+                                close()
                             }
-                            .padding(top = arrowHeight)
-                            .clip(RoundedCornerShape(radius))
-                            .background(backgroundColor)
-                    ) {
-                        content(modal)
-                    }
+                            drawPath(path, backgroundColor)
+                        }
+                        .padding(bottom = arrowHeight)
+                        .clip(RoundedCornerShape(radius))
+                        .background(backgroundColor),
+                ) {
+                    content(modal)
+                }
+            }
+            PopupDirection.Bottom -> {
+                val offsetY = offset.y
+                val offsetYDp = with(LocalDensity.current) {
+                    offsetY.toDp()
+                }
+                Box(
+                    modifier = Modifier
+                        .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
+                        .width(width)
+                        .heightIn(max = maxHeight - offsetYDp - verEdge)
+                        .animateEnterExit(
+                            enter = enter,
+                            exit = exit,
+                        )
+                        .animateEnterExit(
+                            enter = enter,
+                            exit = exit,
+                        )
+                        .drawBehind {
+                            val path = Path().apply {
+                                moveTo(arrowCenterX, 0f)
+                                lineTo(arrowCenterX - arrowWidthPx / 2, arrowHeightPx)
+                                lineTo(arrowCenterX + arrowWidthPx / 2, arrowHeightPx)
+                                close()
+                            }
+                            drawPath(path, backgroundColor)
+                        }
+                        .padding(top = arrowHeight)
+                        .clip(RoundedCornerShape(radius))
+                        .background(backgroundColor),
+                ) {
+                    content(modal)
                 }
             }
         }
     }
 }
 
-data class QuickAction(
-    val icon: Int,
-    val text: String,
-    val onClick: (EmoModal) -> Unit
-)
+data class QuickAction(val icon: Int, val text: String, val onClick: (EmoModal) -> Unit)
 
 fun View.emoQuickAction(
     offset: Offset,
@@ -384,7 +382,7 @@ fun View.emoQuickAction(
     actionRender: @Composable (EmoModal, QuickAction) -> Unit = { modal, action ->
         QuickActionItem(
             modal = modal,
-            action = action
+            action = action,
         )
     },
     directionCal: (height: Int, Offset) -> PopupDirection = DEFAULT_QUICK_ACTION_DIRECTION_CAL,
@@ -397,78 +395,73 @@ fun View.emoQuickAction(
     background: @Composable () -> Color = { Color.Black },
     enter: EnterTransition = fadeIn(),
     exit: ExitTransition = fadeOut(),
-    themeProvider: @Composable (@Composable () -> Unit) -> Unit = { inner -> inner() }
-): EmoModal {
-    return emoPopup(
-        offset,
-        widthCal = { maxWidth ->
-            val expectedWidth = actionWidth * actions.size
-            if (maxWidth >= expectedWidth) {
-                expectedWidth
-            } else {
-                val allowCount = (maxWidth.value / actionWidth.value).toInt()
-                actionWidth * allowCount
-            }
-        },
-        directionCal,
-        modalHostProvider,
-        horEdge,
-        verEdge,
-        arrowWidth,
-        arrowHeight,
-        radius,
-        background,
-        enter,
-        exit,
-        themeProvider
-    ) { modal ->
-        ConstraintLayout {
-            val refs = actions.map {
-                val ref = createRef()
-                Box(
-                    modifier = Modifier
-                        .constrainAs(ref) {}
-                        .width(actionWidth)
-                ) {
-                    actionRender(modal, it)
-                }
-                ref
-            }.toTypedArray()
-            createFlow(
-                *refs,
-                wrapMode = Wrap.Chain
-            )
+    themeProvider: @Composable (@Composable () -> Unit) -> Unit = { inner -> inner() },
+): EmoModal = emoPopup(
+    offset,
+    widthCal = { maxWidth ->
+        val expectedWidth = actionWidth * actions.size
+        if (maxWidth >= expectedWidth) {
+            expectedWidth
+        } else {
+            val allowCount = (maxWidth.value / actionWidth.value).toInt()
+            actionWidth * allowCount
         }
+    },
+    directionCal,
+    modalHostProvider,
+    horEdge,
+    verEdge,
+    arrowWidth,
+    arrowHeight,
+    radius,
+    background,
+    enter,
+    exit,
+    themeProvider,
+) { modal ->
+    ConstraintLayout {
+        val refs = actions.map {
+            val ref = createRef()
+            Box(
+                modifier = Modifier
+                    .constrainAs(ref) {}
+                    .width(actionWidth),
+            ) {
+                actionRender(modal, it)
+            }
+            ref
+        }.toTypedArray()
+        createFlow(
+            *refs,
+            wrapMode = Wrap.Chain,
+        )
     }
 }
 
 @Composable
-fun QuickActionItem(
-    modal: EmoModal,
-    action: QuickAction
-) {
+fun QuickActionItem(modal: EmoModal, action: QuickAction) {
     PressWithAlphaBox(
         modifier = Modifier.fillMaxWidth(),
         onClick = {
             action.onClick(modal)
-        }
+        },
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 4.dp, bottom = 6.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Image(
                 painter = painterResource(id = action.icon),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(Color.White)
+                colorFilter = ColorFilter.tint(Color.White),
             )
             Text(
                 text = action.text,
                 fontSize = 10.sp,
                 letterSpacing = 0.05.sp,
-                color = Color.White
+                color = Color.White,
             )
         }
     }

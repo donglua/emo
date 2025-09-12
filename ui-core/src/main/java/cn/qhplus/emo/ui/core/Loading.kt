@@ -38,7 +38,7 @@ fun Loading(
     size: Dp = 32.dp,
     duration: Int = 600,
     lineCount: Int = 12,
-    lineColor: Color = Color.LightGray
+    lineColor: Color = Color.LightGray,
 ) {
     val transition = rememberInfiniteTransition()
     val degree = 360f / lineCount
@@ -46,7 +46,7 @@ fun Loading(
         initialValue = 0,
         targetValue = lineCount - 1,
         typeConverter = Int.VectorConverter,
-        animationSpec = infiniteRepeatable(tween(duration, 0, LinearEasing))
+        animationSpec = infiniteRepeatable(tween(duration, 0, LinearEasing)),
     )
     Canvas(modifier = modifier.size(size)) {
         rotate(rotate.value * degree, center) {
@@ -56,7 +56,7 @@ fun Loading(
                         lineColor.copy((i + 1) / lineCount.toFloat()),
                         center + Offset(this.size.width / 4f, 0f),
                         center + Offset(this.size.width / 2f, 0f),
-                        this.size.width / 16f
+                        this.size.width / 16f,
                     )
                 }
             }

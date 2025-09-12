@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicReference
 enum class SchemeHandleStrategy {
     WaitPrevAndRun,
     CancelPrevAndRun,
-    ContinuePrevOrRun
+    ContinuePrevOrRun,
 }
 
 class SchemeClient(
@@ -38,7 +38,7 @@ class SchemeClient(
     val storage: SchemeDefStorage,
     private val debug: Boolean = false,
     private val handler: SchemeHandler,
-    private val transactionFactory: SchemeTransactionFactory
+    private val transactionFactory: SchemeTransactionFactory,
 ) {
     private val scope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
     private var lastHandledSchemes: List<String>? = null
@@ -49,29 +49,19 @@ class SchemeClient(
         transactionFactory.pop()
     }
 
-    fun handleQuietly(
-        scheme: String,
-        strategy: SchemeHandleStrategy = SchemeHandleStrategy.WaitPrevAndRun
-    ) {
+    fun handleQuietly(scheme: String, strategy: SchemeHandleStrategy = SchemeHandleStrategy.WaitPrevAndRun) {
         scope.launch {
             handle(scheme, strategy)
         }
     }
 
-    suspend fun handle(
-        scheme: String,
-        strategy: SchemeHandleStrategy = SchemeHandleStrategy.WaitPrevAndRun
-    ): Boolean {
-        return handle(strategy, listOf(scheme)) {
+    suspend fun handle(scheme: String, strategy: SchemeHandleStrategy = SchemeHandleStrategy.WaitPrevAndRun): Boolean =
+        handle(strategy, listOf(scheme)) {
             val env = transactionFactory.factory(storage, false)
             doHandle(env, scheme)
         }
-    }
 
-    fun batchHandleQuietly(
-        scheme: List<String>,
-        strategy: SchemeHandleStrategy = SchemeHandleStrategy.WaitPrevAndRun
-    ) {
+    fun batchHandleQuietly(scheme: List<String>, strategy: SchemeHandleStrategy = SchemeHandleStrategy.WaitPrevAndRun) {
         scope.launch {
             batchHandle(scheme, strategy)
         }
@@ -79,7 +69,7 @@ class SchemeClient(
 
     suspend fun batchHandle(
         schemes: List<String>,
-        strategy: SchemeHandleStrategy = SchemeHandleStrategy.WaitPrevAndRun
+        strategy: SchemeHandleStrategy = SchemeHandleStrategy.WaitPrevAndRun,
     ): Boolean {
         if (schemes.isEmpty()) {
             if (debug) {
@@ -104,7 +94,7 @@ class SchemeClient(
     private suspend fun handle(
         strategy: SchemeHandleStrategy,
         schemes: List<String>,
-        handle: suspend () -> Boolean
+        handle: suspend () -> Boolean,
     ): Boolean = withContext(Dispatchers.Main.immediate) {
         val current = System.currentTimeMillis()
         if (lastHandledSchemes == schemes && current - lastHandledTime < blockSameSchemeTimeout) {
@@ -168,11 +158,8 @@ object CoreSchemeHandler : SchemeHandler {
     }
 }
 
-class InterceptorSchemeHandler(
-    private val delegate: SchemeHandler,
-    private val interceptor: SchemeInterceptor
-) : SchemeHandler {
-    override suspend fun run(env: SchemeTransaction, schemeParts: SchemeParts): Boolean {
-        return interceptor.intercept(env, schemeParts, delegate)
-    }
+class InterceptorSchemeHandler(private val delegate: SchemeHandler, private val interceptor: SchemeInterceptor) :
+    SchemeHandler {
+    override suspend fun run(env: SchemeTransaction, schemeParts: SchemeParts): Boolean =
+        interceptor.intercept(env, schemeParts, delegate)
 }

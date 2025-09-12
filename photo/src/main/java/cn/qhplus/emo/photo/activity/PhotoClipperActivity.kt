@@ -68,11 +68,7 @@ private const val PHOTO_CLIPPER_RESULT_URI = "emo_photo_clipper_result_uri"
 private const val PHOTO_CLIPPER_RESULT_WIDTH = "emo_photo_clipper_result_width"
 private const val PHOTO_CLIPPER_RESULT_HEIGHT = "emo_photo_clipper_result_height"
 
-class PhotoClipperResult(
-    val width: Int,
-    val height: Int,
-    val uri: Uri
-)
+class PhotoClipperResult(val width: Int, val height: Int, val uri: Uri)
 
 fun Intent.getPhotoClipperResult(): PhotoClipperResult? {
     @Suppress("DEPRECATION")
@@ -92,7 +88,7 @@ open class PhotoClipperActivity : ComponentActivity() {
         fun intentOf(
             context: Context,
             photoProvider: PhotoProvider,
-            cls: Class<out PhotoClipperActivity> = PhotoClipperActivity::class.java
+            cls: Class<out PhotoClipperActivity> = PhotoClipperActivity::class.java,
         ): Intent {
             val intent = Intent(context, cls)
             intent.putExtra(PHOTO_CLIPPER_DELIVERY_KEY, PhotoClipperDelivery.put(photoProvider))
@@ -133,35 +129,33 @@ open class PhotoClipperActivity : ComponentActivity() {
         overridePendingTransition(0, R.anim.scale_exit)
     }
 
-    private fun buildPhotoProvider(): PhotoProvider {
-        return try {
-            val meta = intent.getBundleExtra(PHOTO_CLIPPER_META_KEY)
-            val clsName = intent.getStringExtra(PHOTO_CLIPPER_RECOVER_KEY)
-            if (meta == null || clsName.isNullOrBlank()) {
-                lossPhotoProvider
-            } else {
-                val cls = Class.forName(clsName)
-                val recover = cls.newInstance() as PhotoShotRecover
-                recover.recover(meta)?.photoProvider ?: lossPhotoProvider
-            }
-        } catch (e: Throwable) {
+    private fun buildPhotoProvider(): PhotoProvider = try {
+        val meta = intent.getBundleExtra(PHOTO_CLIPPER_META_KEY)
+        val clsName = intent.getStringExtra(PHOTO_CLIPPER_RECOVER_KEY)
+        if (meta == null || clsName.isNullOrBlank()) {
             lossPhotoProvider
+        } else {
+            val cls = Class.forName(clsName)
+            val recover = cls.newInstance() as PhotoShotRecover
+            recover.recover(meta)?.photoProvider ?: lossPhotoProvider
         }
+    } catch (e: Throwable) {
+        lossPhotoProvider
     }
 
     @Composable
     protected open fun PageContent(photoProvider: PhotoProvider) {
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         ) {
             PhotoClipper(
-                photoProvider = photoProvider
+                photoProvider = photoProvider,
             ) { doClip ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.BottomCenter)
-                        .windowInsetsCommonNavPadding()
+                        .windowInsetsCommonNavPadding(),
                 ) {
                     Box(
                         modifier = Modifier
@@ -170,13 +164,13 @@ open class PhotoClipperActivity : ComponentActivity() {
                                 finish()
                             }
                             .padding(vertical = 16.dp),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         Text(
                             "取消",
                             fontSize = 20.sp,
                             color = Color.White,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                     }
                     Box(
@@ -200,13 +194,13 @@ open class PhotoClipperActivity : ComponentActivity() {
                                 }
                             }
                             .padding(vertical = 16.dp),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         Text(
                             "确定",
                             fontSize = 20.sp,
                             color = Color.White,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                     }
                 }
@@ -226,12 +220,12 @@ open class PhotoClipperActivity : ComponentActivity() {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.6f))
+                    .background(Color.Black.copy(alpha = 0.6f)),
             ) {
                 Loading(
                     modifier = Modifier.align(Alignment.Center),
                     size = 64.dp,
-                    lineColor = Color.White
+                    lineColor = Color.White,
                 )
             }
         }
@@ -248,7 +242,7 @@ open class PhotoClipperActivity : ComponentActivity() {
                 putExtra(PHOTO_CLIPPER_RESULT_WIDTH, bm.width)
                 putExtra(PHOTO_CLIPPER_RESULT_HEIGHT, bm.height)
                 putExtra(PHOTO_CLIPPER_RESULT_URI, uri)
-            }
+            },
         )
         finish()
     }

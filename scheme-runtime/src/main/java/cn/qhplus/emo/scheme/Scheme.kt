@@ -25,7 +25,7 @@ data class Scheme(
     val protocol: String,
     val action: String,
     val args: Map<String, Any>,
-    val origin: String
+    val origin: String,
 ) {
 
     fun getIntentFlag(): Int {
@@ -45,13 +45,9 @@ data class Scheme(
         return 0
     }
 
-    fun forceNewHost(): Boolean {
-        return checkBoolValue(SCHEME_ARG_FORCE_NEW_HOST)
-    }
+    fun forceNewHost(): Boolean = checkBoolValue(SCHEME_ARG_FORCE_NEW_HOST)
 
-    fun isBad(): Boolean {
-        return checkBoolValue(SCHEME_ARG_BAD)
-    }
+    fun isBad(): Boolean = checkBoolValue(SCHEME_ARG_BAD)
 
     private fun checkBoolValue(name: String): Boolean {
         val v = args[name] ?: return false
@@ -64,12 +60,7 @@ data class Scheme(
     }
 }
 
-data class SchemeParts(
-    val protocol: String,
-    val action: String,
-    val queries: Map<String, String>,
-    val origin: String
-) {
+data class SchemeParts(val protocol: String, val action: String, val queries: Map<String, String>, val origin: String) {
     fun parse(def: SchemeDef): Scheme {
         val ret = mutableMapOf<String, Any>()
         def.args.forEach {

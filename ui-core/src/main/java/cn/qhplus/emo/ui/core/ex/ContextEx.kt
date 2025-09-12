@@ -32,13 +32,11 @@ fun Context.findActivity(): Activity? {
     return null
 }
 
-fun Context.getWindowSize(): Size {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val windowMetrics = wm.currentWindowMetrics
-        Size(windowMetrics.bounds.width(), windowMetrics.bounds.height())
-    } else {
-        val displayMetrics = resources.displayMetrics
-        Size(displayMetrics.widthPixels, displayMetrics.heightPixels)
-    }
+fun Context.getWindowSize(): Size = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+    val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    val windowMetrics = wm.currentWindowMetrics
+    Size(windowMetrics.bounds.width(), windowMetrics.bounds.height())
+} else {
+    val displayMetrics = resources.displayMetrics
+    Size(displayMetrics.widthPixels, displayMetrics.heightPixels)
 }

@@ -50,7 +50,7 @@ private class ClipperPhotoInfo(
     var scale: Float = 1f,
     var rect: Rect? = null,
     var drawable: Drawable? = null,
-    var clipArea: Rect
+    var clipArea: Rect,
 )
 
 val DefaultClipFocusAreaSquareCenter = Rect.Zero
@@ -67,7 +67,7 @@ fun PhotoClipper(
             Color.Black,
             radius = area.size.minDimension / 2,
             center = area.center,
-            blendMode = BlendMode.DstOut
+            blendMode = BlendMode.DstOut,
         )
     },
     bitmapClipper: (origin: Bitmap, clipArea: Rect, scale: Float) -> Bitmap? = { origin, clipArea, scale ->
@@ -80,10 +80,10 @@ fun PhotoClipper(
             clipArea.width.toInt(),
             clipArea.height.toInt(),
             matrix,
-            false
+            false,
         )
     },
-    operateContent: @Composable BoxWithConstraintsScope.(doClip: () -> Bitmap?) -> Unit
+    operateContent: @Composable BoxWithConstraintsScope.(doClip: () -> Bitmap?) -> Unit,
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val focusArea = if (clipFocusArea == DefaultClipFocusAreaSquareCenter) {
@@ -107,7 +107,7 @@ fun PhotoClipper(
                 val rect = photoInfo.rect ?: return@lambda null
                 if (rect.width < photoInfo.clipArea.width || rect.height < photoInfo.clipArea.height) {
                     throw SmallImageSizeException(
-                        "expected minimum (${photoInfo.clipArea.width} x ${photoInfo.clipArea.height}); actual (${rect.width} x ${rect.height})"
+                        "expected minimum (${photoInfo.clipArea.width} x ${photoInfo.clipArea.height}); actual (${rect.width} x ${rect.height})",
                     )
                 }
                 val scale = rect.width / origin.width
@@ -116,7 +116,7 @@ fun PhotoClipper(
                     clipRect.left / scale,
                     clipRect.top / scale,
                     clipRect.right / scale,
-                    clipRect.bottom / scale
+                    clipRect.bottom / scale,
                 )
                 bitmapClipper(origin, imageArea, scale)
             }
@@ -131,7 +131,7 @@ fun PhotoClipper(
             shouldTransitionExit = false,
             panEdgeProtection = focusArea,
             onBeginPullExit = { false },
-            onTapExit = {}
+            onTapExit = {},
         ) { _, scale, rect, onImageRatioEnsured ->
             photoInfo.scale = scale
             photoInfo.rect = rect
@@ -153,10 +153,7 @@ fun PhotoClipper(
 }
 
 @Composable
-fun BoxScope.PhotoClipperContent(
-    photoProvider: PhotoProvider,
-    onSuccess: (Drawable) -> Unit
-) {
+fun BoxScope.PhotoClipperContent(photoProvider: PhotoProvider, onSuccess: (Drawable) -> Unit) {
     var loadStatus by remember {
         mutableStateOf(PhotoLoadStatus.Loading)
     }
@@ -172,13 +169,13 @@ fun BoxScope.PhotoClipperContent(
         },
         onError = {
             loadStatus = PhotoLoadStatus.Failed
-        }
+        },
     )
 
     if (loadStatus == PhotoLoadStatus.Loading) {
         Loading(
             modifier = Modifier.align(Alignment.Center),
-            size = 48.dp
+            size = 48.dp,
         )
     }
 }

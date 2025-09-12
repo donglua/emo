@@ -20,11 +20,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 interface ListReportTransporter<T> {
-    suspend fun transport(
-        client: ReportClient<T>,
-        batch: List<T>,
-        usedStrategy: ReportStrategy
-    ): Boolean
+    suspend fun transport(client: ReportClient<T>, batch: List<T>, usedStrategy: ReportStrategy): Boolean
 }
 
 class WriteBackIfFailedListReportTransporter<T>(val delegate: ListReportTransporter<T>) : ListReportTransporter<T> {
@@ -39,9 +35,8 @@ class WriteBackIfFailedListReportTransporter<T>(val delegate: ListReportTranspor
     }
 }
 
-fun <T> writeBackIfFailed(delegate: ListReportTransporter<T>): ListReportTransporter<T> {
-    return WriteBackIfFailedListReportTransporter(delegate)
-}
+fun <T> writeBackIfFailed(delegate: ListReportTransporter<T>): ListReportTransporter<T> =
+    WriteBackIfFailedListReportTransporter(delegate)
 
 interface StreamReportTransporter<T> {
 
@@ -49,7 +44,7 @@ interface StreamReportTransporter<T> {
         client: ReportClient<T>,
         buffer: ByteArray,
         converter: ReportMsgConverter<T>,
-        usedStrategy: ReportStrategy
+        usedStrategy: ReportStrategy,
     )
 
     suspend fun flush(client: ReportClient<T>, usedStrategy: ReportStrategy)
@@ -57,7 +52,7 @@ interface StreamReportTransporter<T> {
 
 internal class ListToStreamTransporterAdapter<T>(
     private val delegate: ListReportTransporter<T>,
-    private val batchCount: Int = 50
+    private val batchCount: Int = 50,
 ) : StreamReportTransporter<T> {
 
     private var list = mutableListOf<T>()
@@ -67,7 +62,7 @@ internal class ListToStreamTransporterAdapter<T>(
         client: ReportClient<T>,
         buffer: ByteArray,
         converter: ReportMsgConverter<T>,
-        usedStrategy: ReportStrategy
+        usedStrategy: ReportStrategy,
     ) {
         val batchTransport = mutex.withLock {
             list.add(converter.decode(buffer))
@@ -97,14 +92,10 @@ internal class ListToStreamTransporterAdapter<T>(
 
 internal class StreamToListTransporterAdapter<T>(
     private val delegate: StreamReportTransporter<T>,
-    private val converter: ReportMsgConverter<T>
+    private val converter: ReportMsgConverter<T>,
 ) : ListReportTransporter<T> {
 
-    override suspend fun transport(
-        client: ReportClient<T>,
-        batch: List<T>,
-        usedStrategy: ReportStrategy
-    ): Boolean {
+    override suspend fun transport(client: ReportClient<T>, batch: List<T>, usedStrategy: ReportStrategy): Boolean {
         batch.forEach {
             val buffer = converter.encode(it)
             delegate.transport(client, buffer, converter, usedStrategy)
@@ -114,12 +105,8 @@ internal class StreamToListTransporterAdapter<T>(
     }
 }
 
-fun <T> ListReportTransporter<T>.wrapToStreamTransporter(batchCount: Int): StreamReportTransporter<T> {
-    return ListToStreamTransporterAdapter(this, batchCount)
-}
+fun <T> ListReportTransporter<T>.wrapToStreamTransporter(batchCount: Int): StreamReportTransporter<T> =
+    ListToStreamTransporterAdapter(this, batchCount)
 
-fun <T> StreamReportTransporter<T>.wrapToListTransporter(
-    converter: ReportMsgConverter<T>
-): ListReportTransporter<T> {
-    return StreamToListTransporterAdapter(this, converter)
-}
+fun <T> StreamReportTransporter<T>.wrapToListTransporter(converter: ReportMsgConverter<T>): ListReportTransporter<T> =
+    StreamToListTransporterAdapter(this, converter)

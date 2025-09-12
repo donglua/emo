@@ -53,7 +53,7 @@ const val MAX_BITMAP_SIZE = 1024 * 1024 * 20
 suspend fun View.createMagicBitmap(
     width: Int,
     height: Int,
-    content: @Composable (fullDrawnReporter: () -> Unit) -> Unit
+    content: @Composable (fullDrawnReporter: () -> Unit) -> Unit,
 ): Bitmap? {
     if (width <= 0) {
         return null
@@ -66,7 +66,11 @@ suspend fun View.createMagicBitmap(
                     content {
                         OneShotPreDrawListener.add(this) {
                             post {
-                                val bitmap = Bitmap.createBitmap(composeView.width, composeView.height, Bitmap.Config.ARGB_8888)
+                                val bitmap = Bitmap.createBitmap(
+                                    composeView.width,
+                                    composeView.height,
+                                    Bitmap.Config.ARGB_8888,
+                                )
                                 val canvas = Canvas(bitmap)
                                 draw(canvas)
                                 contentLayout.removeView(this)
@@ -79,20 +83,16 @@ suspend fun View.createMagicBitmap(
             },
             FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
+                FrameLayout.LayoutParams.MATCH_PARENT,
             ).apply {
                 leftMargin = 100000
-            }
+            },
         )
     }
 }
 
 @SuppressLint("ViewConstructor")
-private class MagicBitmapContainer(
-    context: Context,
-    val w: Int,
-    val h: Int
-) : FrameLayout(context) {
+private class MagicBitmapContainer(context: Context, val w: Int, val h: Int) : FrameLayout(context) {
 
     val composeView = ComposeView(context)
 
@@ -101,8 +101,8 @@ private class MagicBitmapContainer(
             composeView,
             LayoutParams(
                 LayoutParams.MATCH_PARENT,
-                if (h > 0) LayoutParams.MATCH_PARENT else LayoutParams.WRAP_CONTENT
-            )
+                if (h > 0) LayoutParams.MATCH_PARENT else LayoutParams.WRAP_CONTENT,
+            ),
         )
     }
 
@@ -118,7 +118,7 @@ private class MagicBitmapContainer(
                 MeasureSpec.makeMeasureSpec(h, MeasureSpec.EXACTLY)
             } else {
                 MeasureSpec.makeMeasureSpec(MAX_BITMAP_SIZE / ws, MeasureSpec.AT_MOST)
-            }
+            },
         )
     }
 }
@@ -130,7 +130,7 @@ suspend fun View.saveEditBitmapToStore(
     shortSideMin: Int = 0,
     dirName: String = Environment.DIRECTORY_PICTURES,
     compressFormat: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
-    compressQuality: Int = 100
+    compressQuality: Int = 100,
 ): Uri? {
     if (drawable.intrinsicWidth <= 0 || drawable.intrinsicHeight <= 0) {
         return null
@@ -146,7 +146,9 @@ suspend fun View.saveEditBitmapToStore(
     val source = drawable.toBitmap().let {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && it.config == Bitmap.Config.HARDWARE) {
             it.copy(Bitmap.Config.ARGB_8888, false)
-        } else it
+        } else {
+            it
+        }
     }
     val bitmap = createMagicBitmap(w, h) { fullDrawnReporter ->
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -154,7 +156,7 @@ suspend fun View.saveEditBitmapToStore(
                 modifier = Modifier.fillMaxSize(),
                 painter = BitmapPainter(source.asImageBitmap()),
                 contentDescription = "",
-                contentScale = ContentScale.Fit
+                contentScale = ContentScale.Fit,
             )
             EditLayerList(editLayers)
         }
@@ -169,7 +171,7 @@ suspend fun View.saveEditBitmapToStore(
             nameWithoutSuffix,
             dirName,
             compressFormat,
-            compressQuality
+            compressQuality,
         )
     }
 }

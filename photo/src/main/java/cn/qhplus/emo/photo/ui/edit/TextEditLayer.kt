@@ -65,7 +65,7 @@ internal val TextEditStyle by lazy {
     TextStyle.Default.copy(
         fontSize = 18.sp,
         lineHeight = 1.5.em,
-        fontWeight = FontWeight.Medium
+        fontWeight = FontWeight.Medium,
     )
 }
 
@@ -77,7 +77,7 @@ private fun TextLayout(
     color: Color,
     bgColor: Color = Color.Transparent,
     focus: () -> Boolean,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
 ) {
     val focusPointSize = with(LocalDensity.current) {
         6.dp.toPx()
@@ -107,32 +107,32 @@ private fun TextLayout(
                     if (isFocused) {
                         drawRect(
                             Color.White,
-                            style = Stroke(focusLineWidth)
+                            style = Stroke(focusLineWidth),
                         )
                         val focusSize = Size(focusPointSize, focusPointSize)
                         drawRect(
                             Color.White,
                             topLeft = Offset.Zero,
-                            size = focusSize
+                            size = focusSize,
                         )
                         drawRect(
                             Color.White,
                             topLeft = Offset(size.width - focusPointSize, 0f),
-                            size = focusSize
+                            size = focusSize,
                         )
                         drawRect(
                             Color.White,
                             topLeft = Offset(0f, size.height - focusPointSize),
-                            size = focusSize
+                            size = focusSize,
                         )
                         drawRect(
                             Color.White,
                             topLeft = Offset(size.width - focusPointSize, size.height - focusPointSize),
-                            size = focusSize
+                            size = focusSize,
                         )
                     }
                 }
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
         )
         if (isFocused) {
             Image(
@@ -144,7 +144,7 @@ private fun TextLayout(
                     .align(Alignment.TopEnd)
                     .throttleNoIndicationClick {
                         onDelete()
-                    }
+                    },
             )
         }
     }
@@ -160,7 +160,7 @@ class TextEditLayer(
     val parentOffsetX: Float,
     val parentOffsetY: Float,
     val onEdit: ((TextEditLayer) -> Unit)? = null,
-    val onDelete: ((TextEditLayer) -> Unit)? = null
+    val onDelete: ((TextEditLayer) -> Unit)? = null,
 ) : EditLayer {
     internal var color by mutableStateOf(initColor)
     internal var text by mutableStateOf(TextFieldValue(initText, TextRange(initText.length)))
@@ -181,22 +181,20 @@ class TextEditLayer(
         }
     }
 
-    override fun toMutable(state: EditState): EditLayer {
-        return TextEditLayer(
-            text.text,
-            reversed,
-            color,
-            size,
-            parentScale,
-            parentOffsetX,
-            parentOffsetY,
-            { state.scene.value = EditSceneText(it) },
-            { state.textEditLayers.remove(it) }
-        ).also {
-            it.offset = offset
-            it.scale = scale
-            it.rotation = rotation
-        }
+    override fun toMutable(state: EditState): EditLayer = TextEditLayer(
+        text.text,
+        reversed,
+        color,
+        size,
+        parentScale,
+        parentOffsetX,
+        parentOffsetY,
+        { state.scene.value = EditSceneText(it) },
+        { state.textEditLayers.remove(it) },
+    ).also {
+        it.offset = offset
+        it.scale = scale
+        it.rotation = rotation
     }
 
     @Composable
@@ -207,7 +205,7 @@ class TextEditLayer(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.2f))
-                    .throttleNoIndicationClick { isFocus = false }
+                    .throttleNoIndicationClick { isFocus = false },
             )
         }
         TextLayout(
@@ -234,7 +232,7 @@ class TextEditLayer(
                                             } else {
                                                 isFocus = true
                                             }
-                                        }
+                                        },
                                     )
                                 }
 
@@ -255,12 +253,14 @@ class TextEditLayer(
             style = TextEditStyle,
             color = if (reversed) {
                 if (color == Color.White) Color.Black else Color.White
-            } else color,
+            } else {
+                color
+            },
             bgColor = if (reversed) color else Color.Transparent,
             focus = { isFocus },
             onDelete = {
                 onDelete?.invoke(this@TextEditLayer)
-            }
+            },
         )
     }
 

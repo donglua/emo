@@ -36,8 +36,8 @@ class ConcurrencyShare(
     private val successResultKeepTime: Long = 5 * 1000,
     private val timeoutByCancellation: Long = 300,
     private val scope: CoroutineScope = CoroutineScope(
-        Dispatchers.IO + SupervisorJob() + coroutineLogExceptionHandler("ConcurrencyShare")
-    )
+        Dispatchers.IO + SupervisorJob() + coroutineLogExceptionHandler("ConcurrencyShare"),
+    ),
 ) {
     companion object {
         val globalInstance by lazy {
@@ -151,8 +151,5 @@ class ConcurrencyShare(
         }
     }
 
-    private class Item<T>(
-        val task: Deferred<T>,
-        val counter: AtomicInteger = AtomicInteger(1)
-    )
+    private class Item<T>(val task: Deferred<T>, val counter: AtomicInteger = AtomicInteger(1))
 }

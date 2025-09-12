@@ -63,7 +63,7 @@ class PhotoThumbnailConfig(
     val averageIfTwoImage: Boolean = true,
     val horGap: Dp = 5.dp,
     val verGap: Dp = 5.dp,
-    val alphaWhenPressed: Float = 1f
+    val alphaWhenPressed: Float = 1f,
 )
 
 val emoDefaultPhotoThumbnailConfig = PhotoThumbnailConfig()
@@ -77,7 +77,7 @@ private fun PhotoThumbnailItem(
     isContainerDimenExactly: Boolean,
     onLayout: (offset: Offset, size: IntSize) -> Unit,
     onPhotoLoaded: (PhotoResult) -> Unit,
-    click: (() -> Unit)?
+    click: (() -> Unit)?,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
@@ -98,7 +98,7 @@ private fun PhotoThumbnailItem(
             }
             .onGloballyPositioned {
                 onLayout(it.positionInWindow(), it.size)
-            }
+            },
     ) {
         thumb?.Compose(
             contentScale = if (isContainerDimenExactly) ContentScale.Crop else ContentScale.Fit,
@@ -106,7 +106,7 @@ private fun PhotoThumbnailItem(
             onSuccess = {
                 onPhotoLoaded(it)
             },
-            onError = null
+            onError = null,
         )
     }
 }
@@ -115,7 +115,7 @@ private fun PhotoThumbnailItem(
 fun PhotoThumbnailWithViewer(
     targetActivity: Class<out PhotoViewerActivity> = PhotoViewerActivity::class.java,
     images: PersistentList<PhotoProvider>,
-    config: PhotoThumbnailConfig = remember { emoDefaultPhotoThumbnailConfig }
+    config: PhotoThumbnailConfig = remember { emoDefaultPhotoThumbnailConfig },
 ) {
     val context = LocalContext.current
     PhotoThumbnail(images, config) { list, index ->
@@ -128,7 +128,7 @@ fun PhotoThumbnailWithViewer(
 fun PhotoThumbnail(
     images: PersistentList<PhotoProvider>,
     config: PhotoThumbnailConfig = remember { emoDefaultPhotoThumbnailConfig },
-    onClick: ((images: List<PhotoShot>, index: Int) -> Unit)? = null
+    onClick: ((images: List<PhotoShot>, index: Int) -> Unit)? = null,
 ) {
     if (images.isEmpty()) {
         return
@@ -166,7 +166,9 @@ fun PhotoThumbnail(
                                 {
                                     onClick.invoke(renderInfo.toList(), 0)
                                 }
-                            } else null
+                            } else {
+                                null
+                            },
                         )
                     }
                     ratio == 1f -> {
@@ -188,7 +190,9 @@ fun PhotoThumbnail(
                                 {
                                     onClick.invoke(renderInfo.toList(), 0)
                                 }
-                            } else null
+                            } else {
+                                null
+                            },
                         )
                     }
                     ratio > 1f -> {
@@ -211,12 +215,15 @@ fun PhotoThumbnail(
                                 {
                                     onClick.invoke(renderInfo.toList(), 0)
                                 }
-                            } else null
+                            } else {
+                                null
+                            },
                         )
                     }
                     image.isLongImage() -> {
                         val width = maxWidth * config.singleLongImageWidthRatio
-                        val useScreenHeightRatio = config.singleHighImageMiniHeightRatio == SINGLE_HIGH_IMAGE_MINI_SCREEN_HEIGHT_RATIO
+                        val useScreenHeightRatio =
+                            config.singleHighImageMiniHeightRatio == SINGLE_HIGH_IMAGE_MINI_SCREEN_HEIGHT_RATIO
                         val heightRatio = if (useScreenHeightRatio) {
                             val windowSize = context.getWindowSize()
                             windowSize.width * 1f / windowSize.height
@@ -241,13 +248,17 @@ fun PhotoThumbnail(
                                 {
                                     onClick.invoke(renderInfo.toList(), 0)
                                 }
-                            } else null
+                            } else {
+                                null
+                            },
                         )
                     }
                     else -> {
                         var width = maxWidth * config.singleHighImageDefaultWidthRatio
                         var height = width / ratio
-                        val heightMiniRatio = if (config.singleHighImageMiniHeightRatio == SINGLE_HIGH_IMAGE_MINI_SCREEN_HEIGHT_RATIO) {
+                        val heightMiniRatio = if (config.singleHighImageMiniHeightRatio ==
+                            SINGLE_HIGH_IMAGE_MINI_SCREEN_HEIGHT_RATIO
+                        ) {
                             val windowSize = context.getWindowSize()
                             windowSize.width * 1f / windowSize.height
                         } else {
@@ -274,7 +285,9 @@ fun PhotoThumbnail(
                                 {
                                     onClick.invoke(renderInfo.toList(), 0)
                                 }
-                            } else null
+                            } else {
+                                null
+                            },
                         )
                     }
                 }
@@ -285,7 +298,7 @@ fun PhotoThumbnail(
             Column(modifier = Modifier.fillMaxWidth()) {
                 for (
                 i in 0 until (images.size / 3 + if (images.size % 3 > 0) 1 else 0).coerceAtMost(
-                    3
+                    3,
                 )
                 ) {
                     if (i > 0) {
@@ -298,7 +311,7 @@ fun PhotoThumbnail(
                         this@BoxWithConstraints.maxWidth,
                         3,
                         i * 3,
-                        onClick
+                        onClick,
                     )
                 }
             }
@@ -314,13 +327,13 @@ fun RowImages(
     containerWidth: Dp,
     rowCount: Int,
     startIndex: Int,
-    onClick: ((images: List<PhotoShot>, index: Int) -> Unit)?
+    onClick: ((images: List<PhotoShot>, index: Int) -> Unit)?,
 ) {
     val wh = (containerWidth - config.horGap * (rowCount - 1)) / rowCount
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(wh)
+            .height(wh),
     ) {
         for (i in startIndex until (startIndex + rowCount).coerceAtMost(images.size)) {
             if (i != startIndex) {
@@ -346,7 +359,9 @@ fun RowImages(
                     {
                         onClick.invoke(renderInfo.toList(), i)
                     }
-                } else null
+                } else {
+                    null
+                },
             )
         }
     }
@@ -359,7 +374,7 @@ fun ThumbBlankBox() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(blankColor)
+                .background(blankColor),
         )
     }
 }

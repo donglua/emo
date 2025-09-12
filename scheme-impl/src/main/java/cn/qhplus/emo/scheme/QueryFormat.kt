@@ -36,16 +36,17 @@ class QueryEncoder(override val serializersModule: SerializersModule) : Abstract
     override fun encodeElement(descriptor: SerialDescriptor, index: Int): Boolean {
         val elementDescriptor = descriptor.getElementDescriptor(index)
         if (elementDescriptor.kind !is PrimitiveKind) {
-            throw RuntimeException("The type(${elementDescriptor.kind}) of ${descriptor.getElementName(index)} is not supported.")
+            throw RuntimeException(
+                "The type(${elementDescriptor.kind}) of ${descriptor.getElementName(index)} is not supported.",
+            )
         }
         sb.append(descriptor.getElementName(index))
         sb.append("=")
         return true
     }
 
-    override fun encodeValue(value: Any) {
+    override fun encodeValue(value: Any): Unit =
         throw RuntimeException("The type(${value::class.java.simpleName}) is not supported.")
-    }
 
     override fun encodeNull() {
         val index = sb.lastIndexOf("&")
@@ -81,16 +82,11 @@ class QueryEncoder(override val serializersModule: SerializersModule) : Abstract
         sb.append("&")
     }
 
-    fun getResult(): String {
-        return sb.toString().dropLast(1)
-    }
+    fun getResult(): String = sb.toString().dropLast(1)
 }
 
 @OptIn(ExperimentalSerializationApi::class)
-class QueryDecoder(
-    content: String,
-    override val serializersModule: SerializersModule
-) : AbstractDecoder() {
+class QueryDecoder(content: String, override val serializersModule: SerializersModule) : AbstractDecoder() {
     val list = content.split("&")
         .asSequence()
         .map { it.split("=").let { pair -> pair[0] to pair[1] } }

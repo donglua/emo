@@ -42,10 +42,7 @@ sealed class PaintOption {
 }
 
 @Stable
-class MosaicPaintOption(
-    val level: Int,
-    val strokeWidth: Dp
-) : PaintOption() {
+class MosaicPaintOption(val level: Int, val strokeWidth: Dp) : PaintOption() {
 
     override fun newPaintLayer(size: Size, scale: Float): PathEditLayer {
         TODO("Not yet implemented")
@@ -63,18 +60,18 @@ class MosaicPaintOption(
                     interactionSource = remember {
                         MutableInteractionSource()
                     },
-                    indication = null
+                    indication = null,
                 ) {
                     onClick(this@MosaicPaintOption)
-                }
+                },
         ) {
             drawCircle(
                 Color.White,
-                radius = this.size.minDimension / 2 - if (selected) 0f else ringWidth
+                radius = this.size.minDimension / 2 - if (selected) 0f else ringWidth,
             )
             drawCircle(
                 Color.Black,
-                radius = this.size.minDimension / 2 - ringWidth * 2
+                radius = this.size.minDimension / 2 - ringWidth * 2,
             )
         }
     }
@@ -83,9 +80,11 @@ class MosaicPaintOption(
 @Stable
 class ColorPaintOption(val color: Color, val strokeWidth: Dp) : PaintOption() {
 
-    override fun newPaintLayer(size: Size, scale: Float): PathEditLayer {
-        return GraffitiEditLayer(size, color, strokeWidth / scale)
-    }
+    override fun newPaintLayer(size: Size, scale: Float): PathEditLayer = GraffitiEditLayer(
+        size,
+        color,
+        strokeWidth / scale,
+    )
 
     @Composable
     override fun Selector(size: Dp, selected: Boolean, onClick: (PaintOption) -> Unit) {
@@ -105,7 +104,7 @@ class TextOption(val color: Color) {
         translateY: Float,
         layoutInfo: LayoutInfo,
         onEdit: (TextEditLayer) -> Unit,
-        onDelete: (TextEditLayer) -> Unit
+        onDelete: (TextEditLayer) -> Unit,
     ): TextEditLayer {
         val offset = layoutInfo.contentOffset(translateX, translateY, scale)
         val size = layoutInfo.px.let { Size(it.contentWidth, it.contentHeight) }
@@ -134,18 +133,18 @@ fun ColorOption(size: Dp, color: Color, selected: Boolean, onClick: () -> Unit) 
                 interactionSource = remember {
                     MutableInteractionSource()
                 },
-                indication = null
+                indication = null,
             ) {
                 onClick()
-            }
+            },
     ) {
         drawCircle(
             Color.White,
-            radius = this.size.minDimension / 2 - if (selected) 0f else ringWidth
+            radius = this.size.minDimension / 2 - if (selected) 0f else ringWidth,
         )
         drawCircle(
             color,
-            radius = this.size.minDimension / 2 - ringWidth * 2
+            radius = this.size.minDimension / 2 - ringWidth * 2,
         )
     }
 }

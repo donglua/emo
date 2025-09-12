@@ -61,7 +61,7 @@ fun BoxWithConstraintsScope.LazyListScrollBar(
     thumbHeight: Dp,
     thumbBgColor: Color,
     thumbLineColor: Color,
-    thumbShape: Shape = CircleShape
+    thumbShape: Shape = CircleShape,
 ) {
     val needShow by remember {
         derivedStateOf {
@@ -76,7 +76,7 @@ fun BoxWithConstraintsScope.LazyListScrollBar(
         InternalLazyColumnScrollBar(
             listState,
             insetTop, insetBottom, insetRight,
-            thumbWidth, thumbHeight, thumbBgColor, thumbLineColor, thumbShape
+            thumbWidth, thumbHeight, thumbBgColor, thumbLineColor, thumbShape,
         )
     }
 }
@@ -91,7 +91,7 @@ private fun BoxWithConstraintsScope.InternalLazyColumnScrollBar(
     thumbHeight: Dp,
     thumbBgColor: Color,
     thumbLineColor: Color,
-    thumbShape: Shape = CircleShape
+    thumbShape: Shape = CircleShape,
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -105,8 +105,13 @@ private fun BoxWithConstraintsScope.InternalLazyColumnScrollBar(
         }
     }
 
-    fun LazyListItemInfo.fractionHiddenTop() =
-        if (size == 0) 0f else -offset.toFloat() / size.toFloat()
+    fun LazyListItemInfo.fractionHiddenTop() = if (size ==
+        0
+    ) {
+        0f
+    } else {
+        -offset.toFloat() / size.toFloat()
+    }
 
     val normalOffset by remember {
         derivedStateOf {
@@ -116,7 +121,8 @@ private fun BoxWithConstraintsScope.InternalLazyColumnScrollBar(
                 }
 
                 val firstItem = realFirstVisibleItem ?: return@let 0f
-                firstItem.run { index.toFloat() + fractionHiddenTop() } / it.totalItemsCount.toFloat()
+                firstItem.run { index.toFloat() + fractionHiddenTop() } /
+                    it.totalItemsCount.toFloat()
             }
         }
     }
@@ -180,13 +186,13 @@ private fun BoxWithConstraintsScope.InternalLazyColumnScrollBar(
                 },
                 onDragStopped = {
                     isDragging = false
-                }
+                },
             )
             .padding(start = insetRight, end = insetRight)
             .width(thumbWidth)
             .height(thumbHeight)
             .background(thumbBgColor, thumbShape),
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         ScrollBarLine(thumbLineColor)
         Spacer(modifier = Modifier.height(4.dp))
@@ -195,8 +201,10 @@ private fun BoxWithConstraintsScope.InternalLazyColumnScrollBar(
 }
 
 @Composable
-private fun ScrollBarLine(
-    color: Color
-) {
-    Box(modifier = Modifier.padding(horizontal = 4.dp).fillMaxWidth().height(2.dp).background(color, CircleShape))
+private fun ScrollBarLine(color: Color) {
+    Box(
+        modifier = Modifier.padding(
+            horizontal = 4.dp,
+        ).fillMaxWidth().height(2.dp).background(color, CircleShape),
+    )
 }

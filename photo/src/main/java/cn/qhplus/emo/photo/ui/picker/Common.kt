@@ -65,33 +65,33 @@ fun PhotoPickCheckBox(pickIndex: Int) {
     AnimatedVisibility(
         visible = pickIndex < 0,
         enter = fadeIn(),
-        exit = fadeOut()
+        exit = fadeOut(),
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
                 color = config.commonIconNormalTintColor,
                 radius = (size.minDimension - strokeWidth) / 2.0f,
-                style = Stroke(strokeWidth)
+                style = Stroke(strokeWidth),
             )
         }
     }
     AnimatedVisibility(
         visible = pickIndex >= 0,
         enter = fadeIn(),
-        exit = fadeOut()
+        exit = fadeOut(),
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(CircleShape)
                 .background(config.commonIconCheckedTintColor),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             if (transition.targetState != EnterExitState.PostExit) {
                 Text(
                     text = "${pickIndex + 1}",
                     color = config.commonIconCheckedTextColor,
-                    fontSize = 12.sp
+                    fontSize = 12.sp,
                 )
             }
         }
@@ -99,11 +99,7 @@ fun PhotoPickCheckBox(pickIndex: Int) {
 }
 
 @Composable
-fun PhotoPickRadio(
-    checked: Boolean,
-    ratioSize: Dp = 18.dp,
-    strokeWidthDp: Dp = 1.6.dp
-) {
+fun PhotoPickRadio(checked: Boolean, ratioSize: Dp = 18.dp, strokeWidthDp: Dp = 1.6.dp) {
     Box(modifier = Modifier.size(ratioSize)) {
         val strokeWidth = with(LocalDensity.current) {
             strokeWidthDp.toPx()
@@ -112,31 +108,31 @@ fun PhotoPickRadio(
         AnimatedVisibility(
             visible = !checked,
             enter = fadeIn(),
-            exit = fadeOut()
+            exit = fadeOut(),
         ) {
             Canvas(modifier = Modifier.size(ratioSize)) {
                 drawCircle(
                     color = config.commonIconNormalTintColor,
                     radius = (size.minDimension - strokeWidth) / 2.0f,
-                    style = Stroke(strokeWidth)
+                    style = Stroke(strokeWidth),
                 )
             }
         }
         AnimatedVisibility(
             visible = checked,
             enter = fadeIn(),
-            exit = fadeOut()
+            exit = fadeOut(),
         ) {
             Canvas(modifier = Modifier.size(ratioSize)) {
                 drawCircle(
                     color = config.commonIconCheckedTintColor,
                     radius = (size.minDimension - strokeWidth) / 2.0f,
-                    style = Stroke(strokeWidth)
+                    style = Stroke(strokeWidth),
                 )
 
                 drawCircle(
                     color = config.commonIconCheckedTintColor,
-                    radius = (size.minDimension - strokeWidth * 4) / 2.0f
+                    radius = (size.minDimension - strokeWidth * 4) / 2.0f,
                 )
             }
         }
@@ -147,7 +143,7 @@ fun PhotoPickRadio(
 fun OriginOpenButton(
     modifier: Modifier = Modifier,
     isOriginOpenFlow: StateFlow<Boolean>,
-    onToggleOrigin: (toOpen: Boolean) -> Unit
+    onToggleOrigin: (toOpen: Boolean) -> Unit,
 ) {
     val isOriginOpen by isOriginOpenFlow.collectAsState()
     Row(
@@ -155,62 +151,53 @@ fun OriginOpenButton(
             interactionSource = remember {
                 MutableInteractionSource()
             },
-            indication = null
+            indication = null,
         ) {
             onToggleOrigin.invoke(!isOriginOpen)
         },
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Absolute.spacedBy(5.dp)
+        horizontalArrangement = Arrangement.Absolute.spacedBy(5.dp),
     ) {
         PhotoPickRadio(isOriginOpen)
         Text(
             "原图",
             fontSize = 17.sp,
-            color = LocalPhotoPickerConfig.current.commonTextButtonTextColor
+            color = LocalPhotoPickerConfig.current.commonTextButtonTextColor,
         )
     }
 }
 
 @Composable
-fun PickCurrentCheckButton(
-    modifier: Modifier = Modifier,
-    isPicked: Boolean,
-    onPicked: (toPick: Boolean) -> Unit
-) {
+fun PickCurrentCheckButton(modifier: Modifier = Modifier, isPicked: Boolean, onPicked: (toPick: Boolean) -> Unit) {
     val config = LocalPhotoPickerConfig.current
     Row(
         modifier = modifier.clickable(
             interactionSource = remember {
                 MutableInteractionSource()
             },
-            indication = null
+            indication = null,
         ) {
             onPicked.invoke(!isPicked)
         },
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Absolute.spacedBy(5.dp)
+        horizontalArrangement = Arrangement.Absolute.spacedBy(5.dp),
     ) {
         CheckBox(
             size = 18.dp,
             status = if (isPicked) CheckStatus.Checked else CheckStatus.None,
             tint = if (isPicked) config.commonIconCheckedTintColor else config.commonIconNormalTintColor,
-            background = if (isPicked) config.commonIconNormalTintColor else Color.Transparent
+            background = if (isPicked) config.commonIconNormalTintColor else Color.Transparent,
         )
         Text(
             "选择",
             fontSize = 17.sp,
-            color = LocalPhotoPickerConfig.current.commonTextButtonTextColor
+            color = LocalPhotoPickerConfig.current.commonTextButtonTextColor,
         )
     }
 }
 
 @Composable
-internal fun CommonTextButton(
-    modifier: Modifier,
-    enable: Boolean,
-    text: String,
-    onClick: () -> Unit
-) {
+internal fun CommonTextButton(modifier: Modifier, enable: Boolean, text: String, onClick: () -> Unit) {
     PressWithAlphaBox(
         enable = enable,
         modifier = Modifier
@@ -219,24 +206,19 @@ internal fun CommonTextButton(
             .then(modifier),
         onClick = {
             onClick()
-        }
+        },
     ) {
         Text(
             text,
             fontSize = 17.sp,
             color = LocalPhotoPickerConfig.current.commonTextButtonTextColor,
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier.align(Alignment.Center),
         )
     }
 }
 
 @Composable
-internal fun CommonButton(
-    modifier: Modifier = Modifier,
-    enabled: Boolean,
-    text: String,
-    onClick: () -> Unit
-) {
+internal fun CommonButton(modifier: Modifier = Modifier, enabled: Boolean, text: String, onClick: () -> Unit) {
     val config = LocalPhotoPickerConfig.current
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
@@ -257,16 +239,16 @@ internal fun CommonButton(
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
-                enabled = enabled
+                enabled = enabled,
             ) {
                 onClick()
             }
-            .padding(start = 10.dp, end = 10.dp, top = 3.dp, bottom = 4.dp)
+            .padding(start = 10.dp, end = 10.dp, top = 3.dp, bottom = 4.dp),
     ) {
         Text(
             text = text,
             fontSize = 17.sp,
-            color = textColor
+            color = textColor,
         )
     }
 }
@@ -276,7 +258,7 @@ internal fun CommonPickerTip(text: String) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp)
+            .padding(20.dp),
     ) {
         Text(
             text,
@@ -284,7 +266,7 @@ internal fun CommonPickerTip(text: String) {
             color = LocalPhotoPickerConfig.current.tipTextColor,
             textAlign = TextAlign.Center,
             lineHeight = 20.sp,
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier.align(Alignment.Center),
         )
     }
 }

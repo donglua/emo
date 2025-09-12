@@ -18,6 +18,7 @@ package cn.qhplus.emo.ui.core
 
 import androidx.compose.ui.unit.dp
 
+@Suppress("ktlint:standard:property-naming")
 const val emoTopBarZIndex = 32f
 val emoTopBarHeight = 48.dp
 val emoScrollAlphaChangeMaxOffset = 20.dp

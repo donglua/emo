@@ -40,12 +40,14 @@ fun ChevronIcon(tint: Color? = null) {
     Image(
         painter = painterResource(id = R.drawable.ic_chevron),
         contentDescription = "",
-        colorFilter = tint?.let { ColorFilter.tint(it) }
+        colorFilter = tint?.let { ColorFilter.tint(it) },
     )
 }
 
 enum class CheckStatus {
-    None, Partial, Checked
+    None,
+    Partial,
+    Checked,
 }
 
 @Composable
@@ -54,17 +56,17 @@ fun CheckBox(
     status: CheckStatus = CheckStatus.None,
     isEnabled: Boolean = true,
     tint: Color?,
-    background: Color = Color.Transparent
+    background: Color = Color.Transparent,
 ) {
     Box(
         modifier = Modifier
             .size(size)
-            .clip(CircleShape)
+            .clip(CircleShape),
     ) {
         AnimatedVisibility(
             visible = status == CheckStatus.None,
             enter = fadeIn(),
-            exit = fadeOut()
+            exit = fadeOut(),
         ) {
             CheckBoxImage(R.drawable.ic_checkbox_normal, isEnabled, tint, background)
         }
@@ -72,7 +74,7 @@ fun CheckBox(
         AnimatedVisibility(
             visible = status == CheckStatus.Checked,
             enter = fadeIn(),
-            exit = fadeOut()
+            exit = fadeOut(),
         ) {
             CheckBoxImage(R.drawable.ic_checkbox_checked, isEnabled, tint, background)
         }
@@ -80,7 +82,7 @@ fun CheckBox(
         AnimatedVisibility(
             visible = status == CheckStatus.Partial,
             enter = fadeIn(),
-            exit = fadeOut()
+            exit = fadeOut(),
         ) {
             CheckBoxImage(R.drawable.ic_checkbox_partial, isEnabled, tint, background)
         }
@@ -92,7 +94,7 @@ private fun CheckBoxImage(
     resourceId: Int,
     isEnabled: Boolean = true,
     tint: Color?,
-    background: Color = Color.Transparent
+    background: Color = Color.Transparent,
 ) {
     Image(
         painter = painterResource(id = resourceId),
@@ -113,19 +115,16 @@ private fun CheckBoxImage(
                 } else {
                     it
                 }
-            }
+            },
     )
 }
 
 @Composable
-fun MarkIcon(
-    modifier: Modifier = Modifier,
-    tint: Color? = null
-) {
+fun MarkIcon(modifier: Modifier = Modifier, tint: Color? = null) {
     Image(
         painter = painterResource(id = R.drawable.ic_mark),
         contentDescription = "",
         colorFilter = tint?.let { ColorFilter.tint(it) },
-        modifier = modifier
+        modifier = modifier,
     )
 }

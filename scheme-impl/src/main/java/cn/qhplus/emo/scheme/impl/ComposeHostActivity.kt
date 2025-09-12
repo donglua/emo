@@ -79,7 +79,7 @@ abstract class ComposeHostActivity : ComposeFixActivity() {
         AnimatedNavHost(
             navController = navController,
             modifier = Modifier.fillMaxSize(),
-            startDestination = intent.getStringExtra(SchemeKeys.KEY_START_DESTINATION)!!
+            startDestination = intent.getStringExtra(SchemeKeys.KEY_START_DESTINATION)!!,
         ) {
             intent.getBundleExtra(SchemeKeys.KEY_START_ARGUMENTS)?.let {
                 getStartDestinationArgsFromBundle(it)

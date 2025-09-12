@@ -45,10 +45,7 @@ import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Nullability
 import java.io.OutputStream
 
-class SchemeProcessor(
-    private val codeGenerator: CodeGenerator,
-    private val logger: KSPLogger
-) : SymbolProcessor {
+class SchemeProcessor(private val codeGenerator: CodeGenerator, private val logger: KSPLogger) : SymbolProcessor {
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val activityList = resolver
@@ -75,7 +72,7 @@ class SchemeProcessor(
     @OptIn(KspExperimental::class)
     private fun processSchemeStorage(
         activityList: List<KSClassDeclaration>,
-        composeList: List<KSFunctionDeclaration>
+        composeList: List<KSFunctionDeclaration>,
     ): List<ComposeGraphItem> {
         val storageInputFlies = sequenceOf(activityList, composeList)
             .flatMap { it.asSequence() }
@@ -86,7 +83,7 @@ class SchemeProcessor(
         val osForStorage: OutputStream = codeGenerator.createNewFile(
             dependencies = Dependencies(true, *storageInputFlies),
             packageName = storagePackageName,
-            fileName = "GeneratedSchemeDefStorage"
+            fileName = "GeneratedSchemeDefStorage",
         )
         val composeGraph = mutableListOf<ComposeGraphItem>()
         osForStorage.writeLine("package $storagePackageName")
@@ -107,7 +104,7 @@ class SchemeProcessor(
                         writeLine(
                             "add(SchemeDef(${nextSchemeId++}, \"${it.action}\", " +
                                 "emptyList(), $args, \"${cls.qualifiedName!!.asString()}\"," +
-                                "${it.transition}))"
+                                "${it.transition}))",
                         )
                     }
                 }
@@ -115,16 +112,23 @@ class SchemeProcessor(
                 composeList.asSequence().forEach { fn ->
                     // TODO can not use getAnnotationsByType because of usage of kClass. Just wait ksp's new version and check.
                     val schemes = fn.annotations.filter {
-                        it.shortName.getShortName() == ComposeScheme::class.simpleName && it.annotationType.resolve().declaration
-                            .qualifiedName?.asString() == ComposeScheme::class.qualifiedName
+                        it.shortName.getShortName() == ComposeScheme::class.simpleName &&
+                            it.annotationType.resolve().declaration
+                                .qualifiedName?.asString() == ComposeScheme::class.qualifiedName
                     }
                     val args = fn.buildArgDefineList()
                     schemes.forEach {
                         val action = it.arguments.find { arg -> arg.name!!.asString() == "action" }!!.value as String
-                        val host = it.arguments.find { arg -> arg.name!!.asString() == "alternativeHosts" }!!.value as List<*>
-                        val transition = it.arguments.find { arg -> arg.name!!.asString() == "transition" }!!.value as Int
+                        val host = it.arguments.find { arg ->
+                            arg.name!!.asString() == "alternativeHosts"
+                        }!!.value as List<*>
+                        val transition = it.arguments.find { arg ->
+                            arg.name!!.asString() == "transition"
+                        }!!.value as Int
                         if (host.isEmpty()) {
-                            throw RuntimeException("ComposeScheme.alternativeHosts for ${fn.simpleName.getShortName()} can not be empty")
+                            throw RuntimeException(
+                                "ComposeScheme.alternativeHosts for ${fn.simpleName.getShortName()} can not be empty",
+                            )
                         }
                         val alternativeHosts = host.joinToString(",") { h ->
                             "${(h as KSType).declaration.qualifiedName!!.asString()}::class"
@@ -132,7 +136,7 @@ class SchemeProcessor(
                         writeLine(
                             "add(SchemeDef($nextSchemeId, \"${action}\", " +
                                 "listOf($alternativeHosts), $args, \"${SchemeDef.COMPOSE_CLASS_SUFFIX}\", " +
-                                "$transition))"
+                                "$transition))",
                         )
                         host.forEach { h ->
                             composeGraph.add(ComposeGraphItem(fn, h as KSType, nextSchemeId))
@@ -174,9 +178,7 @@ class SchemeProcessor(
         return "listOf($list)"
     }
 
-    private fun processComposeGraphBuilder(
-        composeGraph: List<ComposeGraphItem>
-    ) {
+    private fun processComposeGraphBuilder(composeGraph: List<ComposeGraphItem>) {
         composeGraph.groupBy {
             it.host
         }.forEach { (host, items) ->
@@ -189,7 +191,7 @@ class SchemeProcessor(
             val os: OutputStream = codeGenerator.createNewFile(
                 dependencies = Dependencies(true, *inputFiles),
                 packageName = packageName,
-                fileName = clsName
+                fileName = clsName,
             )
 
             os.writeLine("package $packageName")
@@ -211,7 +213,7 @@ class SchemeProcessor(
                 os.write(
                     "override fun build(" +
                         "client: SchemeClient, " +
-                        "navGraphBuilder: NavGraphBuilder)"
+                        "navGraphBuilder: NavGraphBuilder)",
                 )
                 os.writeBlock {
                     items.forEach { item ->
@@ -226,7 +228,7 @@ class SchemeProcessor(
                                     "exitTransition = transition.exitTransition()," +
                                     "popEnterTransition = transition.popEnterTransition()," +
                                     "popExitTransition = transition.popExitTransition()" +
-                                    "){"
+                                    "){",
                             )
                             if (item.fn.parameters.size == 1) {
                                 os.writeLine(" entry ->")
@@ -256,7 +258,7 @@ class SchemeProcessor(
                                 os.writeLine("${item.fn.qualifiedName!!.asString()}()")
                             } else {
                                 throw RuntimeException(
-                                    "${item.fn.simpleName} can have one param with type NavBackStackEntry or have any param."
+                                    "${item.fn.simpleName} can have one param with type NavBackStackEntry or have any param.",
                                 )
                             }
                             os.writeLine("}")
@@ -278,8 +280,4 @@ class SchemeProcessor(
     }
 }
 
-class ComposeGraphItem(
-    val fn: KSFunctionDeclaration,
-    val host: KSType,
-    val schemeId: Int
-)
+class ComposeGraphItem(val fn: KSFunctionDeclaration, val host: KSType, val schemeId: Int)

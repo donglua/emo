@@ -40,7 +40,7 @@ class ReporterFileTest {
             },
             sourceProvider = { file ->
                 file.createReportSource()
-            }
+            },
         )
         advanceUntilIdle()
     }
@@ -54,7 +54,7 @@ class ReporterFileTest {
             },
             sourceProvider = { file ->
                 ReporterStreamSource(file.inputStream().buffered())
-            }
+            },
         )
         advanceUntilIdle()
     }
@@ -70,7 +70,7 @@ class ReporterFileTest {
                 },
                 sourceProvider = { file ->
                     file.createReportSource()
-                }
+                },
             )
         }
         val avgCal = AvgCal(0, 0, 0, 0)
@@ -92,7 +92,7 @@ class ReporterFileTest {
                 },
                 sourceProvider = { file ->
                     ReporterStreamSource(file.inputStream().buffered())
-                }
+                },
             )
         }
         list.fold(avgCal) { cal, item ->
@@ -117,7 +117,7 @@ class ReporterFileTest {
     private suspend fun test(
         client: ReportClient<String>,
         sinkProvider: (File, Long) -> ReporterFileSink<String>,
-        sourceProvider: (File) -> ReporterFileSource<String>
+        sourceProvider: (File) -> ReporterFileSource<String>,
     ) {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         val converter = ReportStringMsgConverter
@@ -138,7 +138,7 @@ class ReporterFileTest {
                 client: ReportClient<String>,
                 buffer: ByteArray,
                 converter: ReportMsgConverter<String>,
-                usedStrategy: ReportStrategy
+                usedStrategy: ReportStrategy,
             ) {
                 list.add(converter.decode(buffer))
             }
@@ -157,7 +157,7 @@ class ReporterFileTest {
     private suspend fun speed(
         client: ReportClient<String>,
         sinkProvider: (File, Long) -> ReporterFileSink<String>,
-        sourceProvider: (File) -> ReporterFileSource<String>
+        sourceProvider: (File) -> ReporterFileSource<String>,
     ): Speed {
         val start = SystemClock.elapsedRealtime()
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
@@ -180,7 +180,7 @@ class ReporterFileTest {
                 client: ReportClient<String>,
                 buffer: ByteArray,
                 converter: ReportMsgConverter<String>,
-                usedStrategy: ReportStrategy
+                usedStrategy: ReportStrategy,
             ) {
             }
 
@@ -194,19 +194,14 @@ class ReporterFileTest {
         return Speed(
             SystemClock.elapsedRealtime() - partStart,
             write,
-            SystemClock.elapsedRealtime() - start
+            SystemClock.elapsedRealtime() - start,
         )
     }
 }
 
 class Speed(val read: Long, val write: Long, val total: Long)
 
-class AvgCal(
-    var read: Long,
-    var write: Long,
-    var total: Long,
-    var count: Int
-) {
+class AvgCal(var read: Long, var write: Long, var total: Long, var count: Int) {
 
     fun reset() {
         read = 0

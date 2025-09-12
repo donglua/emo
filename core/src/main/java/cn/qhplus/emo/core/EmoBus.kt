@@ -35,7 +35,7 @@ annotation class EmoEventProp(
     val sticky: Boolean = false,
     val keepChannelAlive: Boolean = false,
     val extraBufferCapacity: Int = 1,
-    val onBufferOverflow: BufferOverflow = BufferOverflow.DROP_OLDEST
+    val onBufferOverflow: BufferOverflow = BufferOverflow.DROP_OLDEST,
 )
 
 class EmoBus {
@@ -65,10 +65,8 @@ class EmoBus {
         }
     }
 
-    fun <T : Any> emitNonSuspend(cls: Class<T>, event: T): Job {
-        return scope.launch {
-            emit(cls, event)
-        }
+    fun <T : Any> emitNonSuspend(cls: Class<T>, event: T): Job = scope.launch {
+        emit(cls, event)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -131,15 +129,11 @@ class EmoBus {
         }
     }
 
-    private fun <T : Any> createFlow(
-        prop: EmoEventProp?
-    ): MutableSharedFlow<T> {
-        return MutableSharedFlow(
-            if (prop?.sticky == true) 1 else 0,
-            prop?.extraBufferCapacity ?: 1,
-            prop?.onBufferOverflow ?: BufferOverflow.DROP_OLDEST
-        )
-    }
+    private fun <T : Any> createFlow(prop: EmoEventProp?): MutableSharedFlow<T> = MutableSharedFlow(
+        if (prop?.sticky == true) 1 else 0,
+        prop?.extraBufferCapacity ?: 1,
+        prop?.onBufferOverflow ?: BufferOverflow.DROP_OLDEST,
+    )
 
     fun <T : Any> removeChannel(cls: Class<T>) {
         val prop = cls.getAnnotation(EmoEventProp::class.java)

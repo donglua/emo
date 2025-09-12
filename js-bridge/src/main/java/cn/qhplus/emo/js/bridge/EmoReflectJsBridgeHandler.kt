@@ -24,7 +24,7 @@ class EmoReflectJsBridgeHandler(
     scope: CoroutineScope,
     private val obj: Any,
     bridgePropName: String = DEFAULT_BRIDGE_PROP_NAME,
-    readyEventName: String = DEFAULT_READY_EVENT_NAME
+    readyEventName: String = DEFAULT_READY_EVENT_NAME,
 ) : EmoJsBridgeHandler(scope, bridgePropName, readyEventName) {
 
     private val supportedCmdListCache by lazy {
@@ -33,11 +33,14 @@ class EmoReflectJsBridgeHandler(
     private val methodsCache = mutableMapOf<String, Method>()
     private val methodsFallbackCache = mutableMapOf<String, Method>()
 
-    override fun getSupportedCmdList(): List<String> {
-        return supportedCmdListCache
-    }
+    override fun getSupportedCmdList(): List<String> = supportedCmdListCache
 
-    override fun handleMessage(webView: WebView, cmd: String, dataPicker: JsonDataPicker, callback: ResponseCallback?) {
+    override fun handleMessage(
+        webView: WebView,
+        cmd: String,
+        dataPicker: JsonDataPicker,
+        callback: ResponseCallback?,
+    ) {
         try {
             try {
                 val method = methodsCache[cmd] ?: obj::class.java.getDeclaredMethod(
@@ -45,7 +48,7 @@ class EmoReflectJsBridgeHandler(
                     WebView::class.java,
                     CoroutineScope::class.java,
                     JsonDataPicker::class.java,
-                    ResponseCallback::class.java
+                    ResponseCallback::class.java,
                 ).also {
                     it.isAccessible = true
                     methodsCache[cmd] = it
@@ -56,7 +59,7 @@ class EmoReflectJsBridgeHandler(
                     cmd,
                     CoroutineScope::class.java,
                     JsonDataPicker::class.java,
-                    ResponseCallback::class.java
+                    ResponseCallback::class.java,
                 ).also {
                     it.isAccessible = true
                     methodsFallbackCache[cmd] = it

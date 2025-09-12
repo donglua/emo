@@ -38,17 +38,14 @@ import androidx.compose.ui.platform.LocalView
 val DefaultMaskColor = Color.Black.copy(alpha = 0.5f)
 
 enum class MaskTouchBehavior {
-    Dismiss, Penetrate, None
+    Dismiss,
+    Penetrate,
+    None,
 }
 
 private class ModalHolder(var current: EmoModal? = null)
 
-class EmoModalAction(
-    val text: String,
-    val color: Color,
-    val enabled: Boolean = true,
-    val onClick: (EmoModal) -> Unit
-)
+class EmoModalAction(val text: String, val color: Color, val enabled: Boolean = true, val onClick: (EmoModal) -> Unit)
 
 private class ShowingModals {
     val modals = mutableMapOf<Long, EmoModal>()
@@ -67,7 +64,7 @@ fun EmoModal(
     uniqueId: Long = SystemClock.elapsedRealtimeNanos(),
     modalHostProvider: ModalHostProvider = DefaultModalHostProvider,
     themeProvider: @Composable (@Composable () -> Unit) -> Unit = { inner -> inner() },
-    content: @Composable AnimatedVisibilityScope.(EmoModal) -> Unit
+    content: @Composable AnimatedVisibilityScope.(EmoModal) -> Unit,
 ) {
     val modalHolder = remember {
         ModalHolder(null)
@@ -83,7 +80,7 @@ fun EmoModal(
                 enter,
                 exit,
                 themeProvider,
-                content
+                content,
             )
             doOnShow?.let { modal.doOnShow(it) }
             doOnDismiss?.let { modal.doOnDismiss(it) }
@@ -123,8 +120,11 @@ fun interface ModalHostProvider {
 class ActivityHostModalProvider : ModalHostProvider {
     override fun provide(view: View): Pair<FrameLayout, OnBackPressedDispatcher> {
         val contentLayout = view.rootView
-            .findViewById<FrameLayout>(Window.ID_ANDROID_CONTENT) ?: throw RuntimeException("View is not attached to Activity")
-        val activity = contentLayout.context as? ComponentActivity ?: throw RuntimeException("view's rootView's context is not ComponentActivity")
+            .findViewById<FrameLayout>(Window.ID_ANDROID_CONTENT)
+            ?: throw RuntimeException("View is not attached to Activity")
+        val activity =
+            contentLayout.context as? ComponentActivity
+                ?: throw RuntimeException("view's rootView's context is not ComponentActivity")
         return contentLayout to activity.onBackPressedDispatcher
     }
 }
@@ -140,7 +140,7 @@ fun View.emoModal(
     enter: EnterTransition = fadeIn(tween(), 0f),
     exit: ExitTransition = fadeOut(tween(), 0f),
     themeProvider: @Composable (@Composable () -> Unit) -> Unit = { inner -> inner() },
-    content: @Composable AnimatedVisibilityScope.(EmoModal) -> Unit
+    content: @Composable AnimatedVisibilityScope.(EmoModal) -> Unit,
 ): EmoModal {
     if (!isAttachedToWindow) {
         throw RuntimeException("View is not attached to window")
@@ -155,7 +155,7 @@ fun View.emoModal(
         enter,
         exit,
         themeProvider,
-        content
+        content,
     )
     val hostView = modalHost.first
     handleModelUnique(hostView, modal, uniqueId)
@@ -169,7 +169,7 @@ fun View.emoStillModal(
     uniqueId: Long = SystemClock.elapsedRealtimeNanos(),
     modalHostProvider: ModalHostProvider = DefaultModalHostProvider,
     themeProvider: @Composable (@Composable () -> Unit) -> Unit = { inner -> inner() },
-    content: @Composable (EmoModal) -> Unit
+    content: @Composable (EmoModal) -> Unit,
 ): EmoModal {
     if (!isAttachedToWindow) {
         throw RuntimeException("View is not attached to window")
@@ -182,7 +182,7 @@ fun View.emoStillModal(
         systemCancellable,
         maskTouchBehavior,
         themeProvider,
-        content
+        content,
     )
     val hostView = modalHost.first
     handleModelUnique(hostView, modal, uniqueId)
@@ -190,9 +190,10 @@ fun View.emoStillModal(
 }
 
 private fun handleModelUnique(hostView: FrameLayout, modal: EmoModal, uniqueId: Long) {
-    val showingModals = (hostView.getTag(R.id.emo_modals) as? ShowingModals) ?: ShowingModals().also {
-        hostView.setTag(R.id.emo_modals, it)
-    }
+    val showingModals =
+        (hostView.getTag(R.id.emo_modals) as? ShowingModals) ?: ShowingModals().also {
+            hostView.setTag(R.id.emo_modals, it)
+        }
 
     modal.doOnShow {
         showingModals.modals.put(uniqueId, it)?.dismiss()

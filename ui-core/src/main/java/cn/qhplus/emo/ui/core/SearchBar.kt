@@ -60,7 +60,7 @@ class SearchState internal constructor(
     placeHolder: String,
     text: String,
     private val autoSearchIfValueChange: Boolean,
-    private val onSearch: suspend (String) -> Unit
+    private val onSearch: suspend (String) -> Unit,
 ) {
 
     internal var placeHolder by mutableStateOf(placeHolder)
@@ -103,7 +103,7 @@ fun rememberSearchState(
     placeHolder: String = "",
     text: String = "",
     autoSearchIfValueChange: Boolean = true,
-    onSearch: suspend (String) -> Unit
+    onSearch: suspend (String) -> Unit,
 ): SearchState {
     val state = remember(text) {
         SearchState(placeHolder, text, autoSearchIfValueChange, onSearch)
@@ -128,13 +128,13 @@ fun SearchBar(
     textFieldColors: TextFieldColors = TextFieldDefaults.colors(
         focusedIndicatorColor = Color.Transparent,
         unfocusedIndicatorColor = Color.Transparent,
-        disabledIndicatorColor = Color.Transparent
+        disabledIndicatorColor = Color.Transparent,
     ),
     state: SearchState,
     leadingIcon: @Composable (() -> Unit)? = {
         Icon(
             imageVector = Icons.Filled.Search,
-            contentDescription = "search"
+            contentDescription = "search",
         )
     },
     placeholder: @Composable ((String) -> Unit)? = { hint ->
@@ -147,11 +147,11 @@ fun SearchBar(
                 contentDescription = "clear",
                 modifier = Modifier.throttleClick {
                     state.clear(scope)
-                }
+                },
             )
         }
     },
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
     val scope = rememberCoroutineScope()
     BasicTextField(
@@ -165,7 +165,7 @@ fun SearchBar(
         keyboardOptions = remember {
             KeyboardOptions(
                 KeyboardCapitalization.None,
-                imeAction = ImeAction.Search
+                imeAction = ImeAction.Search,
             )
         },
         interactionSource = interactionSource,
@@ -184,7 +184,9 @@ fun SearchBar(
                 innerTextField = innerTextField,
                 placeholder = if (placeholder != null) {
                     { placeholder.invoke(state.placeHolder) }
-                } else null,
+                } else {
+                    null
+                },
                 leadingIcon = leadingIcon,
                 trailingIcon = { trailingIcon?.invoke(scope) },
                 shape = shape,
@@ -192,8 +194,8 @@ fun SearchBar(
                 singleLine = true,
                 contentPadding = PaddingValues(),
                 interactionSource = interactionSource,
-                colors = textFieldColors
+                colors = textFieldColors,
             )
-        }
+        },
     )
 }

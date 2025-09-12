@@ -34,12 +34,12 @@ import androidx.compose.ui.platform.debugInspectorInfo
 fun Modifier.windowInsetsCommonTopPadding() = composed(
     inspectorInfo = debugInspectorInfo {
         name = "windowInsetsCommonTopPadding"
-    }
+    },
 ) {
     windowInsetsPadding(
         WindowInsets.statusBarsIgnoringVisibility
             .union(WindowInsets.displayCutout)
-            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
     )
 }
 
@@ -47,19 +47,21 @@ fun Modifier.windowInsetsCommonTopPadding() = composed(
 fun Modifier.windowInsetsCommonNavPadding() = composed(
     inspectorInfo = debugInspectorInfo {
         name = "windowInsetsCommonNavPadding"
-    }
+    },
 ) {
     windowInsetsPadding(
-        WindowInsets.navigationBarsIgnoringVisibility.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+        WindowInsets.navigationBarsIgnoringVisibility.only(
+            WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+        ),
     )
 }
 
 fun Modifier.windowInsetsCommonHorPadding() = composed(
     inspectorInfo = debugInspectorInfo {
         name = "windowInsetsCommonHorPadding"
-    }
+    },
 ) {
     windowInsetsPadding(
-        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
+        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
     )
 }

@@ -56,12 +56,12 @@ fun EmoToast(
     modal: EmoModal,
     radius: Dp = 8.dp,
     background: Color = Color.DarkGray,
-    content: @Composable BoxScope.(EmoModal) -> Unit
+    content: @Composable BoxScope.(EmoModal) -> Unit,
 ) {
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(radius))
-            .background(background)
+            .background(background),
     ) {
         content(modal)
     }
@@ -79,28 +79,26 @@ fun View.emoToast(
     radius: Dp = 8.dp,
     background: Color = Color.Black,
     enter: EnterTransition = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-    exit: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut()
-): EmoModal {
-    return emoToast(
-        duration,
-        modalHostProvider,
-        alignment,
-        horEdge,
-        verEdge,
-        radius,
-        background,
-        enter,
-        exit
-    ) {
-        Text(
-            text = text,
-            color = textColor,
-            fontSize = fontSize,
-            modifier = Modifier
-                .padding(horizontal = 24.dp, vertical = 16.dp)
-                .align(Alignment.Center)
-        )
-    }
+    exit: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+): EmoModal = emoToast(
+    duration,
+    modalHostProvider,
+    alignment,
+    horEdge,
+    verEdge,
+    radius,
+    background,
+    enter,
+    exit,
+) {
+    Text(
+        text = text,
+        color = textColor,
+        fontSize = fontSize,
+        modifier = Modifier
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .align(Alignment.Center),
+    )
 }
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -115,7 +113,7 @@ fun View.emoToast(
     enter: EnterTransition = slideInVertically(initialOffsetY = { it }) + fadeIn(),
     exit: ExitTransition = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
     themeProvider: @Composable (@Composable () -> Unit) -> Unit = { inner -> inner() },
-    content: @Composable BoxScope.(EmoModal) -> Unit
+    content: @Composable BoxScope.(EmoModal) -> Unit,
 ): EmoModal {
     var job: Job? = null
     return emoModal(
@@ -126,20 +124,20 @@ fun View.emoToast(
         modalHostProvider,
         enter = EnterTransition.None,
         exit = ExitTransition.None,
-        themeProvider = themeProvider
+        themeProvider = themeProvider,
     ) { modal ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = horEdge, vertical = verEdge),
-            contentAlignment = alignment
+            contentAlignment = alignment,
         ) {
             Box(
                 modifier = Modifier
                     .animateEnterExit(
                         enter = enter,
-                        exit = exit
-                    )
+                        exit = exit,
+                    ),
             ) {
                 EmoToast(modal, radius, background, content)
             }
@@ -166,26 +164,24 @@ fun View.emoStillToast(
     horEdge: Dp = DefaultToastHorEdgeProtectionMargin,
     verEdge: Dp = DefaultToastVerEdgeProtectionMargin,
     radius: Dp = 8.dp,
-    background: Color = Color.Black
-): EmoModal {
-    return emoStillToast(
-        duration,
-        modalHostProvider,
-        alignment,
-        horEdge,
-        verEdge,
-        radius,
-        background
-    ) {
-        Text(
-            text = text,
-            color = textColor,
-            fontSize = fontSize,
-            modifier = Modifier
-                .padding(horizontal = 24.dp, vertical = 16.dp)
-                .align(Alignment.Center)
-        )
-    }
+    background: Color = Color.Black,
+): EmoModal = emoStillToast(
+    duration,
+    modalHostProvider,
+    alignment,
+    horEdge,
+    verEdge,
+    radius,
+    background,
+) {
+    Text(
+        text = text,
+        color = textColor,
+        fontSize = fontSize,
+        modifier = Modifier
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .align(Alignment.Center),
+    )
 }
 
 fun View.emoStillToast(
@@ -197,7 +193,7 @@ fun View.emoStillToast(
     radius: Dp = 8.dp,
     background: Color = Color.Black,
     themeProvider: @Composable (@Composable () -> Unit) -> Unit = { inner -> inner() },
-    content: @Composable BoxScope.(EmoModal) -> Unit
+    content: @Composable BoxScope.(EmoModal) -> Unit,
 ): EmoModal {
     var job: Job? = null
     return emoStillModal(
@@ -206,13 +202,13 @@ fun View.emoStillToast(
         MaskTouchBehavior.Penetrate,
         -1,
         modalHostProvider,
-        themeProvider
+        themeProvider,
     ) { modal ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = horEdge, vertical = verEdge),
-            contentAlignment = alignment
+            contentAlignment = alignment,
         ) {
             EmoToast(modal, radius, background, content)
         }

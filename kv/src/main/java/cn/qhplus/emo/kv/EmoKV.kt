@@ -40,7 +40,7 @@ class EmoKV(
     valueInitSpace: Long = 1024 * 1024, // 1m
     hashFactor: Float = 0.75f,
     valueUpdateCountToAutoCompact: Int = 5000,
-    private val validateFailedReporter: ((key: ByteArray, e: Throwable) -> Boolean)? = null
+    private val validateFailedReporter: ((key: ByteArray, e: Throwable) -> Boolean)? = null,
 ) {
     companion object {
         @Volatile
@@ -72,7 +72,7 @@ class EmoKV(
             keyInitSpace,
             valueInitSpace,
             hashFactor,
-            valueUpdateCountToAutoCompact
+            valueUpdateCountToAutoCompact,
         )
         if (nativePtr == 0L) {
             throw RuntimeException("native init failed.")
@@ -88,55 +88,39 @@ class EmoKV(
         }
     }
 
-    fun getBool(key: String, default: Boolean = false): Boolean {
-        return getInt(key, if (default) 1 else 0) == 1
-    }
+    fun getBool(key: String, default: Boolean = false): Boolean = getInt(key, if (default) 1 else 0) == 1
 
-    fun getChar(key: String, default: Char = '0'): Char {
-        return get(key.toByteArray())?.let {
-            validResultLength(key, it, Char.SIZE_BYTES)
-            ByteBuffer.wrap(it).char
-        } ?: default
-    }
+    fun getChar(key: String, default: Char = '0'): Char = get(key.toByteArray())?.let {
+        validResultLength(key, it, Char.SIZE_BYTES)
+        ByteBuffer.wrap(it).char
+    } ?: default
 
-    fun getShort(key: String, default: Short = 0): Short {
-        return get(key.toByteArray())?.let {
-            validResultLength(key, it, Short.SIZE_BYTES)
-            ByteBuffer.wrap(it).short
-        } ?: default
-    }
+    fun getShort(key: String, default: Short = 0): Short = get(key.toByteArray())?.let {
+        validResultLength(key, it, Short.SIZE_BYTES)
+        ByteBuffer.wrap(it).short
+    } ?: default
 
-    fun getInt(key: String, default: Int = 0): Int {
-        return get(key.toByteArray())?.let {
-            validResultLength(key, it, Int.SIZE_BYTES)
-            ByteBuffer.wrap(it).int
-        } ?: default
-    }
+    fun getInt(key: String, default: Int = 0): Int = get(key.toByteArray())?.let {
+        validResultLength(key, it, Int.SIZE_BYTES)
+        ByteBuffer.wrap(it).int
+    } ?: default
 
-    fun getLong(key: String, default: Long = 0): Long {
-        return get(key.toByteArray())?.let {
-            validResultLength(key, it, Long.SIZE_BYTES)
-            ByteBuffer.wrap(it).long
-        } ?: default
-    }
+    fun getLong(key: String, default: Long = 0): Long = get(key.toByteArray())?.let {
+        validResultLength(key, it, Long.SIZE_BYTES)
+        ByteBuffer.wrap(it).long
+    } ?: default
 
-    fun getFloat(key: String, default: Float = 0f): Float {
-        return get(key.toByteArray())?.let {
-            validResultLength(key, it, Float.SIZE_BYTES)
-            ByteBuffer.wrap(it).float
-        } ?: default
-    }
+    fun getFloat(key: String, default: Float = 0f): Float = get(key.toByteArray())?.let {
+        validResultLength(key, it, Float.SIZE_BYTES)
+        ByteBuffer.wrap(it).float
+    } ?: default
 
-    fun getDouble(key: String, default: Double = 0.0): Double {
-        return get(key.toByteArray())?.let {
-            validResultLength(key, it, Double.SIZE_BYTES)
-            ByteBuffer.wrap(it).double
-        } ?: default
-    }
+    fun getDouble(key: String, default: Double = 0.0): Double = get(key.toByteArray())?.let {
+        validResultLength(key, it, Double.SIZE_BYTES)
+        ByteBuffer.wrap(it).double
+    } ?: default
 
-    fun getString(key: String): String? {
-        return get(key.toByteArray())?.let { String(it) }
-    }
+    fun getString(key: String): String? = get(key.toByteArray())?.let { String(it) }
 
     fun get(key: ByteArray): ByteArray? {
         validNotClosed()
@@ -181,58 +165,42 @@ class EmoKV(
         }
     }
 
-    fun put(key: String, value: Boolean): Boolean {
-        return put(
-            key.toByteArray(),
-            ByteBuffer.allocate(Int.SIZE_BYTES).putInt(if (value) 1 else 0).array()
-        )
-    }
+    fun put(key: String, value: Boolean): Boolean = put(
+        key.toByteArray(),
+        ByteBuffer.allocate(Int.SIZE_BYTES).putInt(if (value) 1 else 0).array(),
+    )
 
-    fun put(key: String, value: Char): Boolean {
-        return put(
-            key.toByteArray(),
-            ByteBuffer.allocate(Short.SIZE_BYTES).putChar(value).array()
-        )
-    }
+    fun put(key: String, value: Char): Boolean = put(
+        key.toByteArray(),
+        ByteBuffer.allocate(Short.SIZE_BYTES).putChar(value).array(),
+    )
 
-    fun put(key: String, value: Short): Boolean {
-        return put(
-            key.toByteArray(),
-            ByteBuffer.allocate(Short.SIZE_BYTES).putShort(value).array()
-        )
-    }
+    fun put(key: String, value: Short): Boolean = put(
+        key.toByteArray(),
+        ByteBuffer.allocate(Short.SIZE_BYTES).putShort(value).array(),
+    )
 
-    fun put(key: String, value: Int): Boolean {
-        return put(
-            key.toByteArray(),
-            ByteBuffer.allocate(Int.SIZE_BYTES).putInt(value).array()
-        )
-    }
+    fun put(key: String, value: Int): Boolean = put(
+        key.toByteArray(),
+        ByteBuffer.allocate(Int.SIZE_BYTES).putInt(value).array(),
+    )
 
-    fun put(key: String, value: Long): Boolean {
-        return put(
-            key.toByteArray(),
-            ByteBuffer.allocate(Long.SIZE_BYTES).putLong(value).array()
-        )
-    }
+    fun put(key: String, value: Long): Boolean = put(
+        key.toByteArray(),
+        ByteBuffer.allocate(Long.SIZE_BYTES).putLong(value).array(),
+    )
 
-    fun put(key: String, value: Float): Boolean {
-        return put(
-            key.toByteArray(),
-            ByteBuffer.allocate(Float.SIZE_BYTES).putFloat(value).array()
-        )
-    }
+    fun put(key: String, value: Float): Boolean = put(
+        key.toByteArray(),
+        ByteBuffer.allocate(Float.SIZE_BYTES).putFloat(value).array(),
+    )
 
-    fun put(key: String, value: Double): Boolean {
-        return put(
-            key.toByteArray(),
-            ByteBuffer.allocate(Double.SIZE_BYTES).putDouble(value).array()
-        )
-    }
+    fun put(key: String, value: Double): Boolean = put(
+        key.toByteArray(),
+        ByteBuffer.allocate(Double.SIZE_BYTES).putDouble(value).array(),
+    )
 
-    fun put(key: String, value: String): Boolean {
-        return put(key.toByteArray(), value.toByteArray())
-    }
+    fun put(key: String, value: String): Boolean = put(key.toByteArray(), value.toByteArray())
 
     fun put(key: ByteArray, value: ByteArray): Boolean {
         validNotClosed()
@@ -314,7 +282,7 @@ class EmoKV(
         keyInitSpace: Long,
         valueInitSpace: Long,
         hashFactor: Float,
-        valueUpdateCountToAutoCompact: Int = 5000
+        valueUpdateCountToAutoCompact: Int = 5000,
     ): Long
 
     private external fun nPut(nativePtr: Long, key: ByteArray, value: ByteArray): Boolean

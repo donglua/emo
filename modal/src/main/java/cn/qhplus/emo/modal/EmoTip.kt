@@ -59,7 +59,7 @@ fun EmoTip(flow: StateFlow<TipStatus>) {
     val status by flow.collectAsStateWithLifecycle()
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             modifier = Modifier
@@ -67,44 +67,44 @@ fun EmoTip(flow: StateFlow<TipStatus>) {
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color(0xFF181818)),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             val iconSize = 36.dp
             when (status) {
                 is TipStatus.Loading -> {
                     Loading(
                         size = iconSize,
-                        lineColor = Color.White
+                        lineColor = Color.White,
                     )
                 }
                 is TipStatus.Done -> {
                     Image(
                         painter = painterResource(
-                            id = R.mipmap.ic_tip_done
+                            id = R.mipmap.ic_tip_done,
                         ),
                         contentDescription = status.text,
                         modifier = Modifier.size(iconSize),
-                        contentScale = ContentScale.Fit
+                        contentScale = ContentScale.Fit,
                     )
                 }
                 is TipStatus.Error -> {
                     Image(
                         painter = painterResource(
-                            id = R.mipmap.ic_tip_error
+                            id = R.mipmap.ic_tip_error,
                         ),
                         contentDescription = status.text,
                         modifier = Modifier.size(iconSize),
-                        contentScale = ContentScale.Fit
+                        contentScale = ContentScale.Fit,
                     )
                 }
                 is TipStatus.Info -> {
                     Image(
                         painter = painterResource(
-                            id = R.mipmap.ic_tip_info
+                            id = R.mipmap.ic_tip_info,
                         ),
                         contentDescription = status.text,
                         modifier = Modifier.size(iconSize),
-                        contentScale = ContentScale.Fit
+                        contentScale = ContentScale.Fit,
                     )
                 }
             }
@@ -115,7 +115,7 @@ fun EmoTip(flow: StateFlow<TipStatus>) {
                 fontSize = 16.sp,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(top = 12.dp)
+                    .padding(top = 12.dp),
             )
         }
     }
@@ -128,18 +128,16 @@ fun View.emoTip(
     modalHostProvider: ModalHostProvider = DefaultModalHostProvider,
     enter: EnterTransition = fadeIn(tween(), 0f),
     exit: ExitTransition = fadeOut(tween(), 0f),
-    status: StateFlow<TipStatus>
-): EmoModal {
-    return emoModal(
-        mask,
-        systemCancellable,
-        maskTouchBehavior,
-        modalHostProvider = modalHostProvider,
-        enter = enter,
-        exit = exit
-    ) {
-        EmoTip(status)
-    }
+    status: StateFlow<TipStatus>,
+): EmoModal = emoModal(
+    mask,
+    systemCancellable,
+    maskTouchBehavior,
+    modalHostProvider = modalHostProvider,
+    enter = enter,
+    exit = exit,
+) {
+    EmoTip(status)
 }
 
 fun View.emoStillTip(
@@ -147,14 +145,12 @@ fun View.emoStillTip(
     systemCancellable: Boolean = false,
     maskTouchBehavior: MaskTouchBehavior = MaskTouchBehavior.None,
     modalHostProvider: ModalHostProvider = DefaultModalHostProvider,
-    status: StateFlow<TipStatus>
-): EmoModal {
-    return emoStillModal(
-        mask,
-        systemCancellable,
-        maskTouchBehavior,
-        modalHostProvider = modalHostProvider
-    ) {
-        EmoTip(flow = status)
-    }
+    status: StateFlow<TipStatus>,
+): EmoModal = emoStillModal(
+    mask,
+    systemCancellable,
+    maskTouchBehavior,
+    modalHostProvider = modalHostProvider,
+) {
+    EmoTip(flow = status)
 }

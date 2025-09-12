@@ -41,7 +41,7 @@ interface ReporterFileSink<T> {
 
 class ReporterMappedByteBufferSink<T>(
     private val mappedByteBuffer: MappedByteBuffer,
-    private val accessFile: RandomAccessFile
+    private val accessFile: RandomAccessFile,
 ) : ReporterFileSink<T> {
 
     override suspend fun write(msg: T, converter: ReportMsgConverter<T>): Boolean {
@@ -68,10 +68,7 @@ class ReporterMappedByteBufferSink<T>(
     }
 }
 
-class ReporterStreamSink<T>(
-    private val file: File,
-    private val fileMaxSize: Long
-) : ReporterFileSink<T> {
+class ReporterStreamSink<T>(private val file: File, private val fileMaxSize: Long) : ReporterFileSink<T> {
 
     private val os = file.outputStream().buffered()
 
@@ -113,7 +110,7 @@ fun <T> File.createReportSink(bufferLength: Long = 150 * 1024): ReporterFileSink
             val mappedByteBuffer = randomAccessFile.channel.map(
                 FileChannel.MapMode.READ_WRITE,
                 length(),
-                bufferLength
+                bufferLength,
             )
             return ReporterMappedByteBufferSink(mappedByteBuffer, randomAccessFile)
         }
@@ -133,13 +130,13 @@ interface ReporterFileSource<T> {
 
 class ReporterMappedByteBufferSource<T>(
     private val mappedByteBuffer: MappedByteBuffer,
-    private val randomAccessFile: RandomAccessFile
+    private val randomAccessFile: RandomAccessFile,
 ) : ReporterFileSource<T> {
 
     override suspend fun read(
         client: ReportClient<T>,
         transporter: StreamReportTransporter<T>,
-        converter: ReportMsgConverter<T>
+        converter: ReportMsgConverter<T>,
     ) {
         val miniLength = Integer.BYTES + MAGIC_END.size
         val end = ByteArray(MAGIC_END.size)
@@ -166,14 +163,12 @@ class ReporterMappedByteBufferSource<T>(
     }
 }
 
-class ReporterStreamSource<T>(
-    private val ins: InputStream
-) : ReporterFileSource<T> {
+class ReporterStreamSource<T>(private val ins: InputStream) : ReporterFileSource<T> {
 
     override suspend fun read(
         client: ReportClient<T>,
         transporter: StreamReportTransporter<T>,
-        converter: ReportMsgConverter<T>
+        converter: ReportMsgConverter<T>,
     ) = withContext(Dispatchers.IO) {
         val sizeBuffer = ByteBuffer.allocate(Integer.BYTES)
         val end = ByteArray(MAGIC_END.size)
@@ -212,7 +207,7 @@ fun <T> File.createReportSource(): ReporterFileSource<T> {
             val mappedByteBuffer = randomAccessFile.channel.map(
                 FileChannel.MapMode.READ_ONLY,
                 0,
-                length()
+                length(),
             )
             return ReporterMappedByteBufferSource(mappedByteBuffer, randomAccessFile)
         } catch (e: Throwable) {

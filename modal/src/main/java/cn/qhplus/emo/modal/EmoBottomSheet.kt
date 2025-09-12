@@ -20,7 +20,6 @@ import android.view.View
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.tween
@@ -66,17 +65,16 @@ import androidx.compose.ui.unit.dp
 fun EmoBottomSheetList(
     modal: EmoModal,
     state: LazyListState = rememberLazyListState(),
-    children: LazyListScope.(EmoModal) -> Unit
+    children: LazyListScope.(EmoModal) -> Unit,
 ) {
     LazyColumn(
         state = state,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         children(modal)
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AnimatedVisibilityScope.EmoBottomSheet(
     modal: EmoModal,
@@ -87,11 +85,11 @@ fun AnimatedVisibilityScope.EmoBottomSheet(
     background: Color = Color.White,
     mask: Color = DefaultMaskColor,
     modifier: Modifier,
-    content: @Composable (EmoModal) -> Unit
+    content: @Composable (EmoModal) -> Unit,
 ) {
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter
+        contentAlignment = Alignment.BottomCenter,
     ) {
         val wl = widthLimit(maxWidth)
         val wh = heightLimit(maxHeight)
@@ -113,7 +111,7 @@ fun AnimatedVisibilityScope.EmoBottomSheet(
             .background(background)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = null
+                indication = null,
             ) {
             }
 
@@ -130,9 +128,9 @@ fun AnimatedVisibilityScope.EmoBottomSheet(
                         .fillMaxSize()
                         .animateEnterExit(
                             enter = fadeIn(tween()),
-                            exit = fadeOut(tween())
+                            exit = fadeOut(tween()),
                         )
-                        .background(mask)
+                        .background(mask),
                 )
             }
             Box(modifier = modifier.then(contentModifier)) {
@@ -144,13 +142,12 @@ fun AnimatedVisibilityScope.EmoBottomSheet(
 
 private class MutableHeight(var height: Float)
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun AnimatedVisibilityScope.NestScrollWrapper(
     modal: EmoModal,
     modifier: Modifier,
     mask: Color,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val yOffsetState = remember {
         mutableStateOf(0f)
@@ -161,7 +158,9 @@ private fun AnimatedVisibilityScope.NestScrollWrapper(
     }
     val contentHeight = mutableContentHeight.height
 
-    val percent = if (contentHeight <= 0f) 1f else {
+    val percent = if (contentHeight <= 0f) {
+        1f
+    } else {
         ((contentHeight - yOffsetState.value) / contentHeight)
             .coerceAtMost(1f)
             .coerceAtLeast(0f)
@@ -175,7 +174,7 @@ private fun AnimatedVisibilityScope.NestScrollWrapper(
 
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter
+        contentAlignment = Alignment.BottomCenter,
     ) {
         if (mask != Color.Transparent) {
             Box(
@@ -184,9 +183,9 @@ private fun AnimatedVisibilityScope.NestScrollWrapper(
                     .alpha(percent)
                     .animateEnterExit(
                         enter = fadeIn(tween()),
-                        exit = fadeOut(tween())
+                        exit = fadeOut(tween()),
                     )
-                    .background(mask)
+                    .background(mask),
             )
             Box(
                 modifier = modifier
@@ -194,7 +193,7 @@ private fun AnimatedVisibilityScope.NestScrollWrapper(
                     .nestedScroll(nestedScrollConnection)
                     .onGloballyPositioned {
                         mutableContentHeight.height = it.size.height.toFloat()
-                    }
+                    },
             ) {
                 content()
             }
@@ -202,7 +201,6 @@ private fun AnimatedVisibilityScope.NestScrollWrapper(
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 fun View.emoBottomSheet(
     mask: Color = DefaultMaskColor,
     systemCancellable: Boolean = true,
@@ -216,38 +214,36 @@ fun View.emoBottomSheet(
     radius: Dp = 12.dp,
     background: @Composable () -> Color = { MaterialTheme.colorScheme.background },
     themeProvider: @Composable (@Composable () -> Unit) -> Unit = { inner -> inner() },
-    content: @Composable (EmoModal) -> Unit
-): EmoModal {
-    return emoModal(
-        Color.Transparent,
-        systemCancellable,
-        maskTouchBehavior,
-        modalHostProvider = modalHostProvider,
-        enter = EnterTransition.None,
-        exit = ExitTransition.None,
-        themeProvider = themeProvider
-    ) { modal ->
-        EmoBottomSheet(
-            modal,
-            draggable,
-            widthLimit,
-            heightLimit,
-            radius,
-            background(),
-            mask,
-            Modifier.animateEnterExit(
-                enter = enter,
-                exit = exit
-            ),
-            content
-        )
-    }
+    content: @Composable (EmoModal) -> Unit,
+): EmoModal = emoModal(
+    Color.Transparent,
+    systemCancellable,
+    maskTouchBehavior,
+    modalHostProvider = modalHostProvider,
+    enter = EnterTransition.None,
+    exit = ExitTransition.None,
+    themeProvider = themeProvider,
+) { modal ->
+    EmoBottomSheet(
+        modal,
+        draggable,
+        widthLimit,
+        heightLimit,
+        radius,
+        background(),
+        mask,
+        Modifier.animateEnterExit(
+            enter = enter,
+            exit = exit,
+        ),
+        content,
+    )
 }
 
 private class BottomSheetNestedScrollConnection(
     val modal: EmoModal,
     val yOffsetStateFlow: MutableState<Float>,
-    val contentHeight: MutableHeight
+    val contentHeight: MutableHeight,
 ) : NestedScrollConnection {
 
     override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
@@ -263,11 +259,7 @@ private class BottomSheetNestedScrollConnection(
         return super.onPreScroll(available, source)
     }
 
-    override fun onPostScroll(
-        consumed: Offset,
-        available: Offset,
-        source: NestedScrollSource
-    ): Offset {
+    override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
         if (source == NestedScrollSource.Fling) {
             return Offset.Zero
         }
@@ -280,7 +272,9 @@ private class BottomSheetNestedScrollConnection(
 
     override suspend fun onPreFling(available: Velocity): Velocity {
         if (yOffsetStateFlow.value > 0) {
-            if (available.y > 0 || (available.y == 0f && yOffsetStateFlow.value > contentHeight.height / 2)) {
+            if (available.y > 0 ||
+                (available.y == 0f && yOffsetStateFlow.value > contentHeight.height / 2)
+            ) {
                 modal.dismiss()
             } else {
                 val animated = Animatable(yOffsetStateFlow.value, Float.VectorConverter)

@@ -35,7 +35,7 @@ private class EmoMultiplePermissionState(
     view: View,
     scope: CoroutineScope,
     tip: EmoPermissionTip,
-    val permissionState: MultiplePermissionsState
+    val permissionState: MultiplePermissionsState,
 ) : MultiplePermissionsState {
 
     private val modal = EmoPermissionModal(view, scope, tip)
@@ -59,16 +59,14 @@ private class EmoMultiplePermissionState(
     }
 }
 
-private class MultiplePermissionCallbackActionHolder(
-    var action: ((Map<String, Boolean>) -> Unit)? = null
-)
+private class MultiplePermissionCallbackActionHolder(var action: ((Map<String, Boolean>) -> Unit)? = null)
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun rememberEmoMultiplePermissionsState(
     permissions: List<String>,
     tipContent: String,
-    onPermissionsResult: (Map<String, Boolean>) -> Unit = {}
+    onPermissionsResult: (Map<String, Boolean>) -> Unit = {},
 ): MultiplePermissionsState {
     val tip = remember(tipContent) {
         SimpleEmoPermissionTip(tipContent)
@@ -81,7 +79,7 @@ fun rememberEmoMultiplePermissionsState(
 fun rememberEmoMultiplePermissionsState(
     permissions: List<String>,
     tip: EmoPermissionTip,
-    onPermissionsResult: (Map<String, Boolean>) -> Unit = {}
+    onPermissionsResult: (Map<String, Boolean>) -> Unit = {},
 ): MultiplePermissionsState {
     val callbackActionHolder = remember {
         MultiplePermissionCallbackActionHolder()

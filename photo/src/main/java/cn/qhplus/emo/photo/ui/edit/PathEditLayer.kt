@@ -48,9 +48,7 @@ import java.nio.ByteBuffer
 internal const val PAINT_VERSION = 1
 
 @Stable
-sealed class PathEditLayer(
-    internal val points: MutableList<Offset> = mutableListOf()
-) : EditLayer {
+sealed class PathEditLayer(internal val points: MutableList<Offset> = mutableListOf()) : EditLayer {
     internal val path: MutableState<Path> = mutableStateOf(
         Path().apply {
             points.foldIndexed(this) { index, acc, offset ->
@@ -62,7 +60,7 @@ sealed class PathEditLayer(
                 acc
             }
         },
-        neverEqualPolicy()
+        neverEqualPolicy(),
     )
 
     fun append(offset: Offset) {
@@ -76,13 +74,9 @@ sealed class PathEditLayer(
         path.value = p
     }
 
-    override fun toMutable(state: EditState): EditLayer {
-        return this
-    }
+    override fun toMutable(state: EditState): EditLayer = this
 
-    override fun toImmutable(): EditLayer {
-        return this
-    }
+    override fun toImmutable(): EditLayer = this
 }
 
 @Stable
@@ -90,7 +84,7 @@ class GraffitiEditLayer(
     private val size: Size,
     private val color: Color,
     private val strokeWidth: Dp,
-    points: MutableList<Offset> = mutableListOf()
+    points: MutableList<Offset> = mutableListOf(),
 ) : PathEditLayer(points) {
 
     @Composable
@@ -111,10 +105,10 @@ class GraffitiEditLayer(
                         style = Stroke(
                             width = strokeWidth.toPx(),
                             cap = StrokeCap.Round,
-                            join = StrokeJoin.Round
-                        )
+                            join = StrokeJoin.Round,
+                        ),
                     )
-                }
+                },
             )
         }
     }
@@ -147,7 +141,7 @@ class GraffitiEditLayer(
 class MosaicEditLayer(
     private val image: ImageBitmap,
     private val strokeWidth: Dp,
-    points: MutableList<Offset> = mutableListOf()
+    points: MutableList<Offset> = mutableListOf(),
 ) : PathEditLayer(points) {
 
     private val paint = Paint()
@@ -166,25 +160,23 @@ class MosaicEditLayer(
                             style = Stroke(
                                 width = strokeWidth.toPx(),
                                 cap = StrokeCap.Round,
-                                join = StrokeJoin.Round
-                            )
+                                join = StrokeJoin.Round,
+                            ),
                         )
                         drawImage(
                             image,
                             dstSize = IntSize(
                                 drawContext.size.width.toInt(),
-                                drawContext.size.height.toInt()
+                                drawContext.size.height.toInt(),
                             ),
                             blendMode = BlendMode.SrcIn,
-                            filterQuality = FilterQuality.None
+                            filterQuality = FilterQuality.None,
                         )
                     }
-                }
+                },
             )
         }
     }
 
-    override fun serialize(): ByteArray {
-        return ByteArray(0)
-    }
+    override fun serialize(): ByteArray = ByteArray(0)
 }

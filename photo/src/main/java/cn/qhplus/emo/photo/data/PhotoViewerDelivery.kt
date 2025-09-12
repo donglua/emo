@@ -18,10 +18,7 @@ package cn.qhplus.emo.photo.data
 
 import androidx.annotation.MainThread
 
-class PhotoViewerData(
-    val list: List<PhotoShot>,
-    val index: Int
-)
+class PhotoViewerData(val list: List<PhotoShot>, val index: Int)
 
 internal object PhotoShotDelivery {
     private val dataMap = mutableMapOf<Long, PhotoViewerData>()
@@ -42,14 +39,10 @@ internal object PhotoShotDelivery {
     }
 
     @MainThread
-    fun peek(id: Long): PhotoViewerData? {
-        return dataMap[id]
-    }
+    fun peek(id: Long): PhotoViewerData? = dataMap[id]
 
     @MainThread
-    fun getAndRemove(id: Long): PhotoViewerData? {
-        return dataMap.remove(id)
-    }
+    fun getAndRemove(id: Long): PhotoViewerData? = dataMap.remove(id)
 
     @MainThread
     fun remove(id: Long) {

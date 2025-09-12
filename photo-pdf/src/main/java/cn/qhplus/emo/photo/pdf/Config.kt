@@ -31,7 +31,7 @@ data class PdfConfig(
     val barBgColor: Color = Color.White,
     val barContentColor: Color = Color.Black,
     val barDividerColor: Color = Color.Black.copy(alpha = 0.05f),
-    val editConfig: PhotoEditConfig = PhotoEditConfig()
+    val editConfig: PhotoEditConfig = PhotoEditConfig(),
 )
 
 val DefaultPdfConfig by lazy { PdfConfig() }

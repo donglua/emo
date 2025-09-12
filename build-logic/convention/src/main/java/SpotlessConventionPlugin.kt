@@ -33,8 +33,12 @@ class SpotlessConventionPlugin : Plugin<Project> {
                     targetExclude("**/build/**/*.kt")
                     ktlint(libs.findVersion("ktlint").get().toString())
                         .editorConfigOverride(mapOf(
-                            "max_line_length" to "150",
-                            "disabled_rules" to "filename"
+                            "max_line_length" to "120",
+                            "disabled_rules" to "filename",
+                            "ktlint_standard_function-naming" to "disabled",
+                            "ktlint_standard_property-naming" to "disabled",
+                            "ktlint_standard_backing-property-naming" to "disabled",
+                            "ktlint_standard_filename" to "disabled"
                         ))
                     licenseHeaderFile(rootProject.file("spotless/copyright.kt"))
                 }

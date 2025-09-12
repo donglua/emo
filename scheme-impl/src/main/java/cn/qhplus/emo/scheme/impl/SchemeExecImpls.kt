@@ -33,7 +33,7 @@ import kotlin.reflect.KClass
 class SchemeExecSingle(
     private val activity: Activity,
     private val storage: SchemeDefStorage,
-    private val transitionProvider: (Int) -> SchemeTransitionProvider
+    private val transitionProvider: (Int) -> SchemeTransitionProvider,
 ) : SchemeTransaction {
 
     override fun exec(schemeParts: SchemeParts): Boolean {
@@ -51,13 +51,17 @@ class SchemeExecSingle(
             activity.startActivity(intent)
             activity.overridePendingTransition(
                 transition.activityEnterRes(),
-                transition.activityExitRes()
+                transition.activityExitRes(),
             )
             return true
         } else {
             val routeValue = scheme.toComposeRouteValue()
-            if (!scheme.forceNewHost() && activity is ComposeHostActivity && schemeDef.alternativeHosts.contains(activity::class)) {
-                val navController = activity.navController ?: throw RuntimeException("Not call SchemeNavHost in method Content.")
+            if (!scheme.forceNewHost() &&
+                activity is ComposeHostActivity &&
+                schemeDef.alternativeHosts.contains(activity::class)
+            ) {
+                val navController =
+                    activity.navController ?: throw RuntimeException("Not call SchemeNavHost in method Content.")
                 if (scheme.isMatchToCurrentHost(activity::class, activity.intent)) {
                     navController.navigate(routeValue)
                     return true
@@ -68,7 +72,7 @@ class SchemeExecSingle(
                 activity.startActivity(intent.first)
                 activity.overridePendingTransition(
                     transition.activityEnterRes(),
-                    transition.activityExitRes()
+                    transition.activityExitRes(),
                 )
                 return true
             }
@@ -76,15 +80,13 @@ class SchemeExecSingle(
         return false
     }
 
-    override fun finish(): Boolean {
-        throw RuntimeException("should not be called.")
-    }
+    override fun finish(): Boolean = throw RuntimeException("should not be called.")
 }
 
 class SchemeExecBatch(
     private val activity: Activity,
     private val storage: SchemeDefStorage,
-    private val transitionProvider: (Int) -> SchemeTransitionProvider
+    private val transitionProvider: (Int) -> SchemeTransitionProvider,
 ) : SchemeTransaction {
 
     private val intentList: MutableList<Intent> = ArrayList()
@@ -111,12 +113,14 @@ class SchemeExecBatch(
             return true
         } else {
             val routeValue = scheme.toComposeRouteValue()
-            if (intentList.isEmpty() && buildingComposeIntent == null &&
+            if (intentList.isEmpty() &&
+                buildingComposeIntent == null &&
                 !scheme.forceNewHost() &&
                 activity is ComposeHostActivity &&
                 schemeDef.alternativeHosts.contains(activity::class)
             ) {
-                val navController = activity.navController ?: throw RuntimeException("Not call SchemeNavHost in method Content.")
+                val navController =
+                    activity.navController ?: throw RuntimeException("Not call SchemeNavHost in method Content.")
                 if (scheme.isMatchToCurrentHost(activity::class, activity.intent)) {
                     navController.navigate(routeValue)
                     return true
@@ -160,13 +164,11 @@ class SchemeExecBatch(
     private class BuildingComposeIntent(
         val activityCls: KClass<*>,
         val intent: Intent,
-        val composeRoutes: MutableList<String> = mutableListOf()
+        val composeRoutes: MutableList<String> = mutableListOf(),
     ) {
-        fun build(): Intent {
-            return intent.apply {
-                if (composeRoutes.isNotEmpty()) {
-                    putExtra(SchemeKeys.KEY_BATCH_SCHEME_LIST, composeRoutes.toTypedArray())
-                }
+        fun build(): Intent = intent.apply {
+            if (composeRoutes.isNotEmpty()) {
+                putExtra(SchemeKeys.KEY_BATCH_SCHEME_LIST, composeRoutes.toTypedArray())
             }
         }
     }
@@ -206,8 +208,7 @@ private fun Scheme.createIntentForCompose(activity: Activity): Pair<Intent, KCla
         val intent = Intent(activity, cls.java)
         val schemeHost = cls.java.getAnnotation(SchemeHost::class.java)
         val matched = schemeHost == null ||
-            schemeHost.requiredArgs.all {
-                    name ->
+            schemeHost.requiredArgs.all { name ->
                 args.entries.find { it.key == name }?.also { intent.putAny(it.key, it.value) } != null
             }
         if (matched) {
@@ -221,7 +222,7 @@ private fun Scheme.createIntentForCompose(activity: Activity): Pair<Intent, KCla
                         }
                     }
                     putString(SchemeKeys.KEY_ORIGIN, Uri.encode(origin))
-                }
+                },
             )
             intent.handleSchemeFlags(this)
             return intent to cls
@@ -232,21 +233,22 @@ private fun Scheme.createIntentForCompose(activity: Activity): Pair<Intent, KCla
 
 private fun Scheme.isMatchToCurrentHost(host: KClass<*>, intent: Intent): Boolean {
     val schemeHost = host.java.getAnnotation(SchemeHost::class.java)
-    return schemeHost == null || schemeHost.requiredArgs.asSequence().all {
-        val value = args[it] ?: return@all false
-        when (value) {
-            is Boolean -> intent.getBooleanExtra(it, false) == value
-            is Int -> intent.getIntExtra(it, 0) == value
-            is Long -> intent.getLongExtra(it, 0) == value
-            is Float -> intent.getFloatExtra(it, 0.0f) == value
-            else -> intent.getStringExtra(it) == value
+    return schemeHost == null ||
+        schemeHost.requiredArgs.asSequence().all {
+            val value = args[it] ?: return@all false
+            when (value) {
+                is Boolean -> intent.getBooleanExtra(it, false) == value
+                is Int -> intent.getIntExtra(it, 0) == value
+                is Long -> intent.getLongExtra(it, 0) == value
+                is Float -> intent.getFloatExtra(it, 0.0f) == value
+                else -> intent.getStringExtra(it) == value
+            }
         }
-    }
 }
 
 class AndroidSchemeExecTransactionFactory(
     val application: Application,
-    val transitionProvider: (Int) -> SchemeTransitionProvider
+    val transitionProvider: (Int) -> SchemeTransitionProvider,
 ) : SchemeTransactionFactory {
 
     private var currentActivity: Activity? = null

@@ -21,9 +21,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-class PhotoViewerConfig(
-    val blankColor: Color = Color.LightGray
-)
+class PhotoViewerConfig(val blankColor: Color = Color.LightGray)
 
 val defaultPhotoViewerConfig by lazy { PhotoViewerConfig() }
 val LocalPhotoViewerConfig = staticCompositionLocalOf { defaultPhotoViewerConfig }

@@ -52,13 +52,11 @@ enum class ReportStrategy {
     Immediately,
     MemBach,
     FileBatch,
-    WriteBackBecauseOfFailed
+    WriteBackBecauseOfFailed,
 }
 
-class ImmediatelyReporter<T>(
-    private val client: ReportClient<T>,
-    private val transporter: ListReportTransporter<T>
-) : Reporter<T> {
+class ImmediatelyReporter<T>(private val client: ReportClient<T>, private val transporter: ListReportTransporter<T>) :
+    Reporter<T> {
 
     override fun batchReport(list: List<T>) {
         client.scope.launch {
@@ -67,10 +65,9 @@ class ImmediatelyReporter<T>(
     }
 }
 
-abstract class IntervalBatchReporter<T>(
-    private val client: ReportClient<T>,
-    private val batchInterval: Long
-) : BatchReporter<T>, Closeable {
+abstract class IntervalBatchReporter<T>(private val client: ReportClient<T>, private val batchInterval: Long) :
+    BatchReporter<T>,
+    Closeable {
 
     private val channel = Channel<Unit>(1, BufferOverflow.DROP_LATEST)
 
@@ -85,10 +82,10 @@ abstract class IntervalBatchReporter<T>(
         }
     }
 
-    private fun createIntervalJob(): Job? {
-        return if (batchInterval <= 0) {
-            null
-        } else client.scope.launch {
+    private fun createIntervalJob(): Job? = if (batchInterval <= 0) {
+        null
+    } else {
+        client.scope.launch {
             delay(batchInterval)
             channel.send(Unit)
         }
@@ -111,7 +108,7 @@ class MemBatchReporter<T>(
     private val client: ReportClient<T>,
     private val batchCount: Int,
     batchInterval: Long,
-    private val transporter: ListReportTransporter<T>
+    private val transporter: ListReportTransporter<T>,
 ) : IntervalBatchReporter<T>(client, batchInterval) {
 
     @Volatile
@@ -163,8 +160,9 @@ class FileBatchReporter<T>(
     private val converter: ReportMsgConverter<T>,
     private val transporter: StreamReportTransporter<T>,
     dirName: String = "report",
-    private val fileSize: Long = 150 * 1024
-) : IntervalBatchReporter<T>(client, batchInterval), LogTag {
+    private val fileSize: Long = 150 * 1024,
+) : IntervalBatchReporter<T>(client, batchInterval),
+    LogTag {
 
     private val applicationContext = context.applicationContext
     private val emoDir = File(applicationContext.filesDir, "emo").apply {
@@ -227,7 +225,7 @@ class FileBatchReporter<T>(
                                 val time = parts[2].toLong()
                                 time < newestTime
                             }
-                        }
+                        },
                     )
                     if (list != null && list.isNotEmpty()) {
                         for (file in list) {
@@ -263,9 +261,7 @@ class FileBatchReporter<T>(
         blockTransportUntil.set(SystemClock.elapsedRealtime() + time)
     }
 
-    private fun newFile(): File {
-        return File(dir, "report-${Process.myPid()}-${System.currentTimeMillis()}")
-    }
+    private fun newFile(): File = File(dir, "report-${Process.myPid()}-${System.currentTimeMillis()}")
 
     override fun batchReport(list: List<T>) {
         client.scope.launch {

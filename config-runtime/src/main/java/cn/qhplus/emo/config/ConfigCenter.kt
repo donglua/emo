@@ -51,7 +51,8 @@ class ConfigCenter(val storage: ConfigStorage, val prodMode: Boolean = true, aut
         }
     }
 
-    fun <T> actionOf(cls: Class<T>): ConfigAction = configMap.actionMap[cls] ?: throw RuntimeException("${cls.simpleName} is not a config interface")
+    fun <T> actionOf(cls: Class<T>): ConfigAction =
+        configMap.actionMap[cls] ?: throw RuntimeException("${cls.simpleName} is not a config interface")
 
     @Suppress("UNCHECKED_CAST")
     fun <T> resolverOf(cls: Class<T>): ConfigImplResolver<T>? = configMap.implMap[cls] as? ConfigImplResolver<T>
@@ -152,7 +153,13 @@ class ConfigCenter(val storage: ConfigStorage, val prodMode: Boolean = true, aut
     }
 
     fun interface OnValueTypeNotMatched {
-        fun invoke(action: ConfigAction, configCls: Class<*>, value: Any, expectedType: Class<*>, actualType: Class<*>): Boolean
+        fun invoke(
+            action: ConfigAction,
+            configCls: Class<*>,
+            value: Any,
+            expectedType: Class<*>,
+            actualType: Class<*>,
+        ): Boolean
     }
 }
 

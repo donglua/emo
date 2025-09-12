@@ -60,17 +60,13 @@ import coil.size.Scale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-open class CoilThumbPhoto(
-    val uri: Uri,
-    val isLongImage: Boolean,
-    val openBlankColor: Boolean
-) : Photo {
+open class CoilThumbPhoto(val uri: Uri, val isLongImage: Boolean, val openBlankColor: Boolean) : Photo {
     @Composable
     override fun Compose(
         contentScale: ContentScale,
         isContainerDimenExactly: Boolean,
         onSuccess: ((PhotoResult) -> Unit)?,
-        onError: ((Throwable) -> Unit)?
+        onError: ((Throwable) -> Unit)?,
     ) {
         if (isLongImage) {
             LongImage(onSuccess, onError, openBlankColor)
@@ -99,7 +95,7 @@ open class CoilThumbPhoto(
                     } else {
                         it
                     }
-                }
+                },
             ) {
                 val state = painter.state
                 if (state == AsyncImagePainter.State.Empty ||
@@ -116,11 +112,7 @@ open class CoilThumbPhoto(
     }
 
     @Composable
-    fun LongImage(
-        onSuccess: ((PhotoResult) -> Unit)?,
-        onError: ((Throwable) -> Unit)?,
-        openBlankColor: Boolean
-    ) {
+    fun LongImage(onSuccess: ((PhotoResult) -> Unit)?, onError: ((Throwable) -> Unit)?, openBlankColor: Boolean) {
         BoxWithConstraints(Modifier.fillMaxSize()) {
             val request = ImageRequest.Builder(LocalContext.current)
                 .setParameter("isThumb", true)
@@ -140,7 +132,7 @@ open class CoilThumbPhoto(
         request: ImageRequest,
         onSuccess: ((PhotoResult) -> Unit)?,
         onError: ((Throwable) -> Unit)?,
-        openBlankColor: Boolean
+        openBlankColor: Boolean,
     ) {
         val imageLoader = LocalContext.current.imageLoader
         var bitmap by remember("") {
@@ -168,7 +160,7 @@ open class CoilThumbPhoto(
                 contentDescription = "",
                 contentScale = ContentScale.FillWidth,
                 alignment = Alignment.TopCenter,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
         } else if (openBlankColor) {
             ThumbBlankBox()
@@ -176,17 +168,14 @@ open class CoilThumbPhoto(
     }
 }
 
-class CoilPhoto(
-    val uri: Uri,
-    val isLongImage: Boolean
-) : Photo {
+class CoilPhoto(val uri: Uri, val isLongImage: Boolean) : Photo {
 
     @Composable
     override fun Compose(
         contentScale: ContentScale,
         isContainerDimenExactly: Boolean,
         onSuccess: ((PhotoResult) -> Unit)?,
-        onError: ((Throwable) -> Unit)?
+        onError: ((Throwable) -> Unit)?,
     ) {
         if (isLongImage) {
             LongImage(onSuccess, onError)
@@ -214,16 +203,13 @@ class CoilPhoto(
                     } else {
                         it
                     }
-                }
+                },
             )
         }
     }
 
     @Composable
-    fun LongImage(
-        onSuccess: ((PhotoResult) -> Unit)?,
-        onError: ((Throwable) -> Unit)?
-    ) {
+    fun LongImage(onSuccess: ((PhotoResult) -> Unit)?, onError: ((Throwable) -> Unit)?) {
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
             var images by remember {
                 mutableStateOf(emptyList<BitmapRegionProvider>())
@@ -253,7 +239,7 @@ class CoilPhoto(
             if (images.isNotEmpty()) {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(images) { image ->
-                        BoxWithConstraints() {
+                        BoxWithConstraints {
                             val width = constraints.maxWidth
                             val height = width * image.height / image.width
                             val heightDp = with(LocalDensity.current) {
@@ -269,11 +255,7 @@ class CoilPhoto(
 }
 
 @Stable
-open class CoilPhotoProvider(
-    val uri: Uri,
-    val thumbUri: Uri = uri,
-    val ratio: Float
-) : PhotoProvider {
+open class CoilPhotoProvider(val uri: Uri, val thumbUri: Uri = uri, val ratio: Float) : PhotoProvider {
 
     companion object {
         const val META_URI_KEY = "meta_uri"
@@ -281,39 +263,25 @@ open class CoilPhotoProvider(
         const val META_RATIO_KEY = "meta_ratio"
     }
 
-    override fun id(): Any {
-        return "$uri-$thumbUri-$ratio"
-    }
+    override fun id(): Any = "$uri-$thumbUri-$ratio"
 
-    override fun thumbnail(openBlankColor: Boolean): Photo? {
-        return CoilThumbPhoto(thumbUri, isLongImage(), openBlankColor)
-    }
+    override fun thumbnail(openBlankColor: Boolean): Photo? = CoilThumbPhoto(thumbUri, isLongImage(), openBlankColor)
 
-    override fun photo(): Photo? {
-        return CoilPhoto(uri, isLongImage())
-    }
+    override fun photo(): Photo? = CoilPhoto(uri, isLongImage())
 
-    override fun ratio(): Float {
-        return ratio
-    }
+    override fun ratio(): Float = ratio
 
-    override fun isLongImage(): Boolean {
-        return ratio > 0 && ratio < 0.2f
-    }
+    override fun isLongImage(): Boolean = ratio > 0 && ratio < 0.2f
 
-    override fun meta(): Bundle? {
-        return Bundle().apply {
-            putParcelable(META_URI_KEY, uri)
-            if (thumbUri != uri) {
-                putParcelable(META_THUMB_URI_KEY, thumbUri)
-            }
-            putFloat(META_RATIO_KEY, ratio)
+    override fun meta(): Bundle? = Bundle().apply {
+        putParcelable(META_URI_KEY, uri)
+        if (thumbUri != uri) {
+            putParcelable(META_THUMB_URI_KEY, thumbUri)
         }
+        putFloat(META_RATIO_KEY, ratio)
     }
 
-    override fun recoverCls(): Class<out PhotoShotRecover>? {
-        return CoilPhotoShotRecover::class.java
-    }
+    override fun recoverCls(): Class<out PhotoShotRecover>? = CoilPhotoShotRecover::class.java
 }
 
 class CoilPhotoShotRecover : PhotoShotRecover {
@@ -326,7 +294,7 @@ class CoilPhotoShotRecover : PhotoShotRecover {
             CoilPhotoProvider(uri, thumbUri, ratio),
             null,
             null,
-            null
+            null,
         )
     }
 }

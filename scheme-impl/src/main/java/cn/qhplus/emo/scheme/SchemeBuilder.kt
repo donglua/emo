@@ -86,40 +86,35 @@ class SchemeBuilder(val protocol: String, val action: String) {
         return this
     }
 
-    override fun toString(): String {
-        return StringBuilder(protocol)
-            .append("://")
-            .append(action)
-            .run {
-                if (args.isNotEmpty() || modelData != null) {
-                    append("?")
-                    modelData?.let {
-                        append(it)
-                    }
-                    var notFirst = false
-                    args.forEach { (name, value) ->
-                        if (notFirst) {
-                            append("&")
-                        } else {
-                            notFirst = true
-                        }
-                        append(name)
-                        append("=")
-                        append(value)
-                    }
+    override fun toString(): String = StringBuilder(protocol)
+        .append("://")
+        .append(action)
+        .run {
+            if (args.isNotEmpty() || modelData != null) {
+                append("?")
+                modelData?.let {
+                    append(it)
                 }
-                toString()
+                var notFirst = false
+                args.forEach { (name, value) ->
+                    if (notFirst) {
+                        append("&")
+                    } else {
+                        notFirst = true
+                    }
+                    append(name)
+                    append("=")
+                    append(value)
+                }
             }
-    }
+            toString()
+        }
 }
 
-inline fun <reified T> SchemeBuilder.model(data: T): SchemeBuilder {
-    return model(QueryFormat.serializersModule.serializer(), data)
-}
+inline fun <reified T> SchemeBuilder.model(data: T): SchemeBuilder =
+    model(QueryFormat.serializersModule.serializer(), data)
 
-fun Scheme.toBuilder(): SchemeBuilder {
-    return SchemeBuilder(protocol, action).arg(args)
-}
+fun Scheme.toBuilder(): SchemeBuilder = SchemeBuilder(protocol, action).arg(args)
 
 inline fun <reified T> NavBackStackEntry.parseModelData(): T? {
     val origin = arguments?.getString(SchemeKeys.KEY_ORIGIN) ?: return null
@@ -139,14 +134,9 @@ inline fun <reified T> NavBackStackEntry.parseModelData(): T? {
     }
 }
 
-fun NavBackStackEntry.readOriginScheme(): String? {
-    return arguments?.getString(SchemeKeys.KEY_ORIGIN)
-}
+fun NavBackStackEntry.readOriginScheme(): String? = arguments?.getString(SchemeKeys.KEY_ORIGIN)
 
-fun NavBackStackEntry.readTransition(): Int {
-    return arguments?.getInt(SchemeKeys.KEY_TRANSITION, SchemeTransition.UNDEFINED) ?: SchemeTransition.UNDEFINED
-}
+fun NavBackStackEntry.readTransition(): Int =
+    arguments?.getInt(SchemeKeys.KEY_TRANSITION, SchemeTransition.UNDEFINED) ?: SchemeTransition.UNDEFINED
 
-fun NavBackStackEntry.readAction(): String? {
-    return arguments?.getString(SchemeKeys.KEY_ACTION)
-}
+fun NavBackStackEntry.readAction(): String? = arguments?.getString(SchemeKeys.KEY_ACTION)

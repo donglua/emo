@@ -22,7 +22,5 @@ import cn.qhplus.emo.photo.data.PhotoProvider
 
 class CoilMediaPhotoProviderFactory : MediaPhotoProviderFactory {
 
-    override fun factory(model: MediaModel): PhotoProvider {
-        return CoilPhotoProvider(uri = model.uri, ratio = model.ratio())
-    }
+    override fun factory(model: MediaModel): PhotoProvider = CoilPhotoProvider(uri = model.uri, ratio = model.ratio())
 }

@@ -118,13 +118,16 @@ class ConfigMapProcessor(private val codeGenerator: CodeGenerator, private val l
     }
 
     @OptIn(KspExperimental::class)
-    private fun <T : Annotation> OutputStream.writeMethodEx(cls: KSClassDeclaration, annotationKClass: KClass<T>, type: String): Boolean =
-        cls.getAnnotationsByType(annotationKClass).firstOrNull()?.let {
-            write("fun ConfigCenter.actionOf${cls.simpleName.getShortName()}(): ${type}ConfigAction")
-            writeBlock {
-                writeLine("return actionOf(${cls.qualifiedName!!.asString()}::class.java).concrete$type()")
-            }
-        } != null
+    private fun <T : Annotation> OutputStream.writeMethodEx(
+        cls: KSClassDeclaration,
+        annotationKClass: KClass<T>,
+        type: String,
+    ): Boolean = cls.getAnnotationsByType(annotationKClass).firstOrNull()?.let {
+        write("fun ConfigCenter.actionOf${cls.simpleName.getShortName()}(): ${type}ConfigAction")
+        writeBlock {
+            writeLine("return actionOf(${cls.qualifiedName!!.asString()}::class.java).concrete$type()")
+        }
+    } != null
 
     @OptIn(KspExperimental::class)
     private fun OutputStream.writeFactoryBody(configs: List<KSClassDeclaration>) {
@@ -139,7 +142,9 @@ class ConfigMapProcessor(private val codeGenerator: CodeGenerator, private val l
 
             val configBasicList = t.getAnnotationsByType(ConfigBasic::class).toList()
             if (configBasicList.size > 1) {
-                logger.exception(RuntimeException("${t.simpleName.getShortName()} only can have one annotation with ConfigBasic."))
+                logger.exception(
+                    RuntimeException("${t.simpleName.getShortName()} only can have one annotation with ConfigBasic."),
+                )
             }
             val configBasic = configBasicList[0]
             val metaVarLeft = if (index == 0) "var meta" else "meta"

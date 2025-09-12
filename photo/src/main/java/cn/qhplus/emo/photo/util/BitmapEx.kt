@@ -42,7 +42,7 @@ abstract class BitmapCompressResult internal constructor(
     val compressFormat: Bitmap.CompressFormat,
     val compressQuality: Int,
     val width: Int,
-    val height: Int
+    val height: Int,
 ) {
     abstract fun inputStream(): InputStream?
 }
@@ -52,18 +52,16 @@ internal class BitmapCompressStreamResult(
     compressQuality: Int,
     width: Int,
     height: Int,
-    private val stream: BitmapCompressStream
+    private val stream: BitmapCompressStream,
 ) : BitmapCompressResult(compressFormat, compressQuality, width, height) {
 
-    override fun inputStream(): InputStream? {
-        return stream.inputStream()
-    }
+    override fun inputStream(): InputStream? = stream.inputStream()
 }
 
 fun Bitmap.saveToLocal(
     dir: File,
     compressFormat: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
-    compressQuality: Int = 80
+    compressQuality: Int = 80,
 ): File {
     val suffix = when (compressFormat) {
         Bitmap.CompressFormat.JPEG -> "jpeg"
@@ -85,7 +83,7 @@ fun Bitmap.compressByShortEdgeWidthAndByteSize(
     byteMaxSizeStrategy: (Bitmap) -> Int = DefaultBitmapCompressMaxSizeStrategy,
     canUseMemoryStorage: (Bitmap) -> Boolean = DefaultBitmapCompressCanUseMemoryStorage,
     compressFormat: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
-    compressQuality: Int = 80
+    compressQuality: Int = 80,
 ): BitmapCompressResult? {
     var bitmap = this
     try {
@@ -102,14 +100,20 @@ fun Bitmap.compressByShortEdgeWidthAndByteSize(
     } catch (ignored: OutOfMemoryError) {
         EmoLog.w(
             "compressByShortEdgeWidthAndByteSize",
-            "createScaledBitmap failed: shortEdgeMaxWidth = $shortEdgeMaxWidth, width = $width; height = $height"
+            "createScaledBitmap failed: shortEdgeMaxWidth = $shortEdgeMaxWidth, width = $width; height = $height",
         )
     }
 
     val byteMaxSize = byteMaxSizeStrategy(this)
     val useMemoryStorage = canUseMemoryStorage(this)
 
-    val stream: BitmapCompressStream = if (useMemoryStorage) BitmapCompressMemoryStream() else BitmapCompressFileStream(context.cacheDir)
+    val stream: BitmapCompressStream = if (useMemoryStorage) {
+        BitmapCompressMemoryStream()
+    } else {
+        BitmapCompressFileStream(
+            context.cacheDir,
+        )
+    }
     var currentQuality = compressQuality
     var nextQuality = currentQuality
     var failCount = 0
@@ -125,7 +129,7 @@ fun Bitmap.compressByShortEdgeWidthAndByteSize(
             EmoLog.w(
                 "compressByShortEdgeWidthAndByteSize",
                 "compress bitmap failed(compressFormat = $compressFormat; quality = $nextQuality, failCount = $failCount).",
-                e
+                e,
             )
             false
         }
@@ -136,7 +140,9 @@ fun Bitmap.compressByShortEdgeWidthAndByteSize(
             nextQuality -= 5
             failCount++
         }
-    } while ((!succes && failCount < 2 && nextQuality >= 20) || (succes && nextQuality >= 20 && stream.size() > byteMaxSize))
+    } while ((!succes && failCount < 2 && nextQuality >= 20) ||
+        (succes && nextQuality >= 20 && stream.size() > byteMaxSize)
+    )
     if (!succes) {
         return null
     }
@@ -162,17 +168,11 @@ internal class BitmapCompressMemoryStream : BitmapCompressStream {
         output.reset()
     }
 
-    override fun size(): Int {
-        return output.size()
-    }
+    override fun size(): Int = output.size()
 
-    override fun outputStream(): OutputStream {
-        return output
-    }
+    override fun outputStream(): OutputStream = output
 
-    override fun inputStream(): InputStream {
-        return ByteArrayInputStream(output.toByteArray())
-    }
+    override fun inputStream(): InputStream = ByteArrayInputStream(output.toByteArray())
 }
 
 internal class BitmapCompressFileStream(val cacheDir: File) : BitmapCompressStream {
@@ -184,15 +184,9 @@ internal class BitmapCompressFileStream(val cacheDir: File) : BitmapCompressStre
         file = File(cacheDir, "emo-bm-${System.nanoTime()}")
     }
 
-    override fun size(): Int {
-        return file?.length()?.toInt() ?: 0
-    }
+    override fun size(): Int = file?.length()?.toInt() ?: 0
 
-    override fun outputStream(): OutputStream {
-        return file!!.outputStream().buffered()
-    }
+    override fun outputStream(): OutputStream = file!!.outputStream().buffered()
 
-    override fun inputStream(): InputStream? {
-        return file?.inputStream()?.buffered()
-    }
+    override fun inputStream(): InputStream? = file?.inputStream()?.buffered()
 }

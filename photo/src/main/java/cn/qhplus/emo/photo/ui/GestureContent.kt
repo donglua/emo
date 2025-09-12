@@ -68,7 +68,7 @@ class GestureContentState(
     val transitionDurationMs: Int = 360,
     val panAreaFactory: (Float, Float) -> Rect = { containerWidth, containerHeight ->
         Rect(0f, 0f, containerWidth, containerHeight)
-    }
+    },
 ) {
     internal var contentRatio by mutableStateOf(ratio)
     var targetScale by mutableStateOf(1f)
@@ -112,7 +112,7 @@ class GestureContentState(
             layoutInfo.contentWidth,
             x,
             layoutInfo.panArea.left,
-            layoutInfo.panArea.right
+            layoutInfo.panArea.right,
         )
         if (fixed == targetTranslateX) {
             return false
@@ -130,7 +130,7 @@ class GestureContentState(
             layoutInfo.contentHeight,
             y,
             layoutInfo.panArea.top,
-            layoutInfo.panArea.bottom
+            layoutInfo.panArea.bottom,
         )
         if (fixed == targetTranslateY) {
             return false
@@ -161,7 +161,7 @@ data class LayoutInfoPx(
     val containerHeight: Float,
     val contentWidth: Float,
     val contentHeight: Float,
-    val panArea: Rect
+    val panArea: Rect,
 )
 
 @Stable
@@ -170,19 +170,29 @@ data class LayoutInfo(
     val containerHeight: Dp,
     val contentWidth: Dp,
     val contentHeight: Dp,
-    val px: LayoutInfoPx
+    val px: LayoutInfoPx,
 ) {
-    fun cropScale(): Float {
-        return (containerWidth / contentWidth).coerceAtLeast((containerHeight / contentHeight))
-    }
+    fun cropScale(): Float = (containerWidth / contentWidth).coerceAtLeast((containerHeight / contentHeight))
 
-    fun contentOffset(
-        containerTranslateX: Float,
-        containerTranslateY: Float,
-        scale: Float
-    ): Offset {
-        val x = contentSideOffset(px.containerWidth, px.contentWidth, scale, containerTranslateX, px.panArea.left, px.panArea.right)
-        val y = contentSideOffset(px.containerHeight, px.contentHeight, scale, containerTranslateY, px.panArea.top, px.panArea.bottom)
+    fun contentOffset(containerTranslateX: Float, containerTranslateY: Float, scale: Float): Offset {
+        val x =
+            contentSideOffset(
+                px.containerWidth,
+                px.contentWidth,
+                scale,
+                containerTranslateX,
+                px.panArea.left,
+                px.panArea.right,
+            )
+        val y =
+            contentSideOffset(
+                px.containerHeight,
+                px.contentHeight,
+                scale,
+                containerTranslateY,
+                px.panArea.top,
+                px.panArea.bottom,
+            )
         return Offset(x, y)
     }
 
@@ -192,7 +202,7 @@ data class LayoutInfo(
         scale: Float,
         translate: Float,
         min: Float,
-        max: Float
+        max: Float,
     ): Float {
         val viewport = max - min
         val contentScale = contentSize * scale
@@ -212,7 +222,7 @@ fun GestureContent(
     onTap: ((Offset) -> Unit)? = null,
     onLongPress: ((Offset) -> Unit)? = null,
     canTransformStart: ((Offset) -> Boolean) = { true },
-    content: @Composable (onImageRatioEnsured: (Float) -> Unit) -> Unit
+    content: @Composable (onImageRatioEnsured: (Float) -> Unit) -> Unit,
 ) {
     BoxWithConstraints(modifier = modifier) {
         val contentRatio = state.contentRatio
@@ -225,7 +235,7 @@ fun GestureContent(
                 ch,
                 contentWidth.toPx(),
                 contentHeight.toPx(),
-                state.panAreaFactory(cw, ch)
+                state.panAreaFactory(cw, ch),
             )
         }
         val layoutInfo = LayoutInfo(maxWidth, maxHeight, contentWidth, contentHeight, px)
@@ -241,21 +251,21 @@ private fun BoxWithConstraintsScope.GestureContentInner(
     onTap: ((Offset) -> Unit)?,
     onLongPress: ((Offset) -> Unit)?,
     canTransformStart: ((Offset) -> Boolean),
-    content: @Composable (onImageRatioEnsured: (Float) -> Unit) -> Unit
+    content: @Composable (onImageRatioEnsured: (Float) -> Unit) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val flingBehavior = ScrollableDefaults.flingBehavior()
     val transition = updateTransition(targetState = true, "transition")
     val rect = transition.animateRect(
         transitionSpec = { tween(durationMillis = state.transitionDurationMs) },
-        label = "gestureContentTransition"
+        label = "gestureContentTransition",
     ) {
         if (it) {
             Rect(
                 state.targetTranslateX,
                 state.targetTranslateY,
                 state.targetTranslateX + 100 * state.targetScale,
-                state.targetTranslateY + 100 * state.targetScale
+                state.targetTranslateY + 100 * state.targetScale,
             )
         } else {
             Rect(0f, 0f, 100f, 100f)
@@ -295,7 +305,7 @@ private fun BoxWithConstraintsScope.GestureContentInner(
                                 } else {
                                     state.reset()
                                 }
-                            }
+                            },
                         )
                     }
 
@@ -303,7 +313,7 @@ private fun BoxWithConstraintsScope.GestureContentInner(
                         transformTouch(state, scope, layoutInfo.px, canTransformStart, flingBehavior)
                     }
                 }
-            }
+            },
     ) {
         content {
             state.contentRatio = it
@@ -316,25 +326,33 @@ internal suspend fun PointerInputScope.transformTouch(
     composeScope: CoroutineScope,
     layoutInfo: LayoutInfoPx,
     canTransformStart: (Offset) -> Boolean,
-    flingBehavior: FlingBehavior
+    flingBehavior: FlingBehavior,
 ) {
     val velocityTracker = VelocityTracker()
     var flingXJob: Job? = null
     var flingYJob: Job? = null
 
     val scrollXScope = object : ScrollScope {
-        override fun scrollBy(pixels: Float): Float {
-            return if (state.setTranslateX(layoutInfo, state.targetTranslateX + pixels)) {
-                pixels
-            } else 0f
+        override fun scrollBy(pixels: Float): Float = if (state.setTranslateX(
+                layoutInfo,
+                state.targetTranslateX + pixels,
+            )
+        ) {
+            pixels
+        } else {
+            0f
         }
     }
 
     val scrollYScope = object : ScrollScope {
-        override fun scrollBy(pixels: Float): Float {
-            return if (state.setTranslateY(layoutInfo, state.targetTranslateY + pixels)) {
-                pixels
-            } else 0f
+        override fun scrollBy(pixels: Float): Float = if (state.setTranslateY(
+                layoutInfo,
+                state.targetTranslateY + pixels,
+            )
+        ) {
+            pixels
+        } else {
+            0f
         }
     }
     awaitEachGesture {
@@ -393,8 +411,10 @@ internal suspend fun PointerInputScope.transformTouch(
                             }
                         }
                     } else if (isPanning) {
-                        val xConsumed = panChange.x != 0f && state.setTranslateX(layoutInfo, state.targetTranslateX + panChange.x)
-                        val yConsumed = panChange.y != 0f && state.setTranslateY(layoutInfo, state.targetTranslateY + panChange.y)
+                        val xConsumed =
+                            panChange.x != 0f && state.setTranslateX(layoutInfo, state.targetTranslateX + panChange.x)
+                        val yConsumed =
+                            panChange.y != 0f && state.setTranslateY(layoutInfo, state.targetTranslateY + panChange.y)
                         if (xConsumed || yConsumed) {
                             event.changes.forEach {
                                 if (it.positionChanged()) {

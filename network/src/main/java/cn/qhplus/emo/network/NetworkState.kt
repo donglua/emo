@@ -23,34 +23,27 @@ enum class NetworkType {
     Cellular,
     Wifi,
     Fake,
-    Unknown
+    Unknown,
 }
 
-data class NetworkState(
-    val networkType: NetworkType,
-    val isValid: Boolean,
-    val uuid: String,
-    val updateTime: Long
-) {
+data class NetworkState(val networkType: NetworkType, val isValid: Boolean, val uuid: String, val updateTime: Long) {
     companion object {
 
         fun none() = NetworkState(
             NetworkType.None,
             false,
             "",
-            SystemClock.elapsedRealtime()
+            SystemClock.elapsedRealtime(),
         )
     }
 
     val isConnected: Boolean = networkType != NetworkType.None
 
-    override fun toString(): String {
-        return when (networkType) {
-            NetworkType.Wifi -> "wifi"
-            NetworkType.Cellular -> "cellular"
-            NetworkType.Unknown -> "unknown"
-            NetworkType.Fake -> "fake"
-            else -> "none"
-        }
+    override fun toString(): String = when (networkType) {
+        NetworkType.Wifi -> "wifi"
+        NetworkType.Cellular -> "cellular"
+        NetworkType.Unknown -> "unknown"
+        NetworkType.Fake -> "fake"
+        else -> "none"
     }
 }

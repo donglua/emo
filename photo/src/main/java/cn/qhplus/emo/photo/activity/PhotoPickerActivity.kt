@@ -79,7 +79,7 @@ class PhotoPickItemInfo(
     val width: Int,
     val height: Int,
     val uri: Uri,
-    val rotation: Int
+    val rotation: Int,
 ) : Parcelable {
 
     private fun isRotated() = rotation == 90 || rotation == 270
@@ -109,12 +109,10 @@ class PhotoPickItemInfo(
         parcel.readInt(),
         @Suppress("DEPRECATION")
         parcel.readParcelable(Uri::class.java.classLoader)!!,
-        parcel.readInt()
+        parcel.readInt(),
     )
 
-    override fun describeContents(): Int {
-        return 0
-    }
+    override fun describeContents(): Int = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeLong(id)
@@ -126,13 +124,9 @@ class PhotoPickItemInfo(
     }
 
     companion object CREATOR : Parcelable.Creator<PhotoPickItemInfo> {
-        override fun createFromParcel(parcel: Parcel): PhotoPickItemInfo {
-            return PhotoPickItemInfo(parcel)
-        }
+        override fun createFromParcel(parcel: Parcel): PhotoPickItemInfo = PhotoPickItemInfo(parcel)
 
-        override fun newArray(size: Int): Array<PhotoPickItemInfo?> {
-            return arrayOfNulls(size)
-        }
+        override fun newArray(size: Int): Array<PhotoPickItemInfo?> = arrayOfNulls(size)
     }
 }
 
@@ -159,7 +153,7 @@ open class PhotoPickerActivity : ComponentActivity() {
             pickedItems: ArrayList<Uri> = arrayListOf(),
             pickLimitCount: Int = PHOTO_DEFAULT_PICK_LIMIT_COUNT,
             enableOrigin: Boolean = true,
-            configProviderCls: Class<out PhotoPickerConfigProvider> = DefaultPhotoPickerConfigProvider::class.java
+            configProviderCls: Class<out PhotoPickerConfigProvider> = DefaultPhotoPickerConfigProvider::class.java,
         ): Intent {
             val intent = Intent(context, cls)
             intent.putExtra(PHOTO_PICK_LIMIT_COUNT, pickLimitCount)
@@ -182,13 +176,13 @@ open class PhotoPickerActivity : ComponentActivity() {
                     Application::class.java,
                     SavedStateHandle::class.java,
                     MediaDataProvider::class.java,
-                    Array<String>::class.java
+                    Array<String>::class.java,
                 )
                 return constructor.newInstance(
                     this@PhotoPickerActivity.application,
                     handle,
                     dataProviderInstance,
-                    supportedMimeTypes()
+                    supportedMimeTypes(),
                 )
             }
         }
@@ -222,7 +216,9 @@ open class PhotoPickerActivity : ComponentActivity() {
     protected open fun PageContentWithConfigProvider(viewModel: PhotoPickerViewModel) {
         val configProvider = remember {
             kotlin.runCatching {
-                val providerClsName = intent.getStringExtra(PHOTO_CONFIG_PROVIDER) ?: throw RuntimeException("No configProvider provided.")
+                val providerClsName =
+                    intent.getStringExtra(PHOTO_CONFIG_PROVIDER)
+                        ?: throw RuntimeException("No configProvider provided.")
                 Class.forName(providerClsName).newInstance() as PhotoPickerConfigProvider
             }.getOrElse {
                 DefaultPhotoPickerConfigProvider()
@@ -238,17 +234,17 @@ open class PhotoPickerActivity : ComponentActivity() {
     protected open fun PageContent(viewModel: PhotoPickerViewModel) {
         Surface(
             color = LocalPhotoPickerConfig.current.screenBgColor,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         ) {
             val navController = rememberAnimatedNavController()
             AnimatedNavHost(
                 navController = navController,
-                startDestination = Route.GRID
+                startDestination = Route.GRID,
             ) {
                 composable(
                     Route.GRID,
                     exitTransition = { fadeOut(tween()) },
-                    popEnterTransition = { fadeIn(tween()) }
+                    popEnterTransition = { fadeIn(tween()) },
                 ) {
                     PickerGrid(navController, viewModel)
                 }
@@ -259,7 +255,7 @@ open class PhotoPickerActivity : ComponentActivity() {
                     enterTransition = { fadeIn(tween()) },
                     exitTransition = { fadeOut(tween()) },
                     popEnterTransition = { fadeIn(tween()) },
-                    popExitTransition = { fadeOut(tween()) + scaleOut(targetScale = 0.8f) }
+                    popExitTransition = { fadeOut(tween()) + scaleOut(targetScale = 0.8f) },
                 ) { backStack ->
                     val bucketId = backStack.arguments?.getString("bucketId") ?: MediaPhotoBucketAllId
                     val currentId = backStack.arguments?.getLong("currentId") ?: -1
@@ -270,7 +266,7 @@ open class PhotoPickerActivity : ComponentActivity() {
                     "${Route.EDIT}/{id}",
                     arguments = listOf(navArgument("id") { type = NavType.LongType }),
                     enterTransition = { fadeIn(tween()) },
-                    popExitTransition = { fadeOut(tween()) }
+                    popExitTransition = { fadeOut(tween()) },
                 ) { backStack ->
                     val id = backStack.arguments?.getLong("id") ?: -1
                     PickerEdit(navController, viewModel, id)
@@ -280,10 +276,7 @@ open class PhotoPickerActivity : ComponentActivity() {
     }
 
     @Composable
-    protected open fun PickerGrid(
-        navController: NavHostController,
-        viewModel: PhotoPickerViewModel
-    ) {
+    protected open fun PickerGrid(navController: NavHostController, viewModel: PhotoPickerViewModel) {
         PhotoPickerGridPage(navController, viewModel, dataProviderInstance.permissions())
     }
 
@@ -292,17 +285,13 @@ open class PhotoPickerActivity : ComponentActivity() {
         navController: NavHostController,
         viewModel: PhotoPickerViewModel,
         bucketId: String,
-        currentId: Long
+        currentId: Long,
     ) {
         PhotoPickerPreviewPage(navController, viewModel, bucketId, currentId)
     }
 
     @Composable
-    protected open fun PickerEdit(
-        navController: NavHostController,
-        viewModel: PhotoPickerViewModel,
-        id: Long
-    ) {
+    protected open fun PickerEdit(navController: NavHostController, viewModel: PhotoPickerViewModel, id: Long) {
         PhotoPickerEditPage(navController, viewModel, id)
     }
 
@@ -314,19 +303,15 @@ open class PhotoPickerActivity : ComponentActivity() {
                     PHOTO_RESULT_URI_LIST,
                     arrayListOf<PhotoPickItemInfo>().apply {
                         addAll(pickedList)
-                    }
+                    },
                 )
                 putExtra(PHOTO_RESULT_ORIGIN_OPEN, viewModel.isOriginOpenFlow.value)
-            }
+            },
         )
         finish()
     }
 
-    protected open fun dataProvider(): MediaDataProvider {
-        return EmoDefaultImagesProvider()
-    }
+    protected open fun dataProvider(): MediaDataProvider = EmoDefaultImagesProvider()
 
-    protected open fun supportedMimeTypes(): Array<String> {
-        return EmoDefaultImagesProvider.DEFAULT_SUPPORT_MIMETYPES
-    }
+    protected open fun supportedMimeTypes(): Array<String> = EmoDefaultImagesProvider.DEFAULT_SUPPORT_MIMETYPES
 }

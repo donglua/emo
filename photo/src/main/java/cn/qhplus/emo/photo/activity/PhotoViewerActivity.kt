@@ -50,12 +50,7 @@ open class PhotoViewerActivity : ComponentActivity() {
 
     companion object {
 
-        fun intentOf(
-            context: Context,
-            cls: Class<out PhotoViewerActivity>,
-            list: List<PhotoShot>,
-            index: Int
-        ): Intent {
+        fun intentOf(context: Context, cls: Class<out PhotoViewerActivity>, list: List<PhotoShot>, index: Int): Intent {
             val data = PhotoViewerData(list, index)
             val intent = Intent(context, cls)
             intent.putExtra(PhotoViewerViewModel.PHOTO_SHOT_DELIVERY_KEY, PhotoShotDelivery.put(data))
@@ -69,7 +64,7 @@ open class PhotoViewerActivity : ComponentActivity() {
                         intent.putExtra("${PhotoViewerViewModel.PHOTO_META_KEY_PREFIX}$i", meta)
                         intent.putExtra(
                             "${PhotoViewerViewModel.PHOTO_RECOVER_CLASS_KEY_PREFIX}$i",
-                            recoverCls.name
+                            recoverCls.name,
                         )
                     }
                 }
@@ -77,7 +72,7 @@ open class PhotoViewerActivity : ComponentActivity() {
                 EmoLog.w(
                     "PhotoViewerActivity",
                     "once delivered too many photos, so only use memory data for delivery, " +
-                        "there may be some recover issue."
+                        "there may be some recover issue.",
                 )
             }
             return intent
@@ -124,7 +119,7 @@ open class PhotoViewerActivity : ComponentActivity() {
     @Composable
     protected open fun PageContent() {
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         ) {
             val data = viewModel.data
             if (data == null || data.list.isEmpty()) {
@@ -136,11 +131,7 @@ open class PhotoViewerActivity : ComponentActivity() {
     }
 
     @Composable
-    protected open fun PhotoViewer(
-        transitionTargetFlow: StateFlow<Boolean>,
-        list: List<PhotoShot>,
-        index: Int
-    ) {
+    protected open fun PhotoViewer(transitionTargetFlow: StateFlow<Boolean>, list: List<PhotoShot>, index: Int) {
         val arg = remember(list, index) {
             PhotoViewerArg(
                 list,
@@ -154,20 +145,16 @@ open class PhotoViewerActivity : ComponentActivity() {
                         onLongClick(page, drawable)
                     },
                     shouldTransition = shouldTransitionPhoto(),
-                    allowPullExit = allowPullExit()
-                )
+                    allowPullExit = allowPullExit(),
+                ),
             )
         }
         PhotoViewerScaffold(arg)
     }
 
-    protected open fun shouldTransitionPhoto(): Boolean {
-        return true
-    }
+    protected open fun shouldTransitionPhoto(): Boolean = true
 
-    protected open fun allowPullExit(): Boolean {
-        return true
-    }
+    protected open fun allowPullExit(): Boolean = true
 
     protected open fun onLongClick(page: Int, drawable: Drawable) {
     }

@@ -109,9 +109,7 @@ fun EditScene.isPaintScene(): Boolean = this is EditScenePaint
 fun EditScene.isTextScene(): Boolean = this is EditSceneText
 
 @Stable
-class EditState(
-    val config: PhotoEditConfig
-) {
+class EditState(val config: PhotoEditConfig) {
     val toolBarVisibility = mutableStateOf(true)
 
     internal var drawable: Drawable? = null
@@ -133,7 +131,7 @@ fun EditBox(
     photoProvider: PhotoProvider,
     state: EditState,
     onBack: () -> Unit,
-    onEnsure: (Drawable, PersistentList<EditLayer>) -> Unit
+    onEnsure: (Drawable, PersistentList<EditLayer>) -> Unit,
 ) {
     val systemUiController = rememberSystemUiController()
     SideEffect {
@@ -156,7 +154,7 @@ fun EditBox(
     val gestureContentState = remember(photoProvider) {
         GestureContentState(
             photoProvider.ratio(),
-            photoProvider.isLongImage()
+            photoProvider.isLongImage(),
         )
     }
 
@@ -171,7 +169,7 @@ fun EditBox(
             },
             canTransformStart = {
                 state.textEditLayers.none { it.isFocus }
-            }
+            },
         ) { onRatioEnsure ->
             BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
                 val photo = remember(photoProvider) {
@@ -190,7 +188,7 @@ fun EditBox(
                             onRatioEnsure(ratio)
                         }
                     },
-                    onError = null
+                    onError = null,
                 )
                 EditArea(state = state, gestureContentState = gestureContentState, ratioGetter = { photoRatio.value })
             }
@@ -203,10 +201,10 @@ fun EditBox(
                 state.drawable?.let { drawable ->
                     onEnsure(
                         drawable,
-                        (state.paintEditLayers + state.textEditLayers).map { it.toImmutable() }.toPersistentList()
+                        (state.paintEditLayers + state.textEditLayers).map { it.toImmutable() }.toPersistentList(),
                     )
                 }
-            }
+            },
         )
     }
 }
@@ -215,7 +213,7 @@ fun EditBox(
 private fun BoxWithConstraintsScope.EditArea(
     state: EditState,
     gestureContentState: GestureContentState,
-    ratioGetter: () -> Float
+    ratioGetter: () -> Float,
 ) {
     val ratio = ratioGetter()
     if (ratio <= 0f) {
@@ -238,7 +236,7 @@ private fun BoxWithConstraintsScope.EditArea(
             .align(Alignment.Center)
             .graphicsLayer {
                 clip = true
-            }
+            },
     ) {
         EditLayerList(state)
         EditGraffitiBoard(state, gestureContentState)
@@ -246,10 +244,7 @@ private fun BoxWithConstraintsScope.EditArea(
 }
 
 @Composable
-fun EditGraffitiBoard(
-    state: EditState,
-    gestureContentState: GestureContentState
-) {
+fun EditGraffitiBoard(state: EditState, gestureContentState: GestureContentState) {
     val scene = state.scene.value
     if (scene is EditScenePaint) {
         val size = gestureContentState.layoutInfo?.px?.let { Size(it.contentWidth, it.contentHeight) } ?: return
@@ -263,7 +258,7 @@ fun EditGraffitiBoard(
             },
             onTouchEnd = {
                 state.toolBarVisibility.value = true
-            }
+            },
         )
     }
 }
@@ -274,7 +269,7 @@ fun GraffitiBoard(
     size: Size,
     scale: Float,
     onTouchBegin: (PathEditLayer) -> Unit,
-    onTouchEnd: (PathEditLayer) -> Unit
+    onTouchEnd: (PathEditLayer) -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -303,7 +298,7 @@ fun GraffitiBoard(
                         onTouchEnd(layer)
                     }
                 }
-            }
+            },
     )
 }
 
@@ -312,7 +307,7 @@ fun BoxWithConstraintsScope.EditCtrl(
     state: EditState,
     gestureContentState: GestureContentState,
     onBack: () -> Unit,
-    onEnsure: () -> Unit
+    onEnsure: () -> Unit,
 ) {
     val isTextEditing by remember {
         derivedStateOf {
@@ -325,14 +320,14 @@ fun BoxWithConstraintsScope.EditCtrl(
             .fillMaxWidth()
             .align(Alignment.BottomCenter),
         enter = fadeIn(),
-        exit = fadeOut()
+        exit = fadeOut(),
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(brush = Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(0.2f))))
                 .windowInsetsCommonNavPadding()
-                .height(150.dp)
+                .height(150.dp),
         )
     }
 
@@ -342,13 +337,13 @@ fun BoxWithConstraintsScope.EditCtrl(
             .fillMaxWidth()
             .align(Alignment.BottomCenter),
         enter = fadeIn(),
-        exit = fadeOut()
+        exit = fadeOut(),
     ) {
         EditCtrlToolBar(
             modifier = Modifier.windowInsetsCommonNavPadding(),
             state = state,
             gestureContentState = gestureContentState,
-            onEnsureClick = onEnsure
+            onEnsureClick = onEnsure,
         )
     }
 
@@ -358,7 +353,7 @@ fun BoxWithConstraintsScope.EditCtrl(
             .fillMaxWidth()
             .align(Alignment.BottomCenter),
         enter = fadeIn(),
-        exit = fadeOut()
+        exit = fadeOut(),
     ) {
         EditTextCtrl(state = state, onBack)
     }
@@ -370,14 +365,14 @@ fun BoxWithConstraintsScope.EditCtrl(
             .fillMaxWidth()
             .align(Alignment.TopCenter),
         enter = fadeIn(),
-        exit = fadeOut()
+        exit = fadeOut(),
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(brush = Brush.verticalGradient(listOf(Color.Black.copy(0.2f), Color.Transparent)))
                 .windowInsetsCommonTopPadding()
-                .height(60.dp)
+                .height(60.dp),
         )
     }
 
@@ -387,18 +382,18 @@ fun BoxWithConstraintsScope.EditCtrl(
             .fillMaxWidth()
             .align(Alignment.TopStart),
         enter = fadeIn(),
-        exit = fadeOut()
+        exit = fadeOut(),
     ) {
         EditImageButton(
             modifier = Modifier
                 .windowInsetsPadding(
                     WindowInsets.statusBars
                         .union(WindowInsets.displayCutout)
-                        .only(WindowInsetsSides.Start + WindowInsetsSides.Top)
+                        .only(WindowInsetsSides.Start + WindowInsetsSides.Top),
                 )
                 .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 16.dp),
             res = cn.qhplus.emo.ui.core.R.drawable.ic_topbar_back,
-            config = state.config
+            config = state.config,
         ) {
             onBack()
         }
@@ -406,9 +401,7 @@ fun BoxWithConstraintsScope.EditCtrl(
 }
 
 @Composable
-private fun PaintSelector(
-    state: EditState
-) {
+private fun PaintSelector(state: EditState) {
     val isPaintScene by remember {
         derivedStateOf {
             state.scene.value.isPaintScene()
@@ -419,7 +412,7 @@ private fun PaintSelector(
             .padding(16.dp),
         res = R.drawable.ic_edit_paint,
         config = state.config,
-        checked = isPaintScene
+        checked = isPaintScene,
     ) {
         if (state.scene.value.isPaintScene()) {
             state.scene.value = EditSceneNormal
@@ -434,11 +427,11 @@ private fun EditCtrlToolBar(
     modifier: Modifier,
     state: EditState,
     gestureContentState: GestureContentState,
-    onEnsureClick: () -> Unit
+    onEnsureClick: () -> Unit,
 ) {
     Column(
         modifier = modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
     ) {
         EditPaintOptions(state, state.config.optionSelectorSize)
         Row(
@@ -446,14 +439,14 @@ private fun EditCtrlToolBar(
                 .fillMaxWidth()
                 .height(50.dp)
                 .padding(start = 4.dp, end = 20.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             PaintSelector(state)
             EditImageButton(
                 modifier = Modifier
                     .padding(10.dp),
                 config = state.config,
-                res = R.drawable.ic_edit_text
+                res = R.drawable.ic_edit_text,
             ) {
                 val layoutInfo = gestureContentState.layoutInfo ?: return@EditImageButton
                 val layer = state.selectedTextOption.value.newTextLayer(
@@ -467,7 +460,7 @@ private fun EditCtrlToolBar(
                     },
                     {
                         state.textEditLayers.remove(it)
-                    }
+                    },
                 )
                 state.textEditLayers.add(layer)
                 state.scene.value = EditSceneText(layer)
@@ -477,17 +470,14 @@ private fun EditCtrlToolBar(
                 enabled = true,
                 config = state.config,
                 text = "确定",
-                onClick = onEnsureClick
+                onClick = onEnsureClick,
             )
         }
     }
 }
 
 @Composable
-private fun ColumnScope.EditPaintOptions(
-    state: EditState,
-    size: Dp
-) {
+private fun ColumnScope.EditPaintOptions(state: EditState, size: Dp) {
     val isPaintScene by remember {
         derivedStateOf {
             state.scene.value.isPaintScene()
@@ -499,7 +489,7 @@ private fun ColumnScope.EditPaintOptions(
                 .padding(20.dp)
                 .align(Alignment.End),
             config = state.config,
-            res = R.drawable.ic_edit_go_back
+            res = R.drawable.ic_edit_go_back,
         ) {
             state.paintEditLayers.removeLastOrNull()
         }
@@ -508,7 +498,7 @@ private fun ColumnScope.EditPaintOptions(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             state.config.paintOptions.forEach { paintOption ->
                 key(paintOption) {
@@ -523,17 +513,13 @@ private fun ColumnScope.EditPaintOptions(
 }
 
 @Composable
-private fun BoxWithConstraintsScope.EditLayerList(
-    state: EditState
-) {
+private fun BoxWithConstraintsScope.EditLayerList(state: EditState) {
     EditPaintLayerList(state = state)
     EditTextLayerList(state = state)
 }
 
 @Composable
-private fun BoxWithConstraintsScope.EditPaintLayerList(
-    state: EditState
-) {
+private fun BoxWithConstraintsScope.EditPaintLayerList(state: EditState) {
     state.paintEditLayers.forEach { layer ->
         key(layer) {
             with(layer) {
@@ -544,9 +530,7 @@ private fun BoxWithConstraintsScope.EditPaintLayerList(
 }
 
 @Composable
-private fun BoxWithConstraintsScope.EditTextLayerList(
-    state: EditState
-) {
+private fun BoxWithConstraintsScope.EditTextLayerList(state: EditState) {
     state.textEditLayers.forEach { layer ->
         key(layer) {
             with(layer) {
@@ -569,10 +553,7 @@ fun BoxWithConstraintsScope.EditLayerList(list: PersistentList<EditLayer>) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun EditTextCtrl(
-    state: EditState,
-    onBack: () -> Unit
-) {
+fun EditTextCtrl(state: EditState, onBack: () -> Unit) {
     val scene = state.scene.value
     if (scene is EditSceneText) {
         Column(
@@ -586,14 +567,14 @@ fun EditTextCtrl(
                     WindowInsets.navigationBarsIgnoringVisibility
                         .union(WindowInsets.ime)
                         .union(WindowInsets.statusBarsIgnoringVisibility)
-                        .union(WindowInsets.displayCutout)
-                )
+                        .union(WindowInsets.displayCutout),
+                ),
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 val focusRequester = remember { FocusRequester() }
 
@@ -620,20 +601,22 @@ fun EditTextCtrl(
                     textStyle = TextEditStyle.copy(
                         color = if (scene.editLayer.reversed) {
                             if (scene.editLayer.color == Color.White) Color.Black else Color.White
-                        } else scene.editLayer.color
+                        } else {
+                            scene.editLayer.color
+                        },
                     ),
                     cursorBrush = SolidColor(state.config.primaryColor),
                     keyboardOptions = remember {
                         KeyboardOptions(
                             KeyboardCapitalization.None,
-                            imeAction = ImeAction.Done
+                            imeAction = ImeAction.Done,
                         )
                     },
                     keyboardActions = remember(onBack) {
                         KeyboardActions(onDone = {
                             onBack()
                         })
-                    }
+                    },
                 )
             }
             EditTextOptions(state, state.config.optionSelectorSize)
@@ -642,20 +625,17 @@ fun EditTextCtrl(
 }
 
 @Composable
-private fun EditTextOptions(
-    state: EditState,
-    size: Dp
-) {
+private fun EditTextOptions(state: EditState, size: Dp) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 4.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         EditImageButton(
             config = state.config,
             res = if (state.textConfigReversed.value) R.drawable.ic_edit_text_reversed else R.drawable.ic_edit_text,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
         ) {
             val reversed = !state.textConfigReversed.value
             state.textConfigReversed.value = reversed
@@ -666,14 +646,14 @@ private fun EditTextOptions(
             modifier = Modifier
                 .width(OnePx())
                 .height(size + 8.dp)
-                .background(Color.White.copy(alpha = 0.3f))
+                .background(Color.White.copy(alpha = 0.3f)),
         )
 
         Row(
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             state.config.textEditOptions.forEach { option ->
                 option.Selector(size = size, selected = state.selectedTextOption.value == option) {

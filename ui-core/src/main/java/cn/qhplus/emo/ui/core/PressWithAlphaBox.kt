@@ -33,26 +33,34 @@ fun PressWithAlphaBox(
     pressAlpha: Float = 0.5f,
     disableAlpha: Float = 0.5f,
     onClick: (() -> Unit)? = null,
-    content: @Composable BoxScope.() -> Unit
+    content: @Composable BoxScope.() -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
     Box(
         modifier = Modifier
-            .alpha(if (!enable) disableAlpha else if (isPressed.value) pressAlpha else 1f)
+            .alpha(
+                if (!enable) {
+                    disableAlpha
+                } else if (isPressed.value) {
+                    pressAlpha
+                } else {
+                    1f
+                },
+            )
             .let {
                 if (onClick != null) {
                     it.throttleClick(
                         enabled = enable,
                         interactionSource = interactionSource,
                         indication = null,
-                        onClick = onClick
+                        onClick = onClick,
                     )
                 } else {
                     it
                 }
             }
             .then(modifier),
-        content = content
+        content = content,
     )
 }

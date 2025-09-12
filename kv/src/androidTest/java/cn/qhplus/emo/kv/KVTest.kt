@@ -80,7 +80,7 @@ class KVTest {
         Log.i("w_kv_write_read_s", "native allocated size = ${Debug.getNativeHeapAllocatedSize() / 1024}")
         val emoKV = EmoKV(
             appContext,
-            "test3"
+            "test3",
         ) { key, e ->
             Log.i("EmoKV", e.message ?: "")
             true

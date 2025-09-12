@@ -44,20 +44,20 @@ internal fun EditImageButton(
     res: Int,
     enabled: Boolean = true,
     checked: Boolean = false,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     PressWithAlphaBox(
         modifier = modifier,
         enable = enabled,
         onClick = {
             onClick()
-        }
+        },
     ) {
         Image(
             painter = painterResource(res),
             contentDescription = "",
             colorFilter = ColorFilter.tint(if (checked) config.primaryColor else Color.White),
-            contentScale = ContentScale.Inside
+            contentScale = ContentScale.Inside,
         )
     }
 }
@@ -68,7 +68,7 @@ internal fun EditSureButton(
     config: PhotoEditConfig,
     enabled: Boolean,
     text: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
@@ -85,16 +85,16 @@ internal fun EditSureButton(
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
-                enabled = enabled
+                enabled = enabled,
             ) {
                 onClick()
             }
-            .padding(start = 10.dp, end = 10.dp, top = 3.dp, bottom = 4.dp)
+            .padding(start = 10.dp, end = 10.dp, top = 3.dp, bottom = 4.dp),
     ) {
         Text(
             text = text,
             fontSize = 17.sp,
-            color = textColor
+            color = textColor,
         )
     }
 }

@@ -40,26 +40,18 @@ import kotlin.math.min
 
 class BitmapRegions(val width: Int, val height: Int, val list: List<BitmapRegionProvider>)
 
-class BitmapRegionProvider(
-    val width: Int,
-    val height: Int,
-    val loader: BitmapRegionLoader
-)
+class BitmapRegionProvider(val width: Int, val height: Int, val loader: BitmapRegionLoader)
 
 fun interface BitmapRegionLoader {
     suspend fun load(): Bitmap?
 }
 
 class EmoAlreadyBitmapRegionLoader(private val bm: Bitmap) : BitmapRegionLoader {
-    override suspend fun load(): Bitmap {
-        return bm
-    }
+    override suspend fun load(): Bitmap = bm
 }
 
-private class CacheBitmapRegionLoader(
-    private val origin: BitmapRegionLoader,
-    private val caches: BitmapRegionCaches
-) : BitmapRegionLoader {
+private class CacheBitmapRegionLoader(private val origin: BitmapRegionLoader, private val caches: BitmapRegionCaches) :
+    BitmapRegionLoader {
 
     @Volatile
     private var cache: Bitmap? = null
@@ -97,18 +89,16 @@ fun loadLongImageThumbnail(
     ins: InputStream,
     preferredSize: IntSize,
     options: BitmapFactory.Options,
-    fit: Boolean = false
-): Bitmap? {
-    return loadLongImage(ins, preferredSize, options, fit) { regionDecoder ->
-        val w = regionDecoder.width
-        val h = regionDecoder.height
-        val pageHeight = if (preferredSize.width > 0 && preferredSize.height > 0) {
-            (w * preferredSize.height / preferredSize.width).coerceAtMost(w * 5).coerceAtMost(h)
-        } else {
-            (5 * w).coerceAtMost(h)
-        }
-        regionDecoder.decodeRegion(Rect(0, 0, w, pageHeight), options)
+    fit: Boolean = false,
+): Bitmap? = loadLongImage(ins, preferredSize, options, fit) { regionDecoder ->
+    val w = regionDecoder.width
+    val h = regionDecoder.height
+    val pageHeight = if (preferredSize.width > 0 && preferredSize.height > 0) {
+        (w * preferredSize.height / preferredSize.width).coerceAtMost(w * 5).coerceAtMost(h)
+    } else {
+        (5 * w).coerceAtMost(h)
     }
+    regionDecoder.decodeRegion(Rect(0, 0, w, pageHeight), options)
 }
 
 /**
@@ -123,7 +113,7 @@ fun loadLongImage(
     fit: Boolean = false,
     preloadCount: Int = Int.MAX_VALUE,
     cacheTimeoutForLazyLoad: Long = 1000,
-    cacheCountForLazyLoad: Int = 5
+    cacheCountForLazyLoad: Int = 5,
 ): BitmapRegions {
     val caches = BitmapRegionCaches(cacheTimeoutForLazyLoad, cacheCountForLazyLoad)
     return loadLongImage(ins, preferredSize, options, fit) { regionDecoder ->
@@ -149,10 +139,8 @@ fun loadLongImage(
 
                     private val mutex = Mutex()
 
-                    override suspend fun load(): Bitmap? {
-                        return mutex.withLock {
-                            regionDecoder.decodeRegion(Rect(0, finalTop, w, bottom), options)
-                        }
+                    override suspend fun load(): Bitmap? = mutex.withLock {
+                        regionDecoder.decodeRegion(Rect(0, finalTop, w, bottom), options)
                     }
                 }
                 ret.add(
@@ -163,8 +151,8 @@ fun loadLongImage(
                             CacheBitmapRegionLoader(loader, caches)
                         } else {
                             loader
-                        }
-                    )
+                        },
+                    ),
                 )
             }
             top = bottom
@@ -180,7 +168,7 @@ private fun <T> loadLongImage(
     preferredSize: IntSize,
     options: BitmapFactory.Options,
     fit: Boolean = false,
-    handler: (BitmapRegionDecoder) -> T
+    handler: (BitmapRegionDecoder) -> T,
 ): T {
     // Read the image's dimensions.
     options.inJustDecodeBounds = true
@@ -200,7 +188,7 @@ private fun <T> loadLongImage(
             srcHeight = options.outHeight,
             dstWidth = dstWidth,
             dstHeight = dstHeight,
-            fit = fit
+            fit = fit,
         )
     } else {
         options.inSampleSize = 1
@@ -221,7 +209,7 @@ private fun calculateInSampleSize(
     srcHeight: Int,
     dstWidth: Int,
     dstHeight: Int,
-    fit: Boolean = false
+    fit: Boolean = false,
 ): Int {
     val widthInSampleSize = Integer.highestOneBit(srcWidth / dstWidth)
     val heightInSampleSize = Integer.highestOneBit(srcHeight / dstHeight)
@@ -232,10 +220,7 @@ private fun calculateInSampleSize(
     }
 }
 
-private class BitmapRegionCaches(
-    val cacheTimeoutForLazyLoad: Long,
-    val cacheCountForLazyLoad: Int
-) {
+private class BitmapRegionCaches(val cacheTimeoutForLazyLoad: Long, val cacheCountForLazyLoad: Int) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
     private val cacheJobs = object : LruCache<CacheBitmapRegionLoader, Job>(cacheCountForLazyLoad) {
@@ -261,20 +246,14 @@ private class BitmapRegionCaches(
         cacheJobs.put(loader, job)
     }
 
-    fun canCache(): Boolean {
-        return cacheTimeoutForLazyLoad > 0 && cacheCountForLazyLoad > 0
-    }
+    fun canCache(): Boolean = cacheTimeoutForLazyLoad > 0 && cacheCountForLazyLoad > 0
 }
 
 class BitmapRegionHolderDrawable(val bitmapRegion: BitmapRegions) : Drawable() {
 
-    override fun getIntrinsicHeight(): Int {
-        return bitmapRegion.height
-    }
+    override fun getIntrinsicHeight(): Int = bitmapRegion.height
 
-    override fun getIntrinsicWidth(): Int {
-        return bitmapRegion.width
-    }
+    override fun getIntrinsicWidth(): Int = bitmapRegion.width
 
     override fun draw(canvas: Canvas) {
     }
@@ -285,7 +264,5 @@ class BitmapRegionHolderDrawable(val bitmapRegion: BitmapRegions) : Drawable() {
     override fun setColorFilter(colorFilter: ColorFilter?) {
     }
 
-    override fun getOpacity(): Int {
-        return PixelFormat.OPAQUE
-    }
+    override fun getOpacity(): Int = PixelFormat.OPAQUE
 }

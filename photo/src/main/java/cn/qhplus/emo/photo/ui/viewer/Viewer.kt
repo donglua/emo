@@ -59,21 +59,20 @@ class PhotoPageCtrl(
     val onTapExit: (page: Int, afterTransition: Boolean) -> Unit,
     val onLongClick: (page: Int, drawable: Drawable) -> Unit,
     val loading: @Composable BoxScope.() -> Unit = {
-        Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.1f)), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.1f)),
+            contentAlignment = Alignment.Center,
+        ) {
             Loading(size = 48.dp, lineColor = Color.White)
         }
     },
     val loadingFailed: (@Composable BoxScope.() -> Unit)? = null,
     val pullExitMiniTranslateY: Dp = 72.dp,
     val shouldTransition: Boolean = true,
-    val allowPullExit: Boolean = true
+    val allowPullExit: Boolean = true,
 )
 
-class PhotoViewerArg(
-    val list: List<PhotoShot>,
-    val index: Int,
-    val photoPageCtrl: PhotoPageCtrl
-)
+class PhotoViewerArg(val list: List<PhotoShot>, val index: Int, val photoPageCtrl: PhotoPageCtrl)
 
 @OptIn(ExperimentalFoundationApi::class)
 class PhotoPageArg(
@@ -81,7 +80,7 @@ class PhotoPageArg(
     val page: Int,
     val item: PhotoShot,
     val shouldTransitionEnter: Boolean,
-    val ctrl: PhotoPageCtrl
+    val ctrl: PhotoPageCtrl,
 )
 
 @Stable
@@ -89,32 +88,32 @@ class PhotoPageContentArg(
     val transition: Transition<Boolean>,
     val photoShot: PhotoShot,
     val onPhotoLoaded: (PhotoResult) -> Unit,
-    val photoPageCtrl: PhotoPageCtrl
+    val photoPageCtrl: PhotoPageCtrl,
 )
 
 @Composable
 fun PhotoViewerScaffold(
     viewerArg: PhotoViewerArg,
     ConfigProvider: @Composable (
-        @Composable () -> Unit
+        @Composable () -> Unit,
     ) -> Unit = {
         DefaultPhotoViewerConfigProvider(it)
     },
     PhotoViewer: @Composable (
         PhotoViewerArg,
-        @Composable (PhotoPageArg) -> Unit
+        @Composable (PhotoPageArg) -> Unit,
     ) -> Unit = { arg, photoPage ->
         DefaultPhotoViewer(arg, photoPage)
     },
     PhotoPage: @Composable (
         PhotoPageArg,
-        @Composable (PhotoPageContentArg) -> Unit
+        @Composable (PhotoPageContentArg) -> Unit,
     ) -> Unit = { arg, photoPageContent ->
         DefaultPhotoPage(arg, photoPageContent)
     },
     PhotoPageContent: @Composable (PhotoPageContentArg) -> Unit = { arg ->
         DefaultPhotoPageContent(arg)
-    }
+    },
 ) {
     ConfigProvider {
         PhotoViewer(viewerArg) { arg ->
@@ -129,17 +128,14 @@ class PhotoViewerPagedChanged(var changed: Boolean = false)
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun DefaultPhotoViewer(
-    arg: PhotoViewerArg,
-    PhotoPage: @Composable (PhotoPageArg) -> Unit
-) {
+fun DefaultPhotoViewer(arg: PhotoViewerArg, PhotoPage: @Composable (PhotoPageArg) -> Unit) {
     val pagerState = rememberPagerState(arg.index, pageCount = { arg.list.size })
     val pagedChanged = remember {
         PhotoViewerPagedChanged()
     }
     HorizontalPager(
         state = pagerState,
-        key = { arg.list[it].photoProvider.id() }
+        key = { arg.list[it].photoProvider.id() },
     ) { page ->
         if (page != arg.index) {
             pagedChanged.changed = true
@@ -150,8 +146,8 @@ fun DefaultPhotoViewer(
                 page,
                 arg.list[page],
                 page == arg.index && !pagedChanged.changed,
-                arg.photoPageCtrl
-            )
+                arg.photoPageCtrl,
+            ),
         )
     }
 }
@@ -163,10 +159,10 @@ fun DefaultPhotoPage(
     PhotoPageContent: @Composable (PhotoPageContentArg) -> Unit,
     GestureBox: @Composable BoxWithConstraintsScope.(
         PhotoShot,
-        @Composable BoxWithConstraintsScope.(onPhotoLoaded: ((PhotoResult) -> Unit)?) -> Unit
+        @Composable BoxWithConstraintsScope.(onPhotoLoaded: ((PhotoResult) -> Unit)?) -> Unit,
     ) -> Unit = { _, content ->
         DefaultPhotoGestureBox(content)
-    }
+    },
 ) {
     val isTransitionPage = remember(pageArg.page) {
         derivedStateOf {
@@ -176,7 +172,9 @@ fun DefaultPhotoPage(
     val initRect = pageArg.item.photoRect()
     val transitionTarget = if (isTransitionPage.value) {
         pageArg.ctrl.transitionTargetFlow.collectAsState().value
-    } else true
+    } else {
+        true
+    }
     val drawableCache = remember {
         MutableDrawableCache()
     }
@@ -202,7 +200,7 @@ fun DefaultPhotoPage(
                 },
                 onTapExit = {
                     pageArg.ctrl.onTapExit(pageArg.page, it)
-                }
+                },
             ) { transition, _, _, onImageRatioEnsured ->
 
                 val onPhotoLoad: (PhotoResult) -> Unit = remember(drawableCache, onImageRatioEnsured) {
@@ -225,15 +223,13 @@ fun DefaultPhotoPage(
 
 @Composable
 fun BoxWithConstraintsScope.DefaultPhotoGestureBox(
-    content: @Composable BoxWithConstraintsScope.(onPhotoLoaded: ((PhotoResult) -> Unit)?) -> Unit
+    content: @Composable BoxWithConstraintsScope.(onPhotoLoaded: ((PhotoResult) -> Unit)?) -> Unit,
 ) {
     content(null)
 }
 
 @Composable
-fun DefaultPhotoPageContent(
-    arg: PhotoPageContentArg
-) {
+fun DefaultPhotoPageContent(arg: PhotoPageContentArg) {
     val thumb = remember(arg) { arg.photoShot.photoProvider.thumbnail(false) }
 
     var loadStatus by remember {
@@ -253,7 +249,7 @@ fun DefaultPhotoPageContent(
             onSuccess = onSuccess,
             onError = {
                 loadStatus = PhotoLoadStatus.Failed
-            }
+            },
         )
 
         if (loadStatus != PhotoLoadStatus.Success ||
@@ -278,16 +274,18 @@ fun DefaultPhotoPageContent(
                     contentDescription = "",
                     alignment = if (arg.photoShot.photoProvider.isLongImage()) {
                         Alignment.TopCenter
-                    } else Alignment.Center,
+                    } else {
+                        Alignment.Center
+                    },
                     contentScale = contentScale,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 )
             } else {
                 thumb?.Compose(
                     contentScale = contentScale,
                     isContainerDimenExactly = true,
                     onSuccess = null,
-                    onError = null
+                    onError = null,
                 )
             }
         }
@@ -308,7 +306,7 @@ fun DefaultPhotoPageContent(
 private fun PhotoItem(
     photoShot: PhotoShot,
     onSuccess: ((PhotoResult) -> Unit)?,
-    onError: ((Throwable) -> Unit)? = null
+    onError: ((Throwable) -> Unit)? = null,
 ) {
     val photo = remember(photoShot) {
         photoShot.photoProvider.photo()
@@ -317,6 +315,6 @@ private fun PhotoItem(
         contentScale = ContentScale.Fit,
         isContainerDimenExactly = true,
         onSuccess = onSuccess,
-        onError = onError
+        onError = onError,
     )
 }

@@ -45,7 +45,7 @@ interface Photo {
         contentScale: ContentScale,
         isContainerDimenExactly: Boolean,
         onSuccess: ((PhotoResult) -> Unit)?,
-        onError: ((Throwable) -> Unit)?
+        onError: ((Throwable) -> Unit)?,
     )
 }
 
@@ -69,7 +69,7 @@ class PhotoShot(
     val photoProvider: PhotoProvider,
     var offsetInWindow: Offset?,
     var size: IntSize?,
-    var photo: Drawable?
+    var photo: Drawable?,
 ) {
     fun photoRect(): Rect? {
         val offset = offsetInWindow
@@ -99,14 +99,20 @@ class BitmapPhoto(val bitmap: Bitmap, val background: Color) : Photo {
         contentScale: ContentScale,
         isContainerDimenExactly: Boolean,
         onSuccess: ((PhotoResult) -> Unit)?,
-        onError: ((Throwable) -> Unit)?
+        onError: ((Throwable) -> Unit)?,
     ) {
         Image(
             modifier = Modifier.fillMaxSize(),
             painter = BitmapPainter(bitmap.asImageBitmap()),
             contentDescription = "",
             contentScale = contentScale,
-            colorFilter = if (background == Color.Transparent) null else ColorFilter.tint(background, BlendMode.DstOver)
+            colorFilter = if (background ==
+                Color.Transparent
+            ) {
+                null
+            } else {
+                ColorFilter.tint(background, BlendMode.DstOver)
+            },
         )
         val resource = LocalView.current.resources
         LaunchedEffect(this, resource) {
@@ -116,26 +122,16 @@ class BitmapPhoto(val bitmap: Bitmap, val background: Color) : Photo {
 }
 
 class BitmapPhotoProvider(val bitmap: Bitmap, val background: Color = Color.Transparent) : PhotoProvider {
-    override fun id(): Any {
-        return UUID.randomUUID()
-    }
+    override fun id(): Any = UUID.randomUUID()
 
     override fun ratio(): Float = bitmap.width * 1f / bitmap.height
-    override fun thumbnail(openBlankColor: Boolean): Photo? {
-        return null
-    }
+    override fun thumbnail(openBlankColor: Boolean): Photo? = null
 
-    override fun photo(): Photo? {
-        return BitmapPhoto(bitmap, background)
-    }
+    override fun photo(): Photo? = BitmapPhoto(bitmap, background)
 
-    override fun meta(): Bundle? {
-        throw RuntimeException("BitmapPhotoProvider can not delivered by bundle")
-    }
+    override fun meta(): Bundle? = throw RuntimeException("BitmapPhotoProvider can not delivered by bundle")
 
-    override fun recoverCls(): Class<out PhotoShotRecover>? {
-        return null
-    }
+    override fun recoverCls(): Class<out PhotoShotRecover>? = null
 }
 
 interface PhotoShotRecover {
@@ -144,29 +140,21 @@ interface PhotoShotRecover {
 
 val lossPhotoProvider = object : PhotoProvider {
 
-    override fun id(): Any {
-        return Unit
-    }
+    override fun id(): Any = Unit
 
-    override fun thumbnail(openBlankColor: Boolean): Photo? {
-        return null
-    }
+    override fun thumbnail(openBlankColor: Boolean): Photo? = null
 
-    override fun photo(): Photo? {
-        return null
-    }
+    override fun photo(): Photo? = null
 
-    override fun meta(): Bundle? {
-        return null
-    }
+    override fun meta(): Bundle? = null
 
-    override fun recoverCls(): Class<out PhotoShotRecover>? {
-        return null
-    }
+    override fun recoverCls(): Class<out PhotoShotRecover>? = null
 }
 
 val lossPhotoShot = PhotoShot(lossPhotoProvider, null, null, null)
 
 enum class PhotoLoadStatus {
-    Loading, Success, Failed
+    Loading,
+    Success,
+    Failed,
 }

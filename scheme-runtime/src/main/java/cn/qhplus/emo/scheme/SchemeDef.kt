@@ -22,7 +22,7 @@ data class SchemeArgDefine<T : Any>(
     val name: String,
     val special: Boolean,
     val parser: SchemeArgParser<T>,
-    val default: T
+    val default: T,
 )
 
 data class SchemeDef(
@@ -31,7 +31,7 @@ data class SchemeDef(
     val alternativeHosts: List<KClass<*>>,
     val args: List<SchemeArgDefine<*>>,
     val targetId: String,
-    val transition: Int
+    val transition: Int,
 ) {
 
     companion object {
@@ -46,20 +46,16 @@ data class SchemeDef(
         map.toMap()
     }
 
-    fun match(schemeParts: SchemeParts): Boolean {
-        return schemeParts.action == action &&
-            matchSpecialArgs(schemeParts)
-    }
+    fun match(schemeParts: SchemeParts): Boolean = schemeParts.action == action &&
+        matchSpecialArgs(schemeParts)
 
-    internal fun matchSpecialArgs(schemeParts: SchemeParts): Boolean {
-        return args.asSequence()
-            .filter { it.special }
-            .all { def ->
-                schemeParts.queries[def.name].let {
-                    it != null && def.parser.parse(def.name, it) == def.default
-                }
+    internal fun matchSpecialArgs(schemeParts: SchemeParts): Boolean = args.asSequence()
+        .filter { it.special }
+        .all { def ->
+            schemeParts.queries[def.name].let {
+                it != null && def.parser.parse(def.name, it) == def.default
             }
-    }
+        }
 }
 
 interface SchemeDefStorage {
@@ -86,19 +82,13 @@ abstract class AbstractSchemeDefStorage : SchemeDefStorage {
         return subMap.find { it.matchSpecialArgs(schemeParts) }
     }
 
-    override fun findById(id: Int): SchemeDef? {
-        return mapById[id]
-    }
+    override fun findById(id: Int): SchemeDef? = mapById[id]
 }
 
 object DummySchemeDefStorage : SchemeDefStorage {
-    override fun find(schemeParts: SchemeParts): SchemeDef? {
-        return null
-    }
+    override fun find(schemeParts: SchemeParts): SchemeDef? = null
 
-    override fun findById(id: Int): SchemeDef? {
-        return null
-    }
+    override fun findById(id: Int): SchemeDef? = null
 }
 
 object GeneratedSchemeDefStorageDelegate : SchemeDefStorage {
@@ -109,11 +99,7 @@ object GeneratedSchemeDefStorageDelegate : SchemeDefStorage {
         }.getOrDefault(DummySchemeDefStorage)
     }
 
-    override fun find(schemeParts: SchemeParts): SchemeDef? {
-        return storage.find(schemeParts)
-    }
+    override fun find(schemeParts: SchemeParts): SchemeDef? = storage.find(schemeParts)
 
-    override fun findById(id: Int): SchemeDef? {
-        return storage.findById(id)
-    }
+    override fun findById(id: Int): SchemeDef? = storage.findById(id)
 }

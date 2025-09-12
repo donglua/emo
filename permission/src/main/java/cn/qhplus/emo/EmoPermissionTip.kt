@@ -56,16 +56,16 @@ class SimpleEmoPermissionTip(val text: String) : EmoPermissionTip {
                 .fillMaxWidth()
                 .animateEnterExit(
                     slideInVertically(tween(), initialOffsetY = { -it }),
-                    slideOutVertically(tween(), targetOffsetY = { -it })
+                    slideOutVertically(tween(), targetOffsetY = { -it }),
                 )
                 .shadow(32.dp, RoundedCornerShape(12.dp), true)
                 .background(if (isDarkTheme) Color.DarkGray else Color.White)
-                .padding(horizontal = 16.dp, vertical = 24.dp)
+                .padding(horizontal = 16.dp, vertical = 24.dp),
         ) {
             Text(
                 text = text,
                 fontSize = 17.sp,
-                color = if (isDarkTheme) Color.White else Color.Black
+                color = if (isDarkTheme) Color.White else Color.Black,
             )
         }
     }

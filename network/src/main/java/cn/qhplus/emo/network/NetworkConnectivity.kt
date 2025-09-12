@@ -42,11 +42,10 @@ class NetworkConnectivity private constructor(applicationContext: Context) : Log
         private var instance: NetworkConnectivity? = null
 
         @Synchronized
-        fun of(context: Context): NetworkConnectivity {
-            return instance ?: NetworkConnectivity(context.applicationContext).also {
+        fun of(context: Context): NetworkConnectivity =
+            instance ?: NetworkConnectivity(context.applicationContext).also {
                 instance = it
             }
-        }
     }
 
     private val scopeExceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -54,9 +53,11 @@ class NetworkConnectivity private constructor(applicationContext: Context) : Log
     }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO + scopeExceptionHandler)
     private val networkCallback = ConnectivityCallback()
-    private val connectivityManager = applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    private val connectivityManager = applicationContext.getSystemService(
+        Context.CONNECTIVITY_SERVICE,
+    ) as ConnectivityManager
     private val _stateFlow = MutableStateFlow(
-        kotlin.runCatching { fetchNetworkState() }.getOrDefault(NetworkState.none())
+        kotlin.runCatching { fetchNetworkState() }.getOrDefault(NetworkState.none()),
     )
 
     val stateFlow = _stateFlow.asStateFlow()
@@ -99,7 +100,7 @@ class NetworkConnectivity private constructor(applicationContext: Context) : Log
                     NetworkType.Fake,
                     false,
                     networkState.uuid,
-                    networkState.updateTime
+                    networkState.updateTime,
                 )
                 scope.launch {
                     delay(duration)
@@ -122,15 +123,12 @@ class NetworkConnectivity private constructor(applicationContext: Context) : Log
             NetworkType.Unknown,
             false,
             "",
-            0
+            0,
         )
         return fetchNetworkStateByCapabilities(capabilities, network.toString())
     }
 
-    private fun fetchNetworkStateByCapabilities(
-        networkCapabilities: NetworkCapabilities,
-        uuid: String
-    ): NetworkState {
+    private fun fetchNetworkStateByCapabilities(networkCapabilities: NetworkCapabilities, uuid: String): NetworkState {
         if (!networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
             return NetworkState.none()
         }
@@ -140,7 +138,7 @@ class NetworkConnectivity private constructor(applicationContext: Context) : Log
                 NetworkType.Wifi,
                 networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED),
                 uuid,
-                SystemClock.elapsedRealtime()
+                SystemClock.elapsedRealtime(),
             )
         }
 
@@ -149,14 +147,14 @@ class NetworkConnectivity private constructor(applicationContext: Context) : Log
                 NetworkType.Cellular,
                 networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED),
                 uuid,
-                SystemClock.elapsedRealtime()
+                SystemClock.elapsedRealtime(),
             )
         }
         return NetworkState(
             NetworkType.Unknown,
             networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED),
             uuid,
-            SystemClock.elapsedRealtime()
+            SystemClock.elapsedRealtime(),
         )
     }
 
@@ -170,10 +168,7 @@ class NetworkConnectivity private constructor(applicationContext: Context) : Log
             updateJob = null
         }
 
-        override fun onCapabilitiesChanged(
-            network: Network,
-            networkCapabilities: NetworkCapabilities
-        ) {
+        override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
             updateJob?.cancel()
             updateJob = scope.launch {
                 _stateFlow.value =

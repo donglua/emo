@@ -30,7 +30,7 @@ fun DrawScope.drawTopSeparator(
     insetStart: Dp = 0.dp,
     insetEnd: Dp = 0.dp,
     strokeWidth: Float = Stroke.HairlineWidth,
-    pathEffect: PathEffect? = null
+    pathEffect: PathEffect? = null,
 ) {
     drawLine(
         color = color,
@@ -38,7 +38,7 @@ fun DrawScope.drawTopSeparator(
         end = Offset(size.width - insetEnd.toPx(), 0f),
         cap = StrokeCap.Square,
         strokeWidth = strokeWidth,
-        pathEffect = pathEffect
+        pathEffect = pathEffect,
     )
 }
 
@@ -47,7 +47,7 @@ fun DrawScope.drawBottomSeparator(
     insetStart: Dp = 0.dp,
     insetEnd: Dp = 0.dp,
     strokeWidth: Float = Stroke.HairlineWidth,
-    pathEffect: PathEffect? = null
+    pathEffect: PathEffect? = null,
 ) {
     drawLine(
         color = color,
@@ -55,7 +55,7 @@ fun DrawScope.drawBottomSeparator(
         end = Offset(size.width - insetEnd.toPx(), size.height),
         cap = StrokeCap.Square,
         strokeWidth = strokeWidth,
-        pathEffect = pathEffect
+        pathEffect = pathEffect,
     )
 }
 
@@ -64,7 +64,7 @@ fun DrawScope.drawLeftSeparator(
     insetStart: Dp = 0.dp,
     insetEnd: Dp = 0.dp,
     strokeWidth: Float = Stroke.HairlineWidth,
-    pathEffect: PathEffect? = null
+    pathEffect: PathEffect? = null,
 ) {
     drawLine(
         color = color,
@@ -72,7 +72,7 @@ fun DrawScope.drawLeftSeparator(
         end = Offset(0f, size.height - insetEnd.toPx()),
         cap = StrokeCap.Square,
         strokeWidth = strokeWidth,
-        pathEffect = pathEffect
+        pathEffect = pathEffect,
     )
 }
 
@@ -81,7 +81,7 @@ fun DrawScope.drawRightSeparator(
     insetStart: Dp = 0.dp,
     insetEnd: Dp = 0.dp,
     strokeWidth: Float = Stroke.HairlineWidth,
-    pathEffect: PathEffect? = null
+    pathEffect: PathEffect? = null,
 ) {
     drawLine(
         color = color,
@@ -89,6 +89,6 @@ fun DrawScope.drawRightSeparator(
         end = Offset(size.width, size.height - insetEnd.toPx()),
         cap = StrokeCap.Square,
         strokeWidth = strokeWidth,
-        pathEffect = pathEffect
+        pathEffect = pathEffect,
     )
 }

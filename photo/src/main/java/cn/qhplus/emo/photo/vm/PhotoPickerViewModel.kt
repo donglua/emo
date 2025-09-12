@@ -42,18 +42,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PhotoPickerData(
-    val loading: Boolean,
-    val data: List<MediaPhotoBucketVO>?,
-    val error: Throwable? = null
-)
+class PhotoPickerData(val loading: Boolean, val data: List<MediaPhotoBucketVO>?, val error: Throwable? = null)
 
 class PhotoPickerViewModel constructor(
     val application: Application,
     val state: SavedStateHandle,
     val dataProvider: MediaDataProvider,
-    val supportedMimeTypes: Array<String>
-) : ViewModel(), LogTag {
+    val supportedMimeTypes: Array<String>,
+) : ViewModel(),
+    LogTag {
 
     val pickLimitCount = state.get<Int>(PHOTO_PICK_LIMIT_COUNT) ?: PHOTO_DEFAULT_PICK_LIMIT_COUNT
 
@@ -79,7 +76,8 @@ class PhotoPickerViewModel constructor(
 
     init {
         val photoProviderFactoryClsName =
-            state.get<String>(PHOTO_PROVIDER_FACTORY) ?: throw RuntimeException("no MediaPhotoProviderFactory is provided.")
+            state.get<String>(PHOTO_PROVIDER_FACTORY)
+                ?: throw RuntimeException("no MediaPhotoProviderFactory is provided.")
         photoProviderFactory = Class.forName(photoProviderFactoryClsName).newInstance() as MediaPhotoProviderFactory
     }
 
@@ -92,7 +90,7 @@ class PhotoPickerViewModel constructor(
                         bucket.name,
                         bucket.list.map {
                             MediaPhotoVO(it, photoProviderFactory.factory(it))
-                        }
+                        },
                     )
                 }
             }
@@ -160,17 +158,13 @@ class PhotoPickerViewModel constructor(
         }
     }
 
-    fun getPickedVOList(): List<MediaPhotoVO> {
-        return _pickedListFlow.value.mapNotNull { id ->
-            _pickedMap[id]
-        }
+    fun getPickedVOList(): List<MediaPhotoVO> = _pickedListFlow.value.mapNotNull { id ->
+        _pickedMap[id]
     }
 
-    fun getPickedResultList(): List<PhotoPickItemInfo> {
-        return _pickedListFlow.value.mapNotNull { id ->
-            _pickedMap[id]?.model?.let {
-                PhotoPickItemInfo(it.id, it.name, it.width, it.height, it.uri, it.rotation)
-            }
+    fun getPickedResultList(): List<PhotoPickItemInfo> = _pickedListFlow.value.mapNotNull { id ->
+        _pickedMap[id]?.model?.let {
+            PhotoPickItemInfo(it.id, it.name, it.width, it.height, it.uri, it.rotation)
         }
     }
 }

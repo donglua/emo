@@ -23,11 +23,7 @@ interface ReportMsgConverter<T> {
 
 object ReportStringMsgConverter : ReportMsgConverter<String> {
 
-    override fun encode(content: String): ByteArray {
-        return content.toByteArray()
-    }
+    override fun encode(content: String): ByteArray = content.toByteArray()
 
-    override fun decode(content: ByteArray): String {
-        return String(content)
-    }
+    override fun decode(content: ByteArray): String = String(content)
 }

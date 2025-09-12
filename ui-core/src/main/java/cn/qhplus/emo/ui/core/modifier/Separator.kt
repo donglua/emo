@@ -33,9 +33,21 @@ fun Modifier.topSeparator(
     insetStart: Dp = 0.dp,
     insetEnd: Dp = 0.dp,
     strokeWidth: Dp = 0.dp,
-    pathEffect: PathEffect? = null
+    pathEffect: PathEffect? = null,
 ) = drawBehind {
-    drawTopSeparator(color, insetStart, insetEnd, if (strokeWidth == 0.dp) Stroke.HairlineWidth else strokeWidth.toPx(), pathEffect)
+    drawTopSeparator(
+        color,
+        insetStart,
+        insetEnd,
+        if (strokeWidth ==
+            0.dp
+        ) {
+            Stroke.HairlineWidth
+        } else {
+            strokeWidth.toPx()
+        },
+        pathEffect,
+    )
 }
 
 fun Modifier.rightSeparator(
@@ -43,9 +55,21 @@ fun Modifier.rightSeparator(
     insetStart: Dp = 0.dp,
     insetEnd: Dp = 0.dp,
     strokeWidth: Dp = 0.dp,
-    pathEffect: PathEffect? = null
+    pathEffect: PathEffect? = null,
 ) = drawBehind {
-    drawRightSeparator(color, insetStart, insetEnd, if (strokeWidth == 0.dp) Stroke.HairlineWidth else strokeWidth.toPx(), pathEffect)
+    drawRightSeparator(
+        color,
+        insetStart,
+        insetEnd,
+        if (strokeWidth ==
+            0.dp
+        ) {
+            Stroke.HairlineWidth
+        } else {
+            strokeWidth.toPx()
+        },
+        pathEffect,
+    )
 }
 
 fun Modifier.bottomSeparator(
@@ -53,9 +77,21 @@ fun Modifier.bottomSeparator(
     insetStart: Dp = 0.dp,
     insetEnd: Dp = 0.dp,
     strokeWidth: Dp = 0.dp,
-    pathEffect: PathEffect? = null
+    pathEffect: PathEffect? = null,
 ) = drawBehind {
-    drawBottomSeparator(color, insetStart, insetEnd, if (strokeWidth == 0.dp) Stroke.HairlineWidth else strokeWidth.toPx(), pathEffect)
+    drawBottomSeparator(
+        color,
+        insetStart,
+        insetEnd,
+        if (strokeWidth ==
+            0.dp
+        ) {
+            Stroke.HairlineWidth
+        } else {
+            strokeWidth.toPx()
+        },
+        pathEffect,
+    )
 }
 
 fun Modifier.leftSeparator(
@@ -63,7 +99,19 @@ fun Modifier.leftSeparator(
     insetStart: Dp = 0.dp,
     insetEnd: Dp = 0.dp,
     strokeWidth: Dp = 0.dp,
-    pathEffect: PathEffect? = null
+    pathEffect: PathEffect? = null,
 ) = drawBehind {
-    drawLeftSeparator(color, insetStart, insetEnd, if (strokeWidth == 0.dp) Stroke.HairlineWidth else strokeWidth.toPx(), pathEffect)
+    drawLeftSeparator(
+        color,
+        insetStart,
+        insetEnd,
+        if (strokeWidth ==
+            0.dp
+        ) {
+            Stroke.HairlineWidth
+        } else {
+            strokeWidth.toPx()
+        },
+        pathEffect,
+    )
 }

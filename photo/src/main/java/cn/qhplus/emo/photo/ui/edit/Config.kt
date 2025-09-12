@@ -33,7 +33,7 @@ data class PhotoEditConfig(
         ColorPaintOption(Color.Red, 5.dp),
         ColorPaintOption(Color.Green, 5.dp),
         ColorPaintOption(Color.Blue, 5.dp),
-        ColorPaintOption(Color.Magenta, 5.dp)
+        ColorPaintOption(Color.Magenta, 5.dp),
     ),
     val textEditMaskColor: Color = Color.Black.copy(alpha = 0.5f),
     val textEditOptions: PersistentList<TextOption> = persistentListOf(
@@ -43,6 +43,6 @@ data class PhotoEditConfig(
         TextOption(Color.Red),
         TextOption(Color.Green),
         TextOption(Color.Blue),
-        TextOption(Color.Magenta)
-    )
+        TextOption(Color.Magenta),
+    ),
 )

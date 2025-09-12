@@ -91,7 +91,7 @@ class PdfPage(
     val dataSource: PdfDataSource,
     val page: Int,
     initRatio: Float = 1f,
-    private val channel: Channel<PdfBitmapMsg>
+    private val channel: Channel<PdfBitmapMsg>,
 ) : LogTag {
     val bitmap = mutableStateOf<WeakReference<Bitmap>?>(null)
     val failed = mutableStateOf(false)
@@ -123,9 +123,7 @@ class PdfDrawable(val source: PdfDataSource, val list: PersistentList<PdfPage>) 
     override fun setColorFilter(colorFilter: ColorFilter?) {
     }
 
-    override fun getOpacity(): Int {
-        return PixelFormat.TRANSLUCENT
-    }
+    override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 }
 
 @Stable
@@ -152,17 +150,12 @@ data class DefaultUriPdfDataSource(private val uri: Uri) : PdfDataSource {
     override val downloadProgress: StateFlow<Int>
         get() = MutableStateFlow(-1)
 
-    override fun readInitIndex(context: Context): Int {
-        return 0
-    }
+    override fun readInitIndex(context: Context): Int = 0
 
-    override fun readInitOffset(context: Context): Int {
-        return 0
-    }
+    override fun readInitOffset(context: Context): Int = 0
 
-    override suspend fun getFileDescriptor(context: Context): ParcelFileDescriptor? {
-        return context.contentResolver.openFileDescriptor(uri, "r")
-    }
+    override suspend fun getFileDescriptor(context: Context): ParcelFileDescriptor? =
+        context.contentResolver.openFileDescriptor(uri, "r")
 
     override suspend fun saveIndexAndOffset(index: Int, offset: Int) {
         // default do nothing.
@@ -173,27 +166,31 @@ data class DefaultUriPdfDataSource(private val uri: Uri) : PdfDataSource {
     override suspend fun saveEditLayers(page: Int, layers: PersistentList<EditLayer>) {
     }
 
-    override suspend fun loadEditLayers(page: Int): PersistentList<EditLayer> {
-        return persistentListOf()
-    }
+    override suspend fun loadEditLayers(page: Int): PersistentList<EditLayer> = persistentListOf()
 }
 
 @Composable
-fun PdfContent(
-    listState: LazyListState,
-    pages: PersistentList<PdfPage>,
-    firstPagePaddingForTopBar: Boolean = false
-) {
+fun PdfContent(listState: LazyListState, pages: PersistentList<PdfPage>, firstPagePaddingForTopBar: Boolean = false) {
     BoxWithConstraints(Modifier.fillMaxSize()) {
         LazyColumn(
             state = listState,
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.LightGray),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             itemsIndexed(pages, key = { _, page -> page.page }) { index, page ->
-                PdfPage(width = maxWidth, page, if (index == 0) firstPagePaddingForTopBar else false)
+                PdfPage(
+                    width = maxWidth,
+                    page,
+                    if (index ==
+                        0
+                    ) {
+                        firstPagePaddingForTopBar
+                    } else {
+                        false
+                    },
+                )
             }
         }
     }
@@ -205,7 +202,7 @@ fun PdfBox(
     listState: LazyListState,
     firstPagePaddingForTopBar: Boolean = false,
     onSuccess: ((PdfDrawable) -> Unit)?,
-    onError: ((Throwable) -> Unit)?
+    onError: ((Throwable) -> Unit)?,
 ) {
     val scope = rememberCoroutineScope()
     val pdfPages = remember {
@@ -218,7 +215,7 @@ fun PdfBox(
                 var fd: ParcelFileDescriptor? = null
                 try {
                     fd = dataSource.getFileDescriptor(context) ?: throw RuntimeException(
-                        "openFileDescriptor failed for dataSource: $dataSource"
+                        "openFileDescriptor failed for dataSource: $dataSource",
                     )
                     PdfRenderer(fd).use { pdfRender ->
                         val caches = LruCache<Int, Bitmap>(5)
@@ -226,7 +223,9 @@ fun PdfBox(
                         val list = if (pdfRender.pageCount == 0) {
                             persistentListOf()
                         } else {
-                            val checkIndex = listState.firstVisibleItemIndex.coerceAtMost(pdfRender.pageCount - 1)
+                            val checkIndex = listState.firstVisibleItemIndex.coerceAtMost(
+                                pdfRender.pageCount - 1,
+                            )
                             val checkPage = pdfRender.openPage(checkIndex)
                             val ratio = checkPage.width * 1f / checkPage.height
                             checkPage.close()
@@ -245,9 +244,18 @@ fun PdfBox(
                                     val page = pdfRender.openPage(msg.page.page)
                                     msg.page.ratio.value = page.width * 1f / page.height
                                     val ratio = msg.width * 1f / page.width
-                                    val bitmap = Bitmap.createBitmap(msg.width, (page.height * ratio).toInt(), Bitmap.Config.ARGB_8888)
+                                    val bitmap = Bitmap.createBitmap(
+                                        msg.width,
+                                        (page.height * ratio).toInt(),
+                                        Bitmap.Config.ARGB_8888,
+                                    )
                                     caches.put(msg.page.page, bitmap)
-                                    page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                                    page.render(
+                                        bitmap,
+                                        null,
+                                        null,
+                                        PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY,
+                                    )
                                     page.close()
                                     msg.page.bitmap.value = WeakReference(bitmap)
                                 }
@@ -286,11 +294,7 @@ fun PdfRecordIndex(dataSource: PdfDataSource, listState: LazyListState) {
 }
 
 @Composable
-fun PdfPage(
-    width: Dp,
-    page: PdfPage,
-    paddingForTopBar: Boolean
-) {
+fun PdfPage(width: Dp, page: PdfPage, paddingForTopBar: Boolean) {
     val bitmap = page.bitmap.value?.get()
     val failed = page.failed.value
     val widthPx = with(LocalDensity.current) {
@@ -314,14 +318,14 @@ fun PdfPage(
                     it
                 }
             }
-            .height(width / page.ratio.value)
+            .height(width / page.ratio.value),
     ) {
         if (bitmap != null) {
             Image(
                 painter = BitmapPainter(bitmap.asImageBitmap()),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
             PdfLayerList(page)
         } else {
@@ -335,7 +339,7 @@ fun PdfPage(
                     Text(
                         modifier = Modifier.align(Alignment.Center),
                         text = "加载失败, 点击重试",
-                        fontSize = 15.sp
+                        fontSize = 15.sp,
                     )
                 }
             } else {
@@ -353,15 +357,13 @@ private fun BoxWithConstraintsScope.PdfLayerList(pdfPage: PdfPage) {
     }
 }
 
-open class PdfThumbPhoto(
-    val dataSource: PdfDataSource
-) : Photo {
+open class PdfThumbPhoto(val dataSource: PdfDataSource) : Photo {
     @Composable
     override fun Compose(
         contentScale: ContentScale,
         isContainerDimenExactly: Boolean,
         onSuccess: ((PhotoResult) -> Unit)?,
-        onError: ((Throwable) -> Unit)?
+        onError: ((Throwable) -> Unit)?,
     ) {
         val context = LocalContext.current.applicationContext
         val scope = rememberCoroutineScope()
@@ -371,7 +373,7 @@ open class PdfThumbPhoto(
         BoxWithConstraints(
             Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(Color.White),
         ) {
             DisposableEffect(dataSource, constraints.maxWidth) {
                 val job = scope.launch {
@@ -379,18 +381,32 @@ open class PdfThumbPhoto(
                         var fd: ParcelFileDescriptor? = null
                         try {
                             fd = dataSource.getFileDescriptor(context) ?: throw RuntimeException(
-                                "openFileDescriptor failed for dataSource: $dataSource"
+                                "openFileDescriptor failed for dataSource: $dataSource",
                             )
                             PdfRenderer(fd).use { pdfRender ->
                                 if (pdfRender.pageCount > 0) {
                                     val firstPage = pdfRender.openPage(0)
                                     val ratio = firstPage.width * 1f / firstPage.height
                                     val height = constraints.maxWidth / ratio
-                                    val bitmap = Bitmap.createBitmap(constraints.maxWidth, height.toInt(), Bitmap.Config.ARGB_8888)
-                                    firstPage.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                                    val bitmap = Bitmap.createBitmap(
+                                        constraints.maxWidth,
+                                        height.toInt(),
+                                        Bitmap.Config.ARGB_8888,
+                                    )
+                                    firstPage.render(
+                                        bitmap,
+                                        null,
+                                        null,
+                                        PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY,
+                                    )
                                     firstPage.close()
                                     bm.value = bitmap
-                                    onSuccess?.invoke(PhotoResult(dataSource, bitmap.toDrawable(context.resources)))
+                                    onSuccess?.invoke(
+                                        PhotoResult(
+                                            dataSource,
+                                            bitmap.toDrawable(context.resources),
+                                        ),
+                                    )
                                 }
                             }
                         } catch (e: Throwable) {
@@ -412,29 +428,27 @@ open class PdfThumbPhoto(
                     painter = BitmapPainter(bitmap.asImageBitmap()),
                     contentDescription = "",
                     contentScale = contentScale,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
         }
     }
 }
 
-open class PdfPhoto(
-    val dataSource: PdfDataSource
-) : Photo {
+open class PdfPhoto(val dataSource: PdfDataSource) : Photo {
 
     @Composable
     override fun Compose(
         contentScale: ContentScale,
         isContainerDimenExactly: Boolean,
         onSuccess: ((PhotoResult) -> Unit)?,
-        onError: ((Throwable) -> Unit)?
+        onError: ((Throwable) -> Unit)?,
     ) {
         val context = LocalContext.current.applicationContext
         val listState = rememberSaveable(saver = LazyListState.Saver) {
             LazyListState(
                 dataSource.readInitIndex(context),
-                dataSource.readInitOffset(context)
+                dataSource.readInitOffset(context),
             )
         }
         PdfBox(dataSource, listState, false, {
@@ -444,9 +458,7 @@ open class PdfPhoto(
 }
 
 @Stable
-open class PdfPhotoProvider(
-    val uri: Uri
-) : PhotoProvider {
+open class PdfPhotoProvider(val uri: Uri) : PhotoProvider {
 
     companion object {
         const val META_URI_KEY = "meta_uri"
@@ -454,35 +466,21 @@ open class PdfPhotoProvider(
 
     val dataSource = DefaultUriPdfDataSource(uri)
 
-    override fun id(): Any {
-        return uri
+    override fun id(): Any = uri
+
+    override fun thumbnail(openBlankColor: Boolean): Photo? = null
+
+    override fun photo(): Photo? = PdfPhoto(dataSource)
+
+    override fun ratio(): Float = 0f
+
+    override fun isLongImage(): Boolean = true
+
+    override fun meta(): Bundle? = Bundle().apply {
+        putParcelable(META_URI_KEY, uri)
     }
 
-    override fun thumbnail(openBlankColor: Boolean): Photo? {
-        return null
-    }
-
-    override fun photo(): Photo? {
-        return PdfPhoto(dataSource)
-    }
-
-    override fun ratio(): Float {
-        return 0f
-    }
-
-    override fun isLongImage(): Boolean {
-        return true
-    }
-
-    override fun meta(): Bundle? {
-        return Bundle().apply {
-            putParcelable(META_URI_KEY, uri)
-        }
-    }
-
-    override fun recoverCls(): Class<out PhotoShotRecover>? {
-        return PdfPhotoShotRecover::class.java
-    }
+    override fun recoverCls(): Class<out PhotoShotRecover>? = PdfPhotoShotRecover::class.java
 }
 
 class PdfPhotoShotRecover : PhotoShotRecover {
@@ -494,7 +492,7 @@ class PdfPhotoShotRecover : PhotoShotRecover {
             PdfPhotoProvider(uri),
             null,
             null,
-            null
+            null,
         )
     }
 }

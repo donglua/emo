@@ -57,7 +57,7 @@ class PhotoPickerBucketTopBarItem(
     private val iconColor: Color,
     private val textFlow: StateFlow<String>,
     private val isFocusFlow: StateFlow<Boolean>,
-    private val onClick: () -> Unit
+    private val onClick: () -> Unit,
 ) : TopBarItem {
 
     @Composable
@@ -70,19 +70,19 @@ class PhotoPickerBucketTopBarItem(
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                    enabled = true
+                    enabled = true,
                 ) {
                     onClick()
                 }
                 .padding(start = 12.dp, end = 6.dp, top = 4.dp, bottom = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Absolute.spacedBy(5.dp)
+            horizontalArrangement = Arrangement.Absolute.spacedBy(5.dp),
         ) {
             Text(
                 text,
                 fontSize = 17.sp,
                 color = textColor,
-                modifier = Modifier.padding(bottom = 1.dp)
+                modifier = Modifier.padding(bottom = 1.dp),
             )
             PhotoPickerBucketToggleArrow(iconBgColor, iconColor, isFocusFlow)
         }
@@ -94,7 +94,7 @@ class PhotoSendTopBarItem(
     private val text: String,
     private val maxSelectCount: Int,
     private val selectCountFlow: StateFlow<Int>,
-    private val onClick: () -> Unit
+    private val onClick: () -> Unit,
 ) : TopBarItem {
     @Composable
     override fun Compose(topBarHeight: Dp) {
@@ -102,24 +102,20 @@ class PhotoSendTopBarItem(
         CommonButton(
             enabled = selectCount > 0 || canSendSelf,
             text = if (selectCount > 0) "$text($selectCount/$maxSelectCount)" else text,
-            onClick = onClick
+            onClick = onClick,
         )
     }
 }
 
 @Composable
-fun PhotoPickerBucketToggleArrow(
-    bgColor: Color,
-    iconColor: Color,
-    isFocusFlow: StateFlow<Boolean>
-) {
+fun PhotoPickerBucketToggleArrow(bgColor: Color, iconColor: Color, isFocusFlow: StateFlow<Boolean>) {
     val isFocus by isFocusFlow.collectAsState()
     Box(
         modifier = Modifier
             .size(20.dp)
             .clip(CircleShape)
             .background(bgColor),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         val strokeWidth = with(LocalDensity.current) {
             1.6.dp.toPx()
@@ -127,7 +123,7 @@ fun PhotoPickerBucketToggleArrow(
         val transition = updateTransition(targetState = isFocus, "PhotoPickerBucketToggleArrow")
         val rotate = transition.animateFloat(
             transitionSpec = { tween(durationMillis = 300) },
-            label = "PhotoPickerBucketToggleArrowFocus"
+            label = "PhotoPickerBucketToggleArrowFocus",
         ) {
             if (it) 180f else 0f
         }
@@ -135,7 +131,7 @@ fun PhotoPickerBucketToggleArrow(
             modifier = Modifier
                 .width(8.dp)
                 .height(4.dp)
-                .rotate(rotate.value)
+                .rotate(rotate.value),
         ) {
             drawPath(
                 Path().apply {
@@ -144,7 +140,7 @@ fun PhotoPickerBucketToggleArrow(
                     lineTo(size.width, 0f)
                 },
                 iconColor,
-                style = Stroke(strokeWidth)
+                style = Stroke(strokeWidth),
             )
         }
     }

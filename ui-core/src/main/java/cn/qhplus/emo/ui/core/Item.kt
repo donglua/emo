@@ -46,7 +46,7 @@ val DefaultItemTitleTextStyle by lazy {
     TextStyle(
         fontWeight = FontWeight.Medium,
         fontSize = 16.sp,
-        lineHeight = 20.sp
+        lineHeight = 20.sp,
     )
 }
 
@@ -54,7 +54,7 @@ val DefaultItemDetailTextStyle by lazy {
     TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
-        lineHeight = 17.sp
+        lineHeight = 17.sp,
     )
 }
 
@@ -75,7 +75,7 @@ fun Item(
     gapBetweenTitleAndDetail: Dp = 4.dp,
     accessory: @Composable (RowScope.() -> Unit)? = null,
     drawBehind: (DrawScope.() -> Unit)? = null,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
 ) {
     Row(
         modifier = Modifier
@@ -90,7 +90,7 @@ fun Item(
                 if (onClick != null) {
                     it.throttleClick(
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = indication
+                        indication = indication,
                     ) {
                         onClick.invoke()
                     }
@@ -99,14 +99,14 @@ fun Item(
                 }
             }
             .padding(horizontal = paddingHor, vertical = paddingVer),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
                 color = titleTextColor,
                 modifier = Modifier.fillMaxWidth(),
-                style = titleTextStyle
+                style = titleTextStyle,
             )
             if (detail.isNotBlank()) {
                 Text(
@@ -115,7 +115,7 @@ fun Item(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = gapBetweenTitleAndDetail),
-                    style = detailTextStyle
+                    style = detailTextStyle,
                 )
             }
         }

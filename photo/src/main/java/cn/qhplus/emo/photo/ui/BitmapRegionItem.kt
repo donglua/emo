@@ -53,7 +53,7 @@ fun BitmapRegionItem(bmRegion: BitmapRegionProvider, w: Dp, h: Dp) {
                 painter = BitmapPainter(bm.asImageBitmap()),
                 contentDescription = "",
                 contentScale = ContentScale.FillWidth,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
         }
     }

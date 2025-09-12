@@ -37,25 +37,17 @@ object SchemeBoolArgParser : SchemeArgParser<Boolean> {
 }
 
 object SchemeIntArgParser : SchemeArgParser<Int> {
-    override fun parse(name: String, value: String): Int {
-        return value.toInt()
-    }
+    override fun parse(name: String, value: String): Int = value.toInt()
 }
 
 object SchemeLongArgParser : SchemeArgParser<Long> {
-    override fun parse(name: String, value: String): Long {
-        return value.toLong()
-    }
+    override fun parse(name: String, value: String): Long = value.toLong()
 }
 
 object SchemeFloatArgParser : SchemeArgParser<Float> {
-    override fun parse(name: String, value: String): Float {
-        return value.toFloat()
-    }
+    override fun parse(name: String, value: String): Float = value.toFloat()
 }
 
 object SchemeStringArgParser : SchemeArgParser<String> {
-    override fun parse(name: String, value: String): String {
-        return value
-    }
+    override fun parse(name: String, value: String): String = value
 }

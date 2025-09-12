@@ -48,7 +48,7 @@ object PhotoHelper : LogTag {
         nameWithoutSuffix: String,
         dirName: String = Environment.DIRECTORY_PICTURES,
         compressFormat: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
-        compressQuality: Int = 100
+        compressQuality: Int = 100,
     ): Uri? {
         val suffix = when (compressFormat) {
             Bitmap.CompressFormat.JPEG -> ".jpeg"
@@ -70,7 +70,7 @@ object PhotoHelper : LogTag {
         name: String,
         mimeType: String,
         dirName: String = Environment.DIRECTORY_PICTURES,
-        writer: (OutputStream) -> Unit
+        writer: (OutputStream) -> Unit,
     ): Uri? {
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
@@ -119,7 +119,7 @@ object PhotoHelper : LogTag {
         byteMaxSizeStrategy: (Bitmap) -> Int = DefaultBitmapCompressMaxSizeStrategy,
         canUseMemoryStorage: (Bitmap) -> Boolean = DefaultBitmapCompressCanUseMemoryStorage,
         compressFormat: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
-        compressQuality: Int = 80
+        compressQuality: Int = 80,
     ): BitmapCompressResult? {
         val applicationContext = context.applicationContext
         val options = BitmapFactory.Options()
@@ -145,9 +145,7 @@ object PhotoHelper : LogTag {
         val bitmap = inputStream.use {
             BitmapFactory.decodeStream(it, null, options)
         } ?: return object : BitmapCompressResult(compressFormat, -1, -1, -1) {
-            override fun inputStream(): InputStream? {
-                return originProvider(applicationContext)
-            }
+            override fun inputStream(): InputStream? = originProvider(applicationContext)
         }
         return bitmap.compressByShortEdgeWidthAndByteSize(
             context,
@@ -155,7 +153,7 @@ object PhotoHelper : LogTag {
             byteMaxSizeStrategy,
             canUseMemoryStorage,
             compressFormat,
-            compressQuality
+            compressQuality,
         )
     }
 }

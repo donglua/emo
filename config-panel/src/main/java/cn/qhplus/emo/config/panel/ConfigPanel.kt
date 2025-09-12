@@ -141,7 +141,6 @@ fun ConfigPanel(configCenter: ConfigCenter) {
     }
 }
 
-@Suppress("ktlint:standard:function-naming")
 @Composable
 fun BoolConfigActionItem(action: BoolConfigAction) {
     val isSelected by action.stateFlowOf().collectAsStateWithLifecycle()
@@ -161,7 +160,6 @@ fun BoolConfigActionItem(action: BoolConfigAction) {
     )
 }
 
-@Suppress("ktlint:standard:function-naming")
 @Composable
 fun GeneralConfigActionItem(configCenter: ConfigCenter, action: ConfigAction) {
     var value by remember {
@@ -176,7 +174,14 @@ fun GeneralConfigActionItem(configCenter: ConfigCenter, action: ConfigAction) {
             ConfigItemValueAccessory(
                 configCenter,
                 KeyboardOptions(
-                    keyboardType = if (Number::class.java.isAssignableFrom(action.valueType())) KeyboardType.Number else KeyboardType.Text,
+                    keyboardType = if (Number::class.java.isAssignableFrom(
+                            action.valueType(),
+                        )
+                    ) {
+                        KeyboardType.Number
+                    } else {
+                        KeyboardType.Text
+                    },
                 ),
                 action.meta.name,
                 value,
@@ -188,7 +193,6 @@ fun GeneralConfigActionItem(configCenter: ConfigCenter, action: ConfigAction) {
     )
 }
 
-@Suppress("ktlint:standard:function-naming")
 @Composable
 fun ConfigItemValueAccessory(
     configCenter: ConfigCenter,
@@ -223,7 +227,6 @@ fun ConfigItemValueAccessory(
     )
 }
 
-@Suppress("ktlint:standard:function-naming")
 @Composable
 fun ConfigDisplayInfo(resolver: ConfigImplResolver<*>) {
     var display by remember {

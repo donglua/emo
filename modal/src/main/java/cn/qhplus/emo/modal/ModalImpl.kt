@@ -50,7 +50,7 @@ internal abstract class ModalPresent(
     val mask: Color = DefaultMaskColor,
     val systemCancellable: Boolean = true,
     val maskTouchBehavior: MaskTouchBehavior = MaskTouchBehavior.Dismiss,
-    val themeWrapper: @Composable (@Composable () -> Unit) -> Unit
+    val themeWrapper: @Composable (@Composable () -> Unit) -> Unit,
 ) : EmoModal {
 
     private val onShowListeners = arrayListOf<EmoModal.Action>()
@@ -81,7 +81,7 @@ internal abstract class ModalPresent(
                         visible = visibleState.value,
                         onRendered = {
                             isRendered = true
-                        }
+                        },
                     ) {
                         // this callback invoked when dismiss animation finished.
                         if (isDismissing) {
@@ -107,9 +107,7 @@ internal abstract class ModalPresent(
     @Composable
     abstract fun ModalContent(visible: Boolean, onRendered: () -> Unit, dismissFinishAction: () -> Unit)
 
-    override fun isShowing(): Boolean {
-        return isShown
-    }
+    override fun isShowing(): Boolean = isShown
 
     override fun show(): EmoModal {
         if (isShown || isDismissing) {
@@ -126,12 +124,10 @@ internal abstract class ModalPresent(
         return this
     }
 
-    open fun generateLayoutParams(): FrameLayout.LayoutParams {
-        return FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        )
-    }
+    open fun generateLayoutParams(): FrameLayout.LayoutParams = FrameLayout.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT,
+    )
 
     override fun dismiss() {
         if (!isShown) {
@@ -174,14 +170,14 @@ internal class StillModalImpl(
     systemCancellable: Boolean = true,
     maskTouchBehavior: MaskTouchBehavior = MaskTouchBehavior.Dismiss,
     themeWrapper: @Composable (@Composable () -> Unit) -> Unit,
-    val content: @Composable (modal: EmoModal) -> Unit
+    val content: @Composable (modal: EmoModal) -> Unit,
 ) : ModalPresent(
     rootLayout,
     onBackPressedDispatcher,
     mask,
     systemCancellable,
     maskTouchBehavior,
-    themeWrapper
+    themeWrapper,
 ) {
 
     @Composable
@@ -198,12 +194,12 @@ internal class StillModalImpl(
                             it.clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
-                                enabled = maskTouchBehavior == MaskTouchBehavior.Dismiss
+                                enabled = maskTouchBehavior == MaskTouchBehavior.Dismiss,
                             ) {
                                 dismiss()
                             }
                         }
-                    }
+                    },
             )
             content(this)
             SideEffect {
@@ -226,14 +222,14 @@ internal class AnimateModalImpl(
     private val enter: EnterTransition = fadeIn(tween(), 0f),
     private val exit: ExitTransition = fadeOut(tween(), 0f),
     themeWrapper: @Composable (@Composable () -> Unit) -> Unit,
-    val content: @Composable AnimatedVisibilityScope.(modal: EmoModal) -> Unit
+    val content: @Composable AnimatedVisibilityScope.(modal: EmoModal) -> Unit,
 ) : ModalPresent(
     rootLayout,
     onBackPressedDispatcher,
     mask,
     systemCancellable,
     maskTouchBehavior,
-    themeWrapper
+    themeWrapper,
 ) {
 
     @Composable
@@ -241,7 +237,7 @@ internal class AnimateModalImpl(
         AnimatedVisibility(
             visible = visible,
             enter = enter,
-            exit = exit
+            exit = exit,
         ) {
             Box(
                 modifier = Modifier
@@ -254,12 +250,12 @@ internal class AnimateModalImpl(
                             it.throttleClick(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
-                                enabled = maskTouchBehavior == MaskTouchBehavior.Dismiss
+                                enabled = maskTouchBehavior == MaskTouchBehavior.Dismiss,
                             ) {
                                 dismiss()
                             }
                         }
-                    }
+                    },
             )
             content(this@AnimateModalImpl)
             DisposableEffect("") {

@@ -48,7 +48,7 @@ data class PhotoPickerConfig(
     val topBarBucketFactory: (
         textFlow: StateFlow<String>,
         isFocusFlow: StateFlow<Boolean>,
-        onClick: () -> Unit
+        onClick: () -> Unit,
     ) -> TopBarItem = { textFlow, isFocusFlow, onClick ->
         PhotoPickerBucketTopBarItem(
             bgColor = Color.White.copy(alpha = 0.15f),
@@ -57,21 +57,21 @@ data class PhotoPickerConfig(
             iconColor = Color(0xFF333333),
             textFlow = textFlow,
             isFocusFlow = isFocusFlow,
-            onClick = onClick
+            onClick = onClick,
         )
     },
     val topBarSendFactory: (
         canSendSelf: Boolean,
         maxSelectCount: Int,
         selectCountFlow: StateFlow<Int>,
-        onClick: () -> Unit
+        onClick: () -> Unit,
     ) -> TopBarItem = { canSendSelf, maxSelectCount, selectCountFlow, onClick ->
         PhotoSendTopBarItem(
             text = "发送",
             canSendSelf = canSendSelf,
             maxSelectCount = maxSelectCount,
             selectCountFlow = selectCountFlow,
-            onClick = onClick
+            onClick = onClick,
         )
     },
 
@@ -89,7 +89,7 @@ data class PhotoPickerConfig(
     val bucketChooserMainTextColor: Color = Color.White,
     val bucketChooserCountTextColor: Color = Color.White.copy(alpha = 0.64f),
 
-    val editConfig: PhotoEditConfig = PhotoEditConfig()
+    val editConfig: PhotoEditConfig = PhotoEditConfig(),
 )
 
 val DefaultPhotoPickerConfig by lazy { PhotoPickerConfig() }
