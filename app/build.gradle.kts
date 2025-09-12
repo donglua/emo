@@ -26,6 +26,7 @@ plugins {
     id("emo.spotless")
     alias(libs.plugins.ksp)
     alias(libs.plugins.serialization)
+    alias(libs.plugins.compose.compiler)
 }
 
 val gitVersion = providers.exec {

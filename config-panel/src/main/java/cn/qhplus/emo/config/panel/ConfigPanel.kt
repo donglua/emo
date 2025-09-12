@@ -111,7 +111,7 @@ fun ConfigPanel(configCenter: ConfigCenter) {
                 .weight(1f)
         ) {
             derivedConfigList.forEach {
-                stickyHeader(it.first) {
+                stickyHeader(it.first) { _ ->
                     Text(
                         text = it.first,
                         modifier = Modifier

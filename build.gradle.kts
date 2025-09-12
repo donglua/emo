@@ -12,7 +12,10 @@ buildscript {
         classpath(libs.secrets.gradlePlugin)
         classpath(libs.benchmark.gradlePlugin)
     }
+}
 
+plugins {
+    alias(libs.plugins.compose.compiler) apply false
 }
 
 subprojects {
