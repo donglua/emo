@@ -38,10 +38,7 @@ import com.google.devtools.ksp.symbol.Modifier
 import java.io.OutputStream
 import kotlin.reflect.KClass
 
-class ConfigMapProcessor(
-    private val codeGenerator: CodeGenerator,
-    private val logger: KSPLogger
-) : SymbolProcessor {
+class ConfigMapProcessor(private val codeGenerator: CodeGenerator, private val logger: KSPLogger) : SymbolProcessor {
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val configs = resolver
@@ -56,13 +53,13 @@ class ConfigMapProcessor(
         val osForConfigMapFactory: OutputStream = codeGenerator.createNewFile(
             dependencies = Dependencies(true, *inputFlies),
             packageName = ConfigMapFactory::class.java.packageName,
-            fileName = "ConfigMapFactoryGenerated"
+            fileName = "ConfigMapFactoryGenerated",
         )
 
         val osForConfigCenterEx: OutputStream = codeGenerator.createNewFile(
             dependencies = Dependencies(true, *inputFlies),
             packageName = ConfigMapFactory::class.java.packageName,
-            fileName = "ConfigCenterEx"
+            fileName = "ConfigCenterEx",
         )
 
         osForConfigMapFactory.writeLine("package ${ConfigMapFactory::class.java.packageName}")
@@ -115,24 +112,19 @@ class ConfigMapProcessor(
                 },
                 {
                     writeMethodEx(cls, ConfigWithStringValue::class, "String")
-                }
+                },
             ).firstOrNull { it.invoke() }
         }
     }
 
     @OptIn(KspExperimental::class)
-    private fun <T : Annotation> OutputStream.writeMethodEx(
-        cls: KSClassDeclaration,
-        annotationKClass: KClass<T>,
-        type: String
-    ): Boolean {
-        return cls.getAnnotationsByType(annotationKClass).firstOrNull()?.let {
+    private fun <T : Annotation> OutputStream.writeMethodEx(cls: KSClassDeclaration, annotationKClass: KClass<T>, type: String): Boolean =
+        cls.getAnnotationsByType(annotationKClass).firstOrNull()?.let {
             write("fun ConfigCenter.actionOf${cls.simpleName.getShortName()}(): ${type}ConfigAction")
             writeBlock {
                 writeLine("return actionOf(${cls.qualifiedName!!.asString()}::class.java).concrete$type()")
             }
         } != null
-    }
 
     @OptIn(KspExperimental::class)
     private fun OutputStream.writeFactoryBody(configs: List<KSClassDeclaration>) {
@@ -157,7 +149,7 @@ class ConfigMapProcessor(
                     "\"${configBasic.humanName}\", " +
                     "${configBasic.versionRelated}, " +
                     "\"${configBasic.category}\", " +
-                    "arrayOf(${configBasic.tags.joinToString(",") { "\"$it\"" }}))"
+                    "arrayOf(${configBasic.tags.joinToString(",") { "\"$it\"" }}))",
             )
 
             val subClasses = t.getSealedSubclasses().toList()
@@ -169,7 +161,7 @@ class ConfigMapProcessor(
                 qualifiedName,
                 index,
                 "Bool",
-                ConfigWithBoolValue::class
+                ConfigWithBoolValue::class,
             ) {
                 it.default.toString()
             }
@@ -188,7 +180,7 @@ class ConfigMapProcessor(
                 qualifiedName,
                 index,
                 "Int",
-                ConfigWithIntValue::class
+                ConfigWithIntValue::class,
             ) {
                 it.default.toString()
             }
@@ -200,7 +192,7 @@ class ConfigMapProcessor(
                 qualifiedName,
                 index,
                 "Long",
-                ConfigWithLongValue::class
+                ConfigWithLongValue::class,
             ) {
                 it.default.toString()
             }
@@ -212,7 +204,7 @@ class ConfigMapProcessor(
                 qualifiedName,
                 index,
                 "Float",
-                ConfigWithFloatValue::class
+                ConfigWithFloatValue::class,
             ) {
                 "${it.default}f"
             }
@@ -224,7 +216,7 @@ class ConfigMapProcessor(
                 qualifiedName,
                 index,
                 "Double",
-                ConfigWithDoubleValue::class
+                ConfigWithDoubleValue::class,
             ) {
                 it.default.toString()
             }
@@ -236,7 +228,7 @@ class ConfigMapProcessor(
                 qualifiedName,
                 index,
                 "String",
-                ConfigWithStringValue::class
+                ConfigWithStringValue::class,
             ) {
                 "\"${it.default}\""
             }
@@ -257,7 +249,7 @@ class ConfigMapProcessor(
         index: Int,
         configClsPrefix: String,
         annotationKClass: KClass<T>,
-        defaultValue: (T) -> String
+        defaultValue: (T) -> String,
     ): Boolean {
         cls.getAnnotationsByType(annotationKClass).firstOrNull()?.let {
             writeLine("val action$index = ${configClsPrefix}ConfigAction(storage, meta, ${defaultValue(it)})")
@@ -277,7 +269,7 @@ class ConfigMapProcessor(
         index: Int,
         configClsPrefix: String,
         annotationKClass: KClass<T>,
-        defaultValue: (T) -> String
+        defaultValue: (T) -> String,
     ) {
         if (subClasses.isNotEmpty()) {
             val pairs = subClasses.mapNotNull { cls ->
@@ -288,7 +280,9 @@ class ConfigMapProcessor(
                 } else {
                     val instanceField = if (cls.classKind == ClassKind.OBJECT) {
                         cls.qualifiedName!!.asString()
-                    } else "null"
+                    } else {
+                        "null"
+                    }
                     val valueType = if (configClsPrefix == "Bool") "Boolean" else configClsPrefix
                     "ConfigImplItem<$qualifiedName, $valueType>(" +
                         "${cls.qualifiedName!!.asString()}::class.java,$instanceField,${defaultValue(annotation)})"
@@ -298,7 +292,7 @@ class ConfigMapProcessor(
                 writeLine("val pairs$index = listOf($pairs)")
                 writeLine(
                     "implMap[$qualifiedName::class.java] = " +
-                        "${configClsPrefix}ClsConfigImplResolver<$qualifiedName>(pairs$index, prodMode, action$index)"
+                        "${configClsPrefix}ClsConfigImplResolver<$qualifiedName>(pairs$index, prodMode, action$index)",
                 )
             }
         }

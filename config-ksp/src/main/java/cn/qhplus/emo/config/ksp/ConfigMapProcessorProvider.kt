@@ -21,10 +21,8 @@ import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 
 class ConfigMapProcessorProvider : SymbolProcessorProvider {
-    override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
-        return ConfigMapProcessor(
-            environment.codeGenerator,
-            environment.logger
-        )
-    }
+    override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor = ConfigMapProcessor(
+        environment.codeGenerator,
+        environment.logger,
+    )
 }
