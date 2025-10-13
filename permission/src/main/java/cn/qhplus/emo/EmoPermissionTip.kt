@@ -18,23 +18,21 @@ package cn.qhplus.emo
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -43,30 +41,43 @@ interface EmoPermissionTip {
     fun AnimatedVisibilityScope.Content()
 }
 
-class SimpleEmoPermissionTip(val text: String) : EmoPermissionTip {
+class SimpleEmoPermissionTip(val title: String, val text: String) : EmoPermissionTip {
 
     @OptIn(ExperimentalAnimationApi::class)
     @Composable
     override fun AnimatedVisibilityScope.Content() {
-        val isDarkTheme = isSystemInDarkTheme()
         Box(
-            modifier = Modifier
-                .windowInsetsPadding(WindowInsets.systemBars)
-                .padding(horizontal = 16.dp, vertical = 24.dp)
-                .fillMaxWidth()
-                .animateEnterExit(
-                    slideInVertically(tween(), initialOffsetY = { -it }),
-                    slideOutVertically(tween(), targetOffsetY = { -it }),
-                )
-                .shadow(32.dp, RoundedCornerShape(12.dp), true)
-                .background(if (isDarkTheme) Color.DarkGray else Color.White)
-                .padding(horizontal = 16.dp, vertical = 24.dp),
+            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter
         ) {
-            Text(
-                text = text,
-                fontSize = 17.sp,
-                color = if (isDarkTheme) Color.White else Color.Black,
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp, 32.dp, 12.dp, 16.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color(0xE6FFFFFF)),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                val textColor = Color(0xFF181818)
+                Text(
+                    text = title,
+                    color = textColor,
+                    textAlign = TextAlign.Start,
+                    fontSize = 14.sp,
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .padding(10.dp, 12.dp, 10.dp, 0.dp)
+                )
+                Text(
+                    text = text,
+                    color = textColor,
+                    textAlign = TextAlign.Start,
+                    fontSize = 13.sp,
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .padding(10.dp, 4.dp, 10.dp, 12.dp)
+                )
+            }
         }
     }
 }

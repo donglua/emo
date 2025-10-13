@@ -65,11 +65,12 @@ private class MultiplePermissionCallbackActionHolder(var action: ((Map<String, B
 @Composable
 fun rememberEmoMultiplePermissionsState(
     permissions: List<String>,
+    tipTitle: String,
     tipContent: String,
     onPermissionsResult: (Map<String, Boolean>) -> Unit = {},
 ): MultiplePermissionsState {
     val tip = remember(tipContent) {
-        SimpleEmoPermissionTip(tipContent)
+        SimpleEmoPermissionTip(tipTitle, tipContent)
     }
     return rememberEmoMultiplePermissionsState(permissions, tip, onPermissionsResult)
 }

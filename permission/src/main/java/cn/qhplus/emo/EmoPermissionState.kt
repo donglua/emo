@@ -60,11 +60,12 @@ private class PermissionCallbackActionHolder(var action: ((Boolean) -> Unit)? = 
 @Composable
 fun rememberEmoPermissionState(
     permission: String,
+    tipTitle: String,
     tipContent: String,
     onPermissionResult: (Boolean) -> Unit = {},
 ): PermissionState {
     val tip = remember(tipContent) {
-        SimpleEmoPermissionTip(tipContent)
+        SimpleEmoPermissionTip(tipTitle, tipContent)
     }
     return rememberEmoPermissionState(permission, tip, onPermissionResult)
 }

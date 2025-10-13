@@ -88,6 +88,7 @@ fun PermissionPage() {
 fun PermissionDemo() {
     val permissionState = rememberEmoPermissionState(
         permission = Manifest.permission.CAMERA,
+        tipTitle = "相机权限说明",
         tipContent = "为了录入羞羞的事情申请个相机权限"
     )
     val view = LocalView.current
@@ -126,6 +127,7 @@ fun PermissionDemo() {
 fun MultiplePermissionDemo() {
     val permissionState = rememberEmoMultiplePermissionsState(
         permissions = listOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA),
+        tipTitle = "权限说明",
         tipContent = "一次性录入多个权限"
     )
     val view = LocalView.current
